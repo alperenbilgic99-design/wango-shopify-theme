@@ -1,0 +1,33 @@
+{%- comment -%}A different device than another fade-up: a flat stat strip.{%- endcomment -%}
+<section class="w-stats">
+  <div class="w-stats__grid">
+    {%- for block in section.blocks -%}
+      <div class="w-reveal" data-reveal-delay="{{ forloop.index0 | times: 0.06 }}" {{ block.shopify_attributes }}>
+        <b>{{ block.settings.value }}</b>
+        <em>{{ block.settings.label }}</em>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · rakamlar",
+  "max_blocks": 6,
+  "blocks": [
+    { "type": "stat", "name": "Rakam", "settings": [
+      { "type": "text", "id": "value", "label": "Değer" },
+      { "type": "text", "id": "label", "label": "Etiket" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · rakamlar",
+    "blocks": [
+      { "type": "stat", "settings": { "value": "28sa",  "label": "toplam dinleme" } },
+      { "type": "stat", "settings": { "value": "44mm",  "label": "kutu çapı" } },
+      { "type": "stat", "settings": { "value": "3",     "label": "ANC kademesi" } },
+      { "type": "stat", "settings": { "value": "2 yıl", "label": "garanti" } }
+    ]
+  }]
+}
+{% endschema %}

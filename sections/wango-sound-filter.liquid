@@ -1,0 +1,107 @@
+{%- comment -%}
+  Sound-filter reveal — ported from SoundFilterReveal in lib/product-story-fx.tsx.
+
+  A bespoke Canvas 2D waveform, not a video: an AI clip read as low-resolution
+  once stretched full-bleed and could never loop without a visible seam. Real
+  elapsed time feeds every sin(), so there is no loop point to jump at.
+  Pressing the button ramps in a second clean waveform AND a Web Audio lowpass
+  on the ambience track — the same chaos→calm story, heard as well as seen.
+
+  Audio stops when the section scrolls away or the tab is hidden, and the mute
+  button actually pauses rather than silencing a still-running stream.
+{%- endcomment -%}
+
+<div class="w-sound" data-sound data-earbud="{{ 'ws-earbud-black-bg.png' | asset_url }}">
+  {%- if section.settings.audio_url != blank -%}
+    <audio src="{{ section.settings.audio_url }}" loop preload="auto" crossorigin="anonymous"></audio>
+  {%- else -%}
+    <audio loop preload="none"></audio>
+  {%- endif -%}
+
+  <canvas aria-hidden="true"></canvas>
+
+  <div class="w-sound__head" data-sound-head>
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2>{{ section.settings.heading }}</h2>
+    <p>{{ section.settings.body }}</p>
+  </div>
+
+  {%- comment -%}
+    Waveform labels: they name what the canvas is already drawing on each side
+    of the earbud, so the wide empty flanks carry meaning instead of reading as
+    dead space.
+  {%- endcomment -%}
+  <div class="w-sound__labels" aria-hidden="true" style="top: calc(42% - 120px)">
+    <div>
+      <div><b>{{ section.settings.in_label }}</b><small>{{ section.settings.in_sub }}</small></div>
+      <div class="is-out" style="text-align:right">
+        <b>{{ section.settings.out_label }}</b>
+        <small data-sound-outlabel data-label-on="{{ section.settings.out_sub_on | escape }}">{{ section.settings.out_sub }}</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-sound__controls" style="top: calc(42% + 96px)">
+    <button type="button" class="w-btn" data-sound-filter
+            data-label-on="{{ section.settings.button_on | escape }}"
+            aria-label="{{ section.settings.button_off | escape }}">{{ section.settings.button_off }}</button>
+
+    <button type="button" class="w-sound__mute" data-sound-mute aria-pressed="false" aria-label="{{ 'sections.sound.mute' | t }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M11 5 6 9H3v6h3l5 4V5Z"/>
+        <g data-mute-off><path d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></g>
+        <g data-mute-on style="display:none"><path d="m17 9 4 6"/><path d="m21 9-4 6"/></g>
+      </svg>
+    </button>
+  </div>
+
+  {%- comment -%}
+    Three plain-language notes on what the visual is showing — deliberately
+    descriptive, not spec claims. No figure is stated here that isn't
+    demonstrated on screen.
+  {%- endcomment -%}
+  <div class="w-sound__notes">
+    <div>
+      {%- for block in section.blocks -%}
+        <div {{ block.shopify_attributes }}>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Ürün · gürültü filtresi",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "url", "id": "audio_url", "label": "Ortam sesi URL'si", "info": "MP3'ü Ayarlar → Dosyalar'a yükle. Boşsa görsel sessiz çalışır." },
+    { "type": "text", "id": "eyebrow", "default": "Aktif gürültü filtresi", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Kaos girer, sessizlik çıkar.", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Soldan gelen her şey dışarıdaki ses. Filtreyi çalıştır — uğultunun tek bir sakin çizgiye indiğini hem gör, hem duy.", "label": "Metin" },
+    { "type": "text", "id": "button_off", "default": "Gürültüyü filtrele", "label": "Buton (kapalı)" },
+    { "type": "text", "id": "button_on", "default": "Sessizlik", "label": "Buton (açık)" },
+    { "type": "text", "id": "in_label", "default": "Dış gürültü", "label": "Sol etiket" },
+    { "type": "text", "id": "in_sub", "default": "Kafe, metro, ofis", "label": "Sol alt yazı" },
+    { "type": "text", "id": "out_label", "default": "Duyduğun", "label": "Sağ etiket" },
+    { "type": "text", "id": "out_sub", "default": "Henüz filtresiz", "label": "Sağ alt yazı (kapalı)" },
+    { "type": "text", "id": "out_sub_on", "default": "Tek, sakin ton", "label": "Sağ alt yazı (açık)" }
+  ],
+  "blocks": [
+    { "type": "note", "name": "Not", "settings": [
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "body", "label": "Metin" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · gürültü filtresi",
+    "blocks": [
+      { "type": "note", "settings": { "title": "Çok katmanlı uğultu", "body": "Dışarıdaki ses tek bir şey değil — sürekli değişen onlarca kaynak." } },
+      { "type": "note", "settings": { "title": "Anlık ayrışma", "body": "Filtre devreye girdiği anda o karmaşa tek bir düz çizgiye iner." } },
+      { "type": "note", "settings": { "title": "Müzik önde kalır", "body": "Arka plan geri çekilirken dinlediğin şey netliğini korur." } }
+    ]
+  }]
+}
+{% endschema %}

@@ -1,0 +1,11 @@
+<section class="w-page">
+  <div class="w-page__inner">
+    <h1>{{ 'customer.addresses.title' | t }}</h1>
+    {%- for address in customer.addresses -%}
+      <div style="border-bottom:1px solid var(--w-line);padding-block:1.25rem;color:var(--w-muted)">{{ address | format_address }}</div>
+    {%- else -%}
+      <p class="w-page__lede">{{ 'customer.addresses.none' | t }}</p>
+    {%- endfor -%}
+    <div class="w-page__actions"><a class="w-btn w-btn--ghost" href="{{ routes.account_url }}">{{ 'customer.account.title' | t }}</a></div>
+  </div>
+</section>

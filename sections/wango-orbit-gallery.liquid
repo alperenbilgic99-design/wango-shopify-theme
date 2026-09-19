@@ -1,0 +1,52 @@
+{%- comment -%}
+  360° orbit gallery — ported from OrbitGallery in lib/sliders.tsx. Frames ride
+  a tilted oval; the ring idles slowly, accelerates with the wheel, and
+  hovering a frame scales it while dimming the rest.
+{%- endcomment -%}
+
+<section class="w-black w-section">
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2 class="w-h2" style="max-width:22ch">{{ section.settings.heading }}</h2>
+  </div>
+
+  <div class="w-orbit" data-orbit>
+    {%- for block in section.blocks limit: 12 -%}
+      <div class="sl-orbit-item" {{ block.shopify_attributes }}>
+        <div class="sl-orbit-frame">
+          {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: '', loading: 'lazy', sizes: '240px' %}
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · 360° galeri",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "360°", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Her açıdan, her günden.", "label": "Başlık" }
+  ],
+  "blocks": [
+    { "type": "frame", "name": "Kare", "settings": [
+      { "type": "image_picker", "id": "image", "label": "Görsel" },
+      { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · 360° galeri",
+    "blocks": [
+      { "type": "frame", "settings": { "image_asset": "wb-brief-01.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-06.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-08.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-11.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-12.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-16.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-17.jpg" } },
+      { "type": "frame", "settings": { "image_asset": "wb-brief-19.jpg" } }
+    ]
+  }]
+}
+{% endschema %}

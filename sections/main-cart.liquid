@@ -1,0 +1,100 @@
+{%- comment -%}
+  Cart. Replaces the React build's localStorage cart entirely: lines, totals
+  and discounts all come from Shopify, and "Ödemeye geç" hands off to
+  Shopify's real, PCI-compliant checkout. There is no custom payment form in
+  this theme, by design.
+{%- endcomment -%}
+
+<section class="w-cart" data-cart-root>
+  <div class="w-wrap" style="padding-inline:0">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h1 style="margin-top:1rem;font-family:var(--font-brand);font-size:clamp(1.9rem,4.4vw,2.8rem);font-weight:600;letter-spacing:-.025em">
+      {{ 'sections.cart.title' | t }}
+    </h1>
+  </div>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="w-cart__empty">
+      <p class="w-lede" style="margin-inline:auto">{{ 'sections.cart.empty' | t }}</p>
+      <a class="w-btn w-btn--solid" style="margin-top:2rem" href="{{ section.settings.continue_url | default: routes.all_products_collection_url }}">
+        {{ 'sections.cart.continue' | t }}
+      </a>
+    </div>
+  {%- else -%}
+    {%- form 'cart', cart -%}
+      <div class="w-cart__grid" style="margin-top:2.5rem">
+        <div>
+          {%- for line in cart.items -%}
+            <div class="w-cart__line">
+              <a href="{{ line.url }}">
+                {%- if line.image -%}
+                  <img src="{{ line.image | image_url: width: 200 }}" alt="{{ line.title | escape }}" width="92" height="115" loading="lazy">
+                {%- endif -%}
+              </a>
+              <div>
+                <h3><a href="{{ line.url }}">{{ line.product.title }}</a></h3>
+                {%- unless line.product.has_only_default_variant -%}
+                  <p>{{ line.variant.title }}</p>
+                {%- endunless -%}
+                {%- for discount in line.line_level_discount_allocations -%}
+                  <p style="color:var(--w-accent)">{{ discount.discount_application.title }} (&minus;{{ discount.amount | money }})</p>
+                {%- endfor -%}
+
+                <div class="w-cart__line-foot">
+                  <div class="w-qty" data-qty>
+                    <button type="button" data-qty-step="-1" aria-label="{{ 'products.product.decrease' | t }}">&minus;</button>
+                    <input type="number" value="{{ line.quantity }}" min="0" max="99"
+                           data-line-qty="{{ forloop.index }}"
+                           aria-label="{{ 'products.product.quantity' | t }}">
+                    <button type="button" data-qty-step="1" aria-label="{{ 'products.product.increase' | t }}">+</button>
+                  </div>
+                  <span style="font-family:var(--font-brand);font-weight:600;color:var(--w-white)">{{ line.final_line_price | money }}</span>
+                  <button type="button" class="w-cart__remove" data-line-remove="{{ forloop.index }}">{{ 'sections.cart.remove' | t }}</button>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <aside class="w-cart__summary">
+          <h2>{{ 'sections.cart.summary' | t }}</h2>
+          <div class="w-cart__row">
+            <span>{{ 'sections.cart.subtotal' | t }}</span>
+            <span>{{ cart.items_subtotal_price | money }}</span>
+          </div>
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <div class="w-cart__row" style="color:var(--w-accent)">
+              <span>{{ discount.title }}</span>
+              <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+            </div>
+          {%- endfor -%}
+          <div class="w-cart__row w-cart__row--total">
+            <span>{{ 'sections.cart.total' | t }}</span>
+            <span>{{ cart.total_price | money }}</span>
+          </div>
+
+          <button type="submit" name="checkout" class="w-btn w-btn--solid w-btn--block" style="margin-top:1.25rem">
+            {{ 'sections.cart.checkout' | t }}
+          </button>
+
+          {%- comment -%}
+            Shipping and tax are calculated by Shopify at checkout, from the
+            store's own shipping profiles — the theme must not state a figure
+            it cannot know here.
+          {%- endcomment -%}
+          <p class="w-cart__note">{{ 'sections.cart.tax_note' | t }}</p>
+        </aside>
+      </div>
+    {%- endform -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Sepet",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Sepet", "label": "Üst etiket" },
+    { "type": "url", "id": "continue_url", "label": "Alışverişe devam bağlantısı" }
+  ]
+}
+{% endschema %}

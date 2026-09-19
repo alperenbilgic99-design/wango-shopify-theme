@@ -1,0 +1,208 @@
+{%- comment -%}
+  Product detail — ported from product-detail.tsx. Gallery + option picker on
+  the left, price and buy box on the right.
+
+  Two things changed on purpose in the move to Shopify:
+  • The colour "swatches" are now real product options, so picking one selects
+    an actual variant with its own price, stock and image — the React build
+    only swapped a photo.
+  • Add-to-cart posts to Shopify's AJAX cart and the Buy button goes to
+    Shopify's real checkout. The old localStorage cart and the placeholder
+    checkout page are gone.
+{%- endcomment -%}
+
+{%- liquid
+  assign current = product.selected_or_first_available_variant
+  assign swatch_name = section.settings.swatch_option | downcase
+-%}
+
+<section class="w-pdp" data-product-root>
+  <div class="w-pdp__grid">
+    {%- comment -%} ── gallery ── {%- endcomment -%}
+    <div class="w-pdp__gallery">
+      <div class="w-pdp__thumbs">
+        {%- for media in product.media limit: 8 -%}
+          {%- liquid
+            assign thumb_on = false
+            if current.featured_media != blank and media.id == current.featured_media.id
+              assign thumb_on = true
+            elsif current.featured_media == blank and forloop.first
+              assign thumb_on = true
+            endif
+          -%}
+          <button type="button" data-thumb="{{ media.id }}"
+                  aria-pressed="{{ thumb_on }}"
+                  aria-label="{{ 'products.product.media' | t }} {{ forloop.index }}">
+            <img src="{{ media | image_url: width: 200 }}" alt="" loading="lazy" width="80" height="80">
+          </button>
+        {%- endfor -%}
+      </div>
+
+      <div class="w-bezel" style="flex:1">
+        <div class="w-pdp__hero" data-pdp-hero>
+          {%- if product.compare_at_price > product.price -%}
+            {%- assign saving = product.compare_at_price | minus: product.price -%}
+            <span class="w-badge">{{ saving | money }} {{ 'products.product.saving' | t }}</span>
+          {%- endif -%}
+          {%- for media in product.media limit: 8 -%}
+            {%- liquid
+              assign is_on = false
+              if current.featured_media != blank and media.id == current.featured_media.id
+                assign is_on = true
+              elsif current.featured_media == blank and forloop.first
+                assign is_on = true
+              endif
+            -%}
+            <img data-media-id="{{ media.id }}"
+                 class="{% if is_on %}is-on{% endif %}"
+                 src="{{ media | image_url: width: 1200 }}"
+                 srcset="{{ media | image_url: width: 600 }} 600w, {{ media | image_url: width: 1200 }} 1200w, {{ media | image_url: width: 1800 }} 1800w"
+                 sizes="(min-width: 1024px) 620px, 100vw"
+                 width="{{ media.width }}" height="{{ media.height }}"
+                 alt="{{ media.alt | default: product.title | escape }}"
+                 {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} ── buy box ── {%- endcomment -%}
+    <div class="w-pdp__buy">
+      <span class="w-eyebrow">{{ product.vendor | default: section.settings.eyebrow }}</span>
+      <h1>{{ product.title }}</h1>
+
+      {%- if section.settings.show_rating -%}
+        <div class="w-pdp__rating">
+          {% render 'stars', filled: 5 %}
+          <span>{{ section.settings.rating_value }} · {{ section.settings.rating_count }} {{ 'products.product.reviews' | t }}</span>
+        </div>
+      {%- endif -%}
+
+      <div class="w-pdp__desc">{{ product.description }}</div>
+
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" data-product-form>
+        <input type="hidden" name="id" value="{{ current.id }}" data-variant-id>
+
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            {%- liquid
+              assign is_swatch = false
+              assign this_name = option.name | downcase
+              if swatch_name != blank and this_name == swatch_name
+                assign is_swatch = true
+              endif
+            -%}
+
+            <div class="w-pdp__opt" data-option-index="{{ forloop.index0 }}">
+              <div class="w-pdp__opt-head">
+                <b>{{ option.name }}</b>
+                <span data-option-value>{{ option.selected_value }}</span>
+              </div>
+
+              <div class="{% if is_swatch %}w-pdp__swatches{% else %}w-pdp__pills{% endif %}">
+                {%- for value in option.values -%}
+                  <label>
+                    <input type="radio" name="option-{{ option.position }}" value="{{ value | escape }}"
+                           {% if value == option.selected_value %}checked{% endif %}>
+                    {%- if is_swatch -%}
+                      {%- liquid
+                        assign chip = 'var(--w-accent)'
+                        if value.swatch.color
+                          assign chip = value.swatch.color
+                        endif
+                      -%}
+                      <span><i style="background: {{ chip }}{% if value.swatch.image %}; background-image: url({{ value.swatch.image | image_url: width: 100 }}); background-size: cover{% endif %}"></i></span>
+                      <span class="visually-hidden">{{ value }}</span>
+                    {%- else -%}
+                      <span>{{ value }}</span>
+                    {%- endif -%}
+                  </label>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        {%- if section.settings.includes != blank -%}
+          <ul class="w-dotlist" style="margin-top:1.5rem">
+            {%- assign items = section.settings.includes | split: ',' -%}
+            {%- for item in items -%}<li>{{ item | strip }}</li>{%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        <div class="w-pdp__price-row">
+          <div class="w-qty" data-qty>
+            <button type="button" data-qty-step="-1" aria-label="{{ 'products.product.decrease' | t }}">&minus;</button>
+            <input type="number" name="quantity" value="1" min="1" max="99" aria-label="{{ 'products.product.quantity' | t }}">
+            <button type="button" data-qty-step="1" aria-label="{{ 'products.product.increase' | t }}">+</button>
+          </div>
+          <span class="w-pdp__price" data-price>
+            {{ current.price | money }}
+            <s data-compare-price {% unless current.compare_at_price > current.price %}hidden{% endunless %}>{{ current.compare_at_price | money }}</s>
+          </span>
+        </div>
+
+        <div style="margin-top:1.25rem">
+          <button type="submit" class="w-btn w-btn--solid w-btn--block" data-add-to-cart
+                  data-label-add="{{ 'products.product.add_to_cart' | t }}"
+                  data-label-added="{{ 'products.product.added' | t }}"
+                  data-label-soldout="{{ 'products.product.sold_out' | t }}"
+                  data-label-unavailable="{{ 'products.product.unavailable' | t }}"
+                  {% unless current.available %}disabled{% endunless %}>
+            {% if current.available %}{{ 'products.product.add_to_cart' | t }}{% else %}{{ 'products.product.sold_out' | t }}{% endif %}
+          </button>
+          <p class="visually-hidden" role="status" data-cart-status></p>
+        </div>
+      </form>
+
+      {%- if section.settings.promises != blank -%}
+        <div class="w-pdp__promises">
+          {%- assign promises = section.settings.promises | split: ',' -%}
+          {%- for p in promises -%}<span>{{ p | strip }}</span>{%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.cross_sell != blank -%}
+        {%- assign other = all_products[section.settings.cross_sell] -%}
+        {%- if other != empty and other.handle != product.handle -%}
+          <a class="w-pdp__cross" href="{{ other.url }}">{{ other.title }} {{ 'products.product.see_set' | t }} <span aria-hidden="true">&rarr;</span></a>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%}
+    Variant data for the option picker. `| json` escapes it safely; the script
+    parses it rather than reading option state out of the DOM.
+  {%- endcomment -%}
+  <script type="application/json" data-product-json>
+    [
+      {%- for v in product.variants -%}
+        {
+          "id": {{ v.id }},
+          "options": {{ v.options | json }},
+          "price": {{ v.price }},
+          "compare_at_price": {{ v.compare_at_price | default: 0 }},
+          "available": {{ v.available }},
+          "featured_media_id": {{ v.featured_media.id | default: 0 }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Origin WOB", "label": "Üst etiket (marka boşsa)" },
+    { "type": "text", "id": "swatch_option", "default": "Renk", "label": "Renk seçeneğinin adı", "info": "Bu isimdeki seçenek yuvarlak renk noktası olarak gösterilir." },
+    { "type": "textarea", "id": "includes", "default": "Kutu + 2 tıkaç, 3 boy silikon uç, USB-C kablo, Bileklik askısı", "label": "Kutuda ne var", "info": "Virgülle ayır." },
+    { "type": "textarea", "id": "promises", "default": "Ücretsiz kargo, 30 gün iade, 2 yıl garanti, Aynı gün kargo", "label": "Güvence satırı", "info": "Virgülle ayır." },
+    { "type": "checkbox", "id": "show_rating", "default": true, "label": "Puanı göster" },
+    { "type": "text", "id": "rating_value", "default": "4.8", "label": "Puan" },
+    { "type": "text", "id": "rating_count", "default": "312", "label": "Değerlendirme sayısı" },
+    { "type": "product", "id": "cross_sell", "label": "Diğer set" }
+  ]
+}
+{% endschema %}

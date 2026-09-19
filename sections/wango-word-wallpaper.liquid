@@ -1,0 +1,35 @@
+{%- comment -%}
+  Typographic wallpaper — ported from WordWallpaperMarquee in lib/story-fx-2.tsx.
+  Alternate rows drift in opposite directions on scroll. A short breather
+  between two heavy sections.
+{%- endcomment -%}
+
+{%- assign rows = section.settings.rows | default: 4 -%}
+<div class="wwm" data-wallpaper aria-hidden="true">
+  {%- for r in (1..rows) -%}
+    {%- assign i = forloop.index0 -%}
+    {%- assign mod = i | modulo: 2 -%}
+    <div class="wwm-row" style="margin-left: {% if mod == 0 %}-10%{% else %}0{% endif %}">
+      {%- for n in (1..8) -%}
+        {%- if i == 0 -%}
+          <span style="color:var(--w-accent);opacity:1">{{ section.settings.word }}</span>
+        {%- else -%}
+          {%- assign fade = i | times: 0.15 -%}
+          {%- assign op = 0.9 | minus: fade -%}
+          <span style="color:var(--w-white);opacity:{{ op }}">{{ section.settings.word }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Origin · yazı duvarı",
+  "settings": [
+    { "type": "text", "id": "word", "default": "wango", "label": "Kelime" },
+    { "type": "range", "id": "rows", "min": 2, "max": 6, "step": 1, "default": 4, "label": "Satır sayısı" }
+  ],
+  "presets": [{ "name": "Origin · yazı duvarı" }]
+}
+{% endschema %}

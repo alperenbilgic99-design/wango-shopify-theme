@@ -1,0 +1,7 @@
+<section class="w-page">
+  <article class="w-page__inner">
+    <h1>{{ article.title }}</h1>
+    <p class="w-page__lede">{{ article.published_at | date: '%d.%m.%Y' }}</p>
+    <div class="w-page__rte">{{ article.content }}</div>
+  </article>
+</section>

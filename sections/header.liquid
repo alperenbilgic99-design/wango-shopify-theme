@@ -1,0 +1,87 @@
+{%- comment -%}
+  Sticky header + the full-screen "sliding stairs" overlay menu.
+  Ported from sticky-header.tsx and nav-overlay.tsx. The frosted pill layer
+  fades in behind the nav once you scroll past 40px; the hamburger bars morph
+  from origin-center. Menu links come from the store's own navigation so they
+  stay editable, with the wango set as the packaged default.
+{%- endcomment -%}
+
+<header class="w-header" data-header>
+  <div class="w-header__inner">
+    <div class="w-header__glass" aria-hidden="true"></div>
+
+    <a href="{{ routes.root_url }}" class="w-header__logo">wang<span style="color:var(--w-accent)">o</span></a>
+
+    <nav class="w-header__nav" aria-label="{{ 'accessibility.main_nav' | t }}">
+      {%- for link in section.settings.menu.links -%}
+        <a href="{{ link.url }}" class="w-header__link"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>
+      {%- endfor -%}
+
+      <a href="{{ routes.cart_url }}" class="w-cart-pill" aria-label="{{ 'sections.cart.title' | t }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 7h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 7Z"/>
+          <path d="M9 7a3 3 0 0 1 6 0"/>
+        </svg>
+        {{ 'sections.cart.title' | t }}
+        <span class="w-cart-count" data-cart-count {% if cart.item_count == 0 %}hidden{% endif %}>{{ cart.item_count }}</span>
+      </a>
+
+      {%- if section.settings.cta_url != blank -%}
+        <a href="{{ section.settings.cta_url }}" class="w-btn w-btn--solid" style="padding:.625rem 1.25rem;font-size:.9rem">
+          {{ section.settings.cta_label | default: 'Satın al' }}
+        </a>
+      {%- endif -%}
+    </nav>
+
+    <button class="w-burger" data-burger type="button" aria-label="{{ 'accessibility.menu' | t }}" aria-expanded="false" aria-controls="wango-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="w-nav" id="wango-nav" data-nav-overlay aria-hidden="true">
+  {%- comment -%}Five vertical bars grow 0%→100%; the rightmost leads.{%- endcomment -%}
+  <div class="w-nav__bars" data-nav-bars aria-hidden="true"><div></div><div></div><div></div><div></div><div></div></div>
+  <div class="w-nav__bg" data-nav-bg aria-hidden="true"></div>
+
+  <div class="w-nav__panel" data-nav-panel role="dialog" aria-modal="true" aria-label="{{ 'accessibility.menu' | t }}">
+    <div class="w-nav__top">
+      <span class="w-header__logo">wang<span style="color:var(--w-accent)">o</span></span>
+      <button class="w-nav__close" data-nav-close type="button" aria-label="{{ 'accessibility.close' | t }}">&times;</button>
+    </div>
+
+    <nav class="w-nav__list">
+      {%- assign overlay_menu = section.settings.overlay_menu | default: section.settings.menu -%}
+      {%- for link in overlay_menu.links -%}
+        <div class="w-nav__item">
+          <a href="{{ link.url }}"><em>0{{ forloop.index }}</em>{{ link.title }}</a>
+        </div>
+      {%- endfor -%}
+    </nav>
+
+    <div class="w-nav__foot">
+      <p>{{ section.settings.tagline }}</p>
+      <div>
+        {%- if section.settings.social_1 != blank -%}<span>{{ section.settings.social_1 }}</span>{%- endif -%}
+        {%- if section.settings.social_2 != blank -%}<span>{{ section.settings.social_2 }}</span>{%- endif -%}
+        {%- if section.settings.social_3 != blank -%}<span>{{ section.settings.social_3 }}</span>{%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Başlık",
+  "settings": [
+    { "type": "link_list", "id": "menu", "default": "main-menu", "label": "Üst menü" },
+    { "type": "link_list", "id": "overlay_menu", "label": "Açılır menü", "info": "Boş bırakılırsa üst menü kullanılır." },
+    { "type": "text", "id": "cta_label", "default": "Satın al", "label": "Buton yazısı" },
+    { "type": "url", "id": "cta_url", "label": "Buton bağlantısı" },
+    { "type": "text", "id": "tagline", "default": "Modern çağın analog filtresi. Seçici kulaklar için.", "label": "Menü alt yazısı" },
+    { "type": "text", "id": "social_1", "default": "Instagram", "label": "Sosyal 1" },
+    { "type": "text", "id": "social_2", "default": "TikTok", "label": "Sosyal 2" },
+    { "type": "text", "id": "social_3", "default": "E-posta", "label": "Sosyal 3" }
+  ]
+}
+{% endschema %}

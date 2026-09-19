@@ -1,0 +1,38 @@
+{%- comment -%}Ported from the shared footer on every Next.js page.{%- endcomment -%}
+<footer class="w-footer">
+  <div class="w-footer__inner">
+    <div>
+      <div class="w-wordmark" style="font-size:1.3rem;color:var(--w-white)">wang<i>o</i></div>
+      {%- if section.settings.blurb != blank -%}
+        <p style="margin-top:.5rem;max-width:46ch">{{ section.settings.blurb }}</p>
+      {%- endif -%}
+      {%- if section.settings.newsletter_url != blank -%}
+        <p style="margin-top:.75rem">
+          <a class="w-footer__link" href="{{ section.settings.newsletter_url }}">{{ section.settings.newsletter_label }}</a>
+        </p>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.menu != blank -%}
+      <nav aria-label="{{ 'accessibility.footer_nav' | t }}" style="display:flex;flex-wrap:wrap;gap:1.25rem">
+        {%- for link in section.settings.menu.links -%}
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
+
+    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Alt bilgi",
+  "settings": [
+    { "type": "text", "id": "blurb", "default": "Modern çağın analog filtresi · seçici kulaklar", "label": "Kısa metin" },
+    { "type": "link_list", "id": "menu", "default": "footer", "label": "Alt menü" },
+    { "type": "text", "id": "newsletter_label", "default": "Bültene kaydol", "label": "Bülten bağlantı yazısı" },
+    { "type": "url", "id": "newsletter_url", "label": "Bülten bağlantısı" }
+  ]
+}
+{% endschema %}

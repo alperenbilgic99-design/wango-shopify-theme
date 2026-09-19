@@ -1,0 +1,11 @@
+<section class="w-page">
+  <div class="w-page__inner" style="text-align:center">
+    <span class="w-eyebrow">404</span>
+    <h1>{{ 'general.404.title' | t }}</h1>
+    <p class="w-page__lede" style="margin-inline:auto">{{ 'general.404.body' | t }}</p>
+    <div class="w-page__actions" style="justify-content:center">
+      <a class="w-btn w-btn--solid" href="{{ routes.root_url }}">{{ 'general.404.home' | t }}</a>
+    </div>
+  </div>
+</section>
+{% schema %}{ "name": "404" }{% endschema %}

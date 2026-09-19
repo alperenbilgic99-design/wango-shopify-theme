@@ -1,0 +1,215 @@
+{
+  "sections": {
+    "boxhero": {
+      "type": "wango-box-reveal-hero",
+      "settings": {}
+    },
+    "grid": {
+      "type": "wango-product-grid",
+      "settings": {
+        "limit": 2
+      }
+    },
+    "explode": {
+      "type": "wango-explode-view",
+      "blocks": {
+        "e1": {
+          "type": "callout",
+          "settings": {
+            "title": "Dış kabuk",
+            "body": "Mat periwinkle yüzey, günlük kullanıma dayanıklı kaplama."
+          }
+        },
+        "e2": {
+          "type": "callout",
+          "settings": {
+            "title": "Sürücü",
+            "body": "Dengeli, sıcak ton — LDAC destekli sürücü ünitesi."
+          }
+        }
+      },
+      "block_order": [
+        "e1",
+        "e2"
+      ]
+    },
+    "sound": {
+      "type": "wango-sound-filter",
+      "blocks": {
+        "n1": {
+          "type": "note",
+          "settings": {
+            "title": "Çok katmanlı uğultu",
+            "body": "Dışarıdaki ses tek bir şey değil — sürekli değişen onlarca kaynak."
+          }
+        },
+        "n2": {
+          "type": "note",
+          "settings": {
+            "title": "Anlık ayrışma",
+            "body": "Filtre devreye girdiği anda o karmaşa tek bir düz çizgiye iner."
+          }
+        },
+        "n3": {
+          "type": "note",
+          "settings": {
+            "title": "Müzik önde kalır",
+            "body": "Arka plan geri çekilirken dinlediğin şey netliğini korur."
+          }
+        }
+      },
+      "block_order": [
+        "n1",
+        "n2",
+        "n3"
+      ]
+    },
+    "story": {
+      "type": "wango-short-story",
+      "blocks": {
+        "b1": {
+          "type": "row",
+          "settings": {
+            "image_asset": "wb-brief-01.jpg",
+            "eyebrow": "Neden mat",
+            "title": "Parlamayan bir yüzey, dikkat çekmeyen bir nesne.",
+            "body": "Sedef periwinkle, ışığı yansıtmak yerine içine alır. Kulağında olduğunu sen bilirsin; karşındaki fark etmez. Mat bitiş bir tercih, bir eksik değil."
+          }
+        },
+        "b2": {
+          "type": "row",
+          "settings": {
+            "image_asset": "wb-brief-08.jpg",
+            "eyebrow": "Nasıl durur",
+            "title": "Konkaya oturur, kanala yerleşir, orada kalır.",
+            "body": "İki loblu gövde kulağın kendi çukuruna gömülür. Dışarı fırlamaz, koşarken düşmez, saatlerce takılı kalınca acıtmaz. Üç boy silikon uçla kendi kulağına ayarlarsın."
+          }
+        },
+        "b3": {
+          "type": "row",
+          "settings": {
+            "image_asset": "wb-brief-19.jpg",
+            "eyebrow": "Yanında",
+            "title": "Çantanda kaybolmayacak kadar kendine ait.",
+            "body": "Kırk dört milimetrelik kutu, anahtarının ve kartlığının yanında bir aksesuar gibi durur. Bileklik askısı çanta sapına da geçer — kolye değil, taşınacak bir nesne."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3"
+      ]
+    },
+    "reveal": {
+      "type": "wango-scroll-reveal",
+      "blocks": {
+        "t1": {
+          "type": "tooltip",
+          "settings": {
+            "icon": "◐",
+            "title": "Tüm hafta",
+            "description": "Tek şarjla bir hafta boyunca yanında — durmadan, kesintisiz."
+          }
+        },
+        "t2": {
+          "type": "tooltip",
+          "settings": {
+            "icon": "◉",
+            "title": "Senkron kal",
+            "description": "Uygulama bağlantısıyla kullanımını takip et, hedef koy."
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2"
+      ],
+      "settings": {}
+    },
+    "orbit": {
+      "type": "wango-orbit-gallery",
+      "settings": {},
+      "blocks": {
+        "o0": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-01.jpg"
+          }
+        },
+        "o1": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-06.jpg"
+          }
+        },
+        "o2": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-08.jpg"
+          }
+        },
+        "o3": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-11.jpg"
+          }
+        },
+        "o4": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-12.jpg"
+          }
+        },
+        "o5": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-16.jpg"
+          }
+        },
+        "o6": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-17.jpg"
+          }
+        },
+        "o7": {
+          "type": "frame",
+          "settings": {
+            "image_asset": "wb-brief-19.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "o0",
+        "o1",
+        "o2",
+        "o3",
+        "o4",
+        "o5",
+        "o6",
+        "o7"
+      ]
+    },
+    "cta": {
+      "type": "wango-cta",
+      "settings": {
+        "ground": "w-grad",
+        "heading": "Setini seçtin mi?",
+        "body": "Yukarıdaki kartlardan birine dokun, ürün sayfasında devam et.",
+        "cta_label": "Setleri gör",
+        "cta_url": "shopify://collections/all"
+      }
+    }
+  },
+  "order": [
+    "boxhero",
+    "grid",
+    "explode",
+    "sound",
+    "story",
+    "reveal",
+    "orbit",
+    "cta"
+  ]
+}

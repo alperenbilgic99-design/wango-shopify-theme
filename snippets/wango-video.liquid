@@ -1,0 +1,25 @@
+{%- comment -%}
+  A <video> whose source comes from a theme setting, because Shopify's
+  `assets/` folder does NOT accept .mp4/.webm — those files live in
+  Content → Files and are referenced by their CDN URL.
+
+  `mp4_url` / `webm_url` are plain URL strings from settings; `poster` is an
+  asset filename. When no URL is configured the poster still renders, so a
+  freshly-installed theme shows a still rather than an empty black box.
+
+  Params: mp4_url, webm_url, poster, class, id, attrs, label
+{%- endcomment -%}
+{%- if mp4_url != blank or webm_url != blank -%}
+  <video
+    {% if id %}id="{{ id }}"{% endif %}
+    class="{{ class }}"
+    {% if poster != blank %}poster="{{ poster | asset_url }}"{% endif %}
+    {% if label != blank %}aria-label="{{ label | escape }}"{% endif %}
+    crossorigin="anonymous"
+    {{ attrs }}>
+    {%- if webm_url != blank -%}<source src="{{ webm_url }}" type="video/webm">{%- endif -%}
+    {%- if mp4_url != blank -%}<source src="{{ mp4_url }}" type="video/mp4">{%- endif -%}
+  </video>
+{%- elsif poster != blank -%}
+  <img class="{{ class }}" src="{{ poster | asset_url }}" alt="{{ label | escape }}" loading="lazy">
+{%- endif -%}

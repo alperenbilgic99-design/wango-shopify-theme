@@ -1,0 +1,17 @@
+<section class="w-page">
+  <div class="w-page__inner">
+    <h1>{{ order.name }}</h1>
+    <p class="w-page__lede">{{ order.created_at | date: '%d.%m.%Y' }} · {{ order.financial_status_label }}</p>
+    <div style="margin-top:2rem">
+      {%- for line in order.line_items -%}
+        <div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--w-line);padding-block:1rem">
+          <span>{{ line.title }} &times; {{ line.quantity }}</span>
+          <span>{{ line.final_line_price | money }}</span>
+        </div>
+      {%- endfor -%}
+      <div style="display:flex;justify-content:space-between;padding-top:1rem;font-weight:600">
+        <span>{{ 'sections.cart.total' | t }}</span><span>{{ order.total_price | money }}</span>
+      </div>
+    </div>
+  </div>
+</section>

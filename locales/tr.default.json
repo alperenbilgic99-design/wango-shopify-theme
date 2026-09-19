@@ -1,0 +1,66 @@
+{
+  "general": {
+    "meta": { "tags": "{{ tags }} etiketli", "page": "Sayfa {{ page }}" },
+    "pagination": "Sayfalama",
+    "404": {
+      "title": "Sayfa bulunamadı",
+      "body": "Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.",
+      "home": "Ana sayfaya dön"
+    },
+    "search": {
+      "title": "Arama",
+      "placeholder": "Ne arıyorsun?",
+      "results": "{{ count }} sonuç"
+    },
+    "collections": { "title": "Koleksiyonlar" },
+    "password_page": { "title": "Yakında", "password": "Şifre", "enter": "Gir" }
+  },
+  "accessibility": {
+    "skip_to_text": "İçeriğe geç",
+    "main_nav": "Ana menü",
+    "footer_nav": "Alt menü",
+    "menu": "Menü",
+    "close": "Kapat"
+  },
+  "sections": {
+    "cart": {
+      "title": "Sepet",
+      "empty": "Sepetin şu an boş.",
+      "continue": "Alışverişe devam et",
+      "remove": "Kaldır",
+      "summary": "Özet",
+      "subtotal": "Ara toplam",
+      "total": "Toplam",
+      "checkout": "Ödemeye geç",
+      "tax_note": "Kargo ve vergi ödeme adımında hesaplanır."
+    },
+    "collection": { "empty": "Burada henüz ürün yok." },
+    "sound": { "mute": "Sesi aç / kapat" }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Sepete ekle",
+      "added": "Sepete eklendi",
+      "sold_out": "Tükendi",
+      "unavailable": "Bu seçenek mevcut değil",
+      "saving": "avantaj",
+      "media": "Görsel",
+      "reviews": "değerlendirme",
+      "quantity": "Adet",
+      "decrease": "Azalt",
+      "increase": "Artır",
+      "see_set": "setine bak"
+    }
+  },
+  "newsletter": { "email": "E-posta" },
+  "gift_cards": { "issued": { "title": "Hediye kartın", "shop_link": "Alışverişe başla" } },
+  "customer": {
+    "login": { "title": "Giriş yap", "email": "E-posta", "password": "Şifre", "submit": "Giriş yap" },
+    "register": { "title": "Hesap oluştur", "first_name": "Ad", "last_name": "Soyad", "submit": "Hesap oluştur" },
+    "account": { "title": "Hesabım", "logout": "Çıkış yap" },
+    "orders": { "none": "Henüz siparişin yok." },
+    "addresses": { "title": "Adresler", "none": "Kayıtlı adresin yok." },
+    "reset_password": { "title": "Şifreyi sıfırla", "confirm": "Şifreyi tekrar gir", "submit": "Şifreyi kaydet" },
+    "activate_account": { "title": "Hesabı etkinleştir", "submit": "Etkinleştir", "decline": "Reddet" }
+  }
+}

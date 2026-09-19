@@ -1,0 +1,33 @@
+{
+  "sections": {
+    "main":    { "type": "main-product", "settings": {} },
+    "stats":   { "type": "wango-stats",
+      "blocks": {
+        "a": { "type": "stat", "settings": { "value": "28sa",  "label": "toplam dinleme" } },
+        "b": { "type": "stat", "settings": { "value": "44mm",  "label": "kutu çapı" } },
+        "c": { "type": "stat", "settings": { "value": "3",     "label": "ANC kademesi" } },
+        "d": { "type": "stat", "settings": { "value": "2 yıl", "label": "garanti" } }
+      },
+      "block_order": ["a", "b", "c", "d"] },
+    "specs":   { "type": "wango-specs",
+      "blocks": {
+        "s1": { "type": "spec", "settings": { "key": "Sürücü",           "value": "10 mm dinamik, mat sedef diyafram" } },
+        "s2": { "type": "spec", "settings": { "key": "Gürültü filtresi", "value": "Hibrit ANC · 3 kademe" } },
+        "s3": { "type": "spec", "settings": { "key": "Pil",              "value": "7 sa tıkaç · 28 sa kutuyla" } },
+        "s4": { "type": "spec", "settings": { "key": "Şarj",             "value": "USB-C · 10 dk = 2 sa" } },
+        "s5": { "type": "spec", "settings": { "key": "Bağlantı",         "value": "Bluetooth 5.4 · çoklu cihaz" } },
+        "s6": { "type": "spec", "settings": { "key": "Dayanıklılık",     "value": "IPX5 tere ve yağmura karşı" } },
+        "s7": { "type": "spec", "settings": { "key": "Kutu",             "value": "44 mm çap · 20 mm kalınlık · 41 g" } },
+        "s8": { "type": "spec", "settings": { "key": "Kutuda",           "value": "3 boy silikon uç, USB-C kablo, bileklik" } }
+      },
+      "block_order": ["s1","s2","s3","s4","s5","s6","s7","s8"] },
+    "reviews": { "type": "wango-reviews",
+      "blocks": {
+        "r1": { "type": "review", "settings": { "rating": 5, "title": "Kulakta durduğunu unutuyorum", "body": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "author": "Deniz K." } },
+        "r2": { "type": "review", "settings": { "rating": 5, "title": "Aksesuar gibi", "body": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "author": "Elif A." } },
+        "r3": { "type": "review", "settings": { "rating": 4, "title": "Filtre kademesi çok iyi", "body": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "author": "Mert Y." } }
+      },
+      "block_order": ["r1","r2","r3"] }
+  },
+  "order": ["main", "stats", "specs", "reviews"]
+}

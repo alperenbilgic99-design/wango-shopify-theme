@@ -1,0 +1,111 @@
+{%- comment -%}
+  "Geçiş" — a scroll-scrubbed displacement-map dissolve between product
+  photos, carrying the story. Ported from transition-story.tsx +
+  DisplacementCrossfade in lib/webgl-fx-2.tsx.
+
+  Each frame has its own pair of captions pinned to the left and right
+  margins; the crossfade reports which frame it has moved to and the text
+  swaps to match, so reading down the page follows the pictures.
+{%- endcomment -%}
+
+{%- liquid
+  assign srcs = ''
+  for block in section.blocks
+    if block.settings.image != blank
+      assign one = block.settings.image | image_url: width: 2000
+    else
+      assign one = block.settings.image_asset | asset_url
+    endif
+    if forloop.first
+      assign srcs = one
+    else
+      assign srcs = srcs | append: '|' | append: one
+    endif
+  endfor
+-%}
+
+<section class="w-black w-section">
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2 class="w-h2">{{ section.settings.heading }}</h2>
+    <p class="w-lede">{{ section.settings.body }}</p>
+  </div>
+
+  <div class="w-transition">
+    <div class="w-xfade" data-xfade data-images="{{ srcs | escape }}">
+      <div class="w-xfade__sticky" data-xfade-sticky>
+        {%- comment -%}Shown when WebGL is off or motion is reduced.{%- endcomment -%}
+        {%- assign first = section.blocks.first -%}
+        {% render 'wango-image', image: first.settings.image, asset: first.settings.image_asset, alt: '', loading: 'lazy' %}
+      </div>
+    </div>
+
+    <div class="w-transition__captions">
+      {%- for block in section.blocks -%}
+        <div class="w-caption" data-xfade-caption data-frame="{{ forloop.index0 }}" {% unless forloop.first %}hidden{% endunless %} {{ block.shopify_attributes }}>
+          <span class="w-eyebrow" style="font-size:.68rem">{{ block.settings.kicker }}</span>
+          <h3>{{ block.settings.left_title }}</h3>
+          <p>{{ block.settings.left_body }}</p>
+        </div>
+        <div class="w-caption w-caption--right" data-xfade-caption data-frame="{{ forloop.index0 }}" {% unless forloop.first %}hidden{% endunless %}>
+          <h3>{{ block.settings.right_title }}</h3>
+          <p>{{ block.settings.right_body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="w-transition__dots" data-xfade-dots aria-hidden="true">
+      {%- for block in section.blocks -%}<i{% if forloop.first %} class="is-on"{% endif %}></i>{%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Origin · geçiş",
+  "max_blocks": 5,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Geçiş", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Her an bir öncekinden doğar.", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Aşağı kaydır: üç kare, üç ayrı hâl. Kutunun kapalı sessizliğinden çoğaldığı ana, oradan da senin seçtiğin tek tanesine.", "label": "Metin" }
+  ],
+  "blocks": [
+    {
+      "type": "frame",
+      "name": "Kare",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
+        { "type": "text", "id": "kicker", "label": "Sayaç etiketi" },
+        { "type": "text", "id": "left_title", "label": "Sol başlık" },
+        { "type": "textarea", "id": "left_body", "label": "Sol metin" },
+        { "type": "text", "id": "right_title", "label": "Sağ başlık" },
+        { "type": "textarea", "id": "right_body", "label": "Sağ metin" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Origin · geçiş",
+    "blocks": [
+      { "type": "frame", "settings": {
+        "image_asset": "wp-real-lilac-banner.jpg", "kicker": "Bir",
+        "left_title": "Önce sessizlik",
+        "left_body": "Kutu kapalıyken hiçbir şey vaat etmiyor. Avuç içine oturan 44 mm'lik bir sedef taş.",
+        "right_title": "Askısıyla",
+        "right_body": "Bileğe ya da çantaya takılır. Boyna asmak için değil — hep elinin altında kalsın diye." } },
+      { "type": "frame", "settings": {
+        "image_asset": "wp-real-case-pattern.jpg", "kicker": "İki",
+        "left_title": "Çoğaldığında",
+        "left_body": "Aynı form yan yana gelince desene dönüşüyor. Tek başına sessiz, sırayla ritim.",
+        "right_title": "Tek renk",
+        "right_body": "Sedef periwinkle. Işığa göre açılıp koyulaşıyor ama asla başka bir renge kaçmıyor." } },
+      { "type": "frame", "settings": {
+        "image_asset": "wp-real-claw-machine.jpg", "kicker": "Üç",
+        "left_title": "Ve seçilir",
+        "left_body": "Yığının içinden biri kalkıyor. Hangi set olduğu değil, hangi anı taşıdığı önemli.",
+        "right_title": "Sana kalan",
+        "right_body": "Kutudan çıkar, kulağında kaybolur. Geriye sadece dinlediğin şey kalır." } }
+    ]
+  }]
+}
+{% endschema %}

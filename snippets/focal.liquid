@@ -1,0 +1,51 @@
+{%- comment -%}
+  Per-image object-position, ported verbatim from
+  src/components/wango/lib/focal.ts.
+
+  Every value was verified by rendering the actual 16:10 crop and looking at
+  it — not guessed. The rule the crops follow: if wango is in the frame the
+  focus is on wango; if it is a person-only brief portrait the focus is on the
+  ears (50% 30%), because those crops exist to show the product being worn.
+
+  Only packaged theme assets are mapped. An image a merchant picks in the
+  theme editor is their own crop, so it centres normally.
+
+  Usage:  {% render 'focal', src: 'wp-real-sky-mirror.jpg' %}   → "50% 52%"
+{%- endcomment -%}
+{%- liquid
+  assign key = src | split: '/' | last | split: '?' | first
+  assign pos = '50% 50%'
+
+  case key
+    when 'wp-real-sky-mirror.jpg'
+      assign pos = '50% 52%'
+    when 'wp-real-sport-duffel.jpg'
+      assign pos = '52% 42%'
+    when 'wp-real-pocket-denim.jpg'
+      assign pos = '42% 48%'
+    when 'wp-real-portrait-yellow.jpg'
+      assign pos = '40% 72%'
+    when 'wp-real-leather-bag.jpg'
+      assign pos = '50% 38%'
+    when 'wp-real-man-green-tank.jpg'
+      assign pos = '50% 52%'
+    when 'wp-real-pyjamas-cushion.jpg'
+      assign pos = '50% 60%'
+    when 'wp-real-sofa-laugh.jpg'
+      assign pos = '50% 55%'
+    when 'wp-real-three-on-mint.jpg'
+      assign pos = '50% 72%'
+    when 'wp-real-canvas-gymbag.jpg'
+      assign pos = '52% 52%'
+    when 'wp-real-lilac-banner.jpg'
+      assign pos = '62% 55%'
+    when 'wp-real-claw-machine.jpg'
+      assign pos = '50% 35%'
+  endcase
+
+  if key contains 'wb-brief-'
+    assign pos = '50% 30%'
+  endif
+
+  echo pos
+-%}

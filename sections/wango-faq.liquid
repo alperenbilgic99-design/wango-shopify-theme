@@ -1,0 +1,63 @@
+{%- comment -%}
+  Support / FAQ — ported from src/app/destek/page.tsx.
+  Only facts already stated elsewhere on the site are repeated here; nothing
+  about service levels or contact hours was invented, and nothing should be
+  added that the store cannot actually honour.
+{%- endcomment -%}
+<section class="w-page">
+  <div class="w-page__inner">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h1>{{ section.settings.heading }}</h1>
+    <p class="w-page__lede">{{ section.settings.body }}</p>
+
+    <dl class="w-faq">
+      {%- for block in section.blocks -%}
+        <div {{ block.shopify_attributes }}>
+          <dt>{{ block.settings.question }}</dt>
+          <dd>{{ block.settings.answer }}</dd>
+        </div>
+      {%- endfor -%}
+    </dl>
+
+    <div class="w-page__actions">
+      {%- if section.settings.cta1_url != blank -%}
+        <a class="w-btn w-btn--solid" href="{{ section.settings.cta1_url }}">{{ section.settings.cta1_label }}</a>
+      {%- endif -%}
+      {%- if section.settings.cta2_url != blank -%}
+        <a class="w-btn w-btn--ghost" href="{{ section.settings.cta2_url }}">{{ section.settings.cta2_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Destek · SSS",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Destek", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Sık sorulanlar", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Aradığını bulamazsan bültenden ya da sosyal hesaplardan yazabilirsin.", "label": "Metin" },
+    { "type": "text", "id": "cta1_label", "default": "Ürünü incele", "label": "1. buton" },
+    { "type": "url", "id": "cta1_url", "label": "1. buton bağlantısı" },
+    { "type": "text", "id": "cta2_label", "default": "Bültene kaydol", "label": "2. buton" },
+    { "type": "url", "id": "cta2_url", "label": "2. buton bağlantısı" }
+  ],
+  "blocks": [
+    { "type": "qa", "name": "Soru", "settings": [
+      { "type": "text", "id": "question", "label": "Soru" },
+      { "type": "textarea", "id": "answer", "label": "Cevap" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Destek · SSS",
+    "blocks": [
+      { "type": "qa", "settings": { "question": "Kargo ne kadar sürer?", "answer": "Tüm siparişlerde kargo ücretsiz. Kargo süresi ve takip bilgisi sipariş onayında paylaşılır." } },
+      { "type": "qa", "settings": { "question": "İade koşulları nedir?", "answer": "30 gün koşulsuz iade. Ürünü kutusuyla birlikte geri gönderdiğinde ücret iadesi yapılır." } },
+      { "type": "qa", "settings": { "question": "Garanti süresi ne kadar?", "answer": "2 yıl garanti. Üretim kaynaklı arızalarda ürün onarılır ya da değiştirilir." } },
+      { "type": "qa", "settings": { "question": "Tıkaçlar kulağıma oturmazsa?", "answer": "Kutudan 3 boy silikon uç çıkıyor. Doğru boy, kulakta hafif bir vakum hissi bırakan ve düşmeyen boydur." } },
+      { "type": "qa", "settings": { "question": "Pil ne kadar gidiyor?", "answer": "Tıkaçlar tek şarjla 7 saat, kutuyla birlikte toplam 28 saat. 10 dakikalık şarj 2 saat dinleme veriyor." } },
+      { "type": "qa", "settings": { "question": "Suya dayanıklı mı?", "answer": "IPX5 — tere ve yağmura karşı korumalı. Suya batırmak için tasarlanmadı." } }
+    ]
+  }]
+}
+{% endschema %}

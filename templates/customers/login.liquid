@@ -1,0 +1,16 @@
+<section class="w-page">
+  <div class="w-page__inner" style="max-width:440px">
+    <h1>{{ 'customer.login.title' | t }}</h1>
+    {%- form 'customer_login' -%}
+      {%- if form.errors -%}<p class="w-formerror" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+      <label class="w-field"><span class="visually-hidden">{{ 'customer.login.email' | t }}</span>
+        <input type="email" name="customer[email]" autocomplete="email" placeholder="{{ 'customer.login.email' | t }}"></label>
+      <label class="w-field"><span class="visually-hidden">{{ 'customer.login.password' | t }}</span>
+        <input type="password" name="customer[password]" autocomplete="current-password" placeholder="{{ 'customer.login.password' | t }}"></label>
+      <button type="submit" class="w-btn w-btn--solid w-btn--block" style="margin-top:1.5rem">{{ 'customer.login.submit' | t }}</button>
+    {%- endform -%}
+    <div class="w-page__actions">
+      <a class="w-btn w-btn--ghost" href="{{ routes.account_register_url }}">{{ 'customer.register.title' | t }}</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,49 @@
+{%- comment -%}
+  Three alternating image/text rows — ported from short-story.tsx. A single
+  fade-and-rise on enter, deliberately calmer than the Origin page's scroll
+  choreography, because this page's job is to get out of the way of the buy
+  button.
+{%- endcomment -%}
+
+<section id="hikaye" class="w-story">
+  <div class="w-story__inner">
+    {%- for block in section.blocks -%}
+      {%- assign mod = forloop.index0 | modulo: 2 -%}
+      <div class="w-story__row w-reveal{% if mod == 1 %} is-flip{% endif %}" {{ block.shopify_attributes }}>
+        <figure>
+          {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy', sizes: '(min-width: 768px) 550px, 100vw' %}
+        </figure>
+        <div>
+          <span class="w-eyebrow" style="font-size:.7rem">{{ block.settings.eyebrow }}</span>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.body }}</p>
+          <em>0{{ forloop.index }} / 0{{ section.blocks.size }}</em>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · kısa hikâye",
+  "max_blocks": 6,
+  "blocks": [
+    { "type": "row", "name": "Blok", "settings": [
+      { "type": "image_picker", "id": "image", "label": "Görsel" },
+      { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
+      { "type": "text", "id": "eyebrow", "label": "Üst etiket" },
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "body", "label": "Metin" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · kısa hikâye",
+    "blocks": [
+      { "type": "row", "settings": { "image_asset": "wb-brief-01.jpg", "eyebrow": "Neden mat", "title": "Parlamayan bir yüzey, dikkat çekmeyen bir nesne.", "body": "Sedef periwinkle, ışığı yansıtmak yerine içine alır. Kulağında olduğunu sen bilirsin; karşındaki fark etmez. Mat bitiş bir tercih, bir eksik değil." } },
+      { "type": "row", "settings": { "image_asset": "wb-brief-08.jpg", "eyebrow": "Nasıl durur", "title": "Konkaya oturur, kanala yerleşir, orada kalır.", "body": "İki loblu gövde kulağın kendi çukuruna gömülür. Dışarı fırlamaz, koşarken düşmez, saatlerce takılı kalınca acıtmaz. Üç boy silikon uçla kendi kulağına ayarlarsın." } },
+      { "type": "row", "settings": { "image_asset": "wb-brief-19.jpg", "eyebrow": "Yanında", "title": "Çantanda kaybolmayacak kadar kendine ait.", "body": "Kırk dört milimetrelik kutu, anahtarının ve kartlığının yanında bir aksesuar gibi durur. Bileklik askısı çanta sapına da geçer — kolye değil, taşınacak bir nesne." } }
+    ]
+  }]
+}
+{% endschema %}

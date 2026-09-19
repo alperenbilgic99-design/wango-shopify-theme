@@ -1,0 +1,38 @@
+{%- comment -%}
+  One <img> that accepts EITHER a theme asset filename (`asset:`) or a Shopify
+  image object (`image:`), so a merchant can replace any packaged photo from
+  the theme editor without the section markup changing.
+
+  A Shopify image gets a real srcset and the CDN's own resizing; a packaged
+  asset is served as-is (asset_url takes no width).
+
+  Params: asset, image, alt, class, sizes, loading
+{%- endcomment -%}
+{%- liquid
+  assign img_alt = alt | default: ''
+  assign img_class = class | default: ''
+  assign img_loading = loading | default: 'lazy'
+  assign img_sizes = sizes | default: '100vw'
+-%}
+{%- if image != blank -%}
+  <img
+    src="{{ image | image_url: width: 1600 }}"
+    srcset="{{ image | image_url: width: 480 }} 480w,
+            {{ image | image_url: width: 800 }} 800w,
+            {{ image | image_url: width: 1200 }} 1200w,
+            {{ image | image_url: width: 1600 }} 1600w,
+            {{ image | image_url: width: 2400 }} 2400w"
+    sizes="{{ img_sizes }}"
+    width="{{ image.width }}" height="{{ image.height }}"
+    alt="{{ img_alt | escape }}"
+    class="{{ img_class }}"
+    loading="{{ img_loading }}">
+{%- elsif asset != blank -%}
+  {%- capture pos %}{% render 'focal', src: asset %}{% endcapture -%}
+  <img
+    src="{{ asset | asset_url }}"
+    alt="{{ img_alt | escape }}"
+    class="{{ img_class }}"
+    loading="{{ img_loading }}"
+    style="object-position: {{ pos | strip }};">
+{%- endif -%}

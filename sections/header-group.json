@@ -1,0 +1,8 @@
+{
+  "type": "header",
+  "name": "Başlık",
+  "sections": {
+    "header": { "type": "header", "settings": { "cta_label": "Satın al" } }
+  },
+  "order": ["header"]
+}

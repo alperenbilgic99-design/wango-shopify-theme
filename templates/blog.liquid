@@ -1,0 +1,16 @@
+<section class="w-page">
+  <div class="w-page__inner">
+    <h1>{{ blog.title }}</h1>
+    <div style="margin-top:2.5rem;display:grid;gap:2rem">
+      {%- for article in blog.articles -%}
+        <article>
+          <a href="{{ article.url }}">
+            <h2 style="font-family:var(--font-brand);font-size:1.35rem;font-weight:600;color:var(--w-white)">{{ article.title }}</h2>
+          </a>
+          <p style="margin-top:.5rem;color:var(--w-muted)">{{ article.excerpt_or_content | strip_html | truncate: 180 }}</p>
+          <small style="color:var(--w-muted)">{{ article.published_at | date: '%d.%m.%Y' }}</small>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>

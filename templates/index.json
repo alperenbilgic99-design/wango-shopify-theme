@@ -1,0 +1,74 @@
+{
+  "sections": {
+    "origin_hero":   { "type": "wango-origin-hero",      "settings": { "cta1_url": "shopify://collections/all", "cta2_url": "/#scenes" } },
+    "wordmark":      { "type": "wango-wordmark-reveal",  "settings": { "cta_url": "shopify://collections/all" } },
+    "marquee":       { "type": "wango-drag-marquee",
+      "blocks": {
+        "s1": { "type": "slide", "settings": { "image_asset": "wp-real-sky-mirror.jpg",      "title": "SESSİZLİK" } },
+        "s2": { "type": "slide", "settings": { "image_asset": "wp-real-sport-duffel.jpg",    "title": "HAREKET" } },
+        "s3": { "type": "slide", "settings": { "image_asset": "wp-real-pocket-denim.jpg",    "title": "GÜNDELİK" } },
+        "s4": { "type": "slide", "settings": { "image_asset": "wp-real-portrait-yellow.jpg", "title": "DOKUNUŞ" } },
+        "s5": { "type": "slide", "settings": { "image_asset": "wp-real-three-hands.jpg",     "title": "RİTİM" } },
+        "s6": { "type": "slide", "settings": { "image_asset": "wp-real-leather-bag.jpg",     "title": "AN" } }
+      },
+      "block_order": ["s1", "s2", "s3", "s4", "s5", "s6"] },
+    "transition":    { "type": "wango-transition-story",
+      "blocks": {
+        "f1": { "type": "frame", "settings": { "image_asset": "wp-real-lilac-banner.jpg", "kicker": "Bir", "left_title": "Önce sessizlik", "left_body": "Kutu kapalıyken hiçbir şey vaat etmiyor. Avuç içine oturan 44 mm'lik bir sedef taş.", "right_title": "Askısıyla", "right_body": "Bileğe ya da çantaya takılır. Boyna asmak için değil — hep elinin altında kalsın diye." } },
+        "f2": { "type": "frame", "settings": { "image_asset": "wp-real-case-pattern.jpg", "kicker": "İki", "left_title": "Çoğaldığında", "left_body": "Aynı form yan yana gelince desene dönüşüyor. Tek başına sessiz, sırayla ritim.", "right_title": "Tek renk", "right_body": "Sedef periwinkle. Işığa göre açılıp koyulaşıyor ama asla başka bir renge kaçmıyor." } },
+        "f3": { "type": "frame", "settings": { "image_asset": "wp-real-claw-machine.jpg", "kicker": "Üç", "left_title": "Ve seçilir", "left_body": "Yığının içinden biri kalkıyor. Hangi set olduğu değil, hangi anı taşıdığı önemli.", "right_title": "Sana kalan", "right_body": "Kutudan çıkar, kulağında kaybolur. Geriye sadece dinlediğin şey kalır." } }
+      },
+      "block_order": ["f1", "f2", "f3"] },
+    "moments":       { "type": "wango-moment-cards",
+      "blocks": {
+        "m1": { "type": "moment", "settings": { "image_asset": "wp-real-canvas-gymbag.jpg", "title": "SABAH", "meta": "Kahve, sessizlik, ilk şarkı" } },
+        "m2": { "type": "moment", "settings": { "image_asset": "wp-real-tray-flatlay.jpg",  "title": "YOLDA", "meta": "Şehrin gürültüsü kapanır" } },
+        "m3": { "type": "moment", "settings": { "image_asset": "wp-real-three-on-mint.jpg", "title": "ODAK",  "meta": "Dünya beklesin, sen dinle" } },
+        "m4": { "type": "moment", "settings": { "image_asset": "wp-real-leather-bag.jpg",   "title": "AKŞAM", "meta": "Kalabalıkta kendi ritmin" } },
+        "m5": { "type": "moment", "settings": { "image_asset": "wp-real-claw-machine.jpg",  "title": "GECE",  "meta": "Gün biter, sessizlik kalır" } }
+      },
+      "block_order": ["m1", "m2", "m3", "m4", "m5"] },
+    "gallery":       { "type": "wango-gallery-grid",
+      "blocks": {
+        "g1":  { "type": "tile", "settings": { "image_asset": "wb-brief-01.jpg" } },
+        "g2":  { "type": "tile", "settings": { "image_asset": "wb-brief-07.jpg" } },
+        "g3":  { "type": "tile", "settings": { "image_asset": "wb-brief-16.jpg" } },
+        "g4":  { "type": "tile", "settings": { "image_asset": "wb-brief-11.jpg" } },
+        "g5":  { "type": "tile", "settings": { "image_asset": "wb-brief-09.jpg" } },
+        "g6":  { "type": "tile", "settings": { "image_asset": "wb-brief-13.jpg" } },
+        "g7":  { "type": "tile", "settings": { "image_asset": "wb-brief-06.jpg" } },
+        "g8":  { "type": "tile", "settings": { "image_asset": "wb-brief-19.jpg" } },
+        "g9":  { "type": "tile", "settings": { "image_asset": "wb-brief-08.jpg" } },
+        "g10": { "type": "tile", "settings": { "image_asset": "wb-brief-04.jpg" } },
+        "g11": { "type": "tile", "settings": { "image_asset": "wb-brief-14.jpg" } },
+        "g12": { "type": "tile", "settings": { "image_asset": "wb-brief-12.jpg" } }
+      },
+      "block_order": ["g1","g2","g3","g4","g5","g6","g7","g8","g9","g10","g11","g12"] },
+    "morph":         { "type": "wango-silhouette-morph",
+      "blocks": {
+        "p1": { "type": "person", "settings": { "image_asset": "wp-real-man-green-tank.jpg",  "tone": "#2f4038", "label": "Origin" } },
+        "p2": { "type": "person", "settings": { "image_asset": "wp-real-pyjamas-cushion.jpg", "tone": "#b4542a", "label": "Sage" } },
+        "p3": { "type": "person", "settings": { "image_asset": "wb-brief-16.jpg",             "tone": "#2f588c", "label": "Cornflower" } },
+        "p4": { "type": "person", "settings": { "image_asset": "wp-real-sofa-laugh.jpg",      "tone": "#c9a227", "label": "Twilight" } },
+        "p5": { "type": "person", "settings": { "image_asset": "wb-brief-17.jpg",             "tone": "#3d6b6b", "label": "Mono" } }
+      },
+      "block_order": ["p1","p2","p3","p4","p5"] },
+    "wallpaper":     { "type": "wango-word-wallpaper",   "settings": { "word": "wango", "rows": 4 } },
+    "split":         { "type": "wango-split-reveal",     "settings": {} },
+    "scenarios":     { "type": "wango-scenarios",
+      "blocks": {
+        "c1": { "type": "scene", "settings": { "image_asset": "wb-brief-16.jpg", "number": "01", "tab": "Kalabalıkta",  "title": "Gürültünün ortasında bir ton serinlik", "body": "Kalabalık senin sesini bastırmasın. wango dışarıyı kısar, seni bırakır." } },
+        "c2": { "type": "scene", "settings": { "image_asset": "wb-brief-07.jpg", "number": "02", "tab": "Yolda",        "title": "Sokakta, tıpkı bir küpe gibi", "body": "Örgüler, ince gümüşler ve kulakta wango. Aksesuar olarak, aksesuarla birlikte." } },
+        "c3": { "type": "scene", "settings": { "image_asset": "wb-brief-09.jpg", "number": "03", "tab": "Kombinlerken", "title": "Gümüşün ve incinin yanında", "body": "Yüzük, halka, zincir — wango koleksiyonun bir parçası. Renkle, dokuyla uyumlanır." } },
+        "c4": { "type": "scene", "settings": { "image_asset": "wb-brief-11.jpg", "number": "04", "tab": "Çantanda",     "title": "Her gün yanında taşıdığın şey", "body": "Anahtarın, kartlığın, gözlüğünün yanında. Kaybolmayacak kadar kendine ait." } },
+        "c5": { "type": "scene", "settings": { "image_asset": "wb-brief-17.jpg", "number": "05", "tab": "Masanda",      "title": "Çalışırken, bir obje gibi", "body": "Eskiz defteri, seramik fincan, wango. İnsandan bağımsız, kendi başına güzel." } },
+        "c6": { "type": "scene", "settings": { "image_asset": "wb-brief-13.jpg", "number": "06", "tab": "Gün biterken", "title": "Rafta, günün sonunda", "body": "Açık kutu, yerine oturmuş iki tıkaç. Yarın için hazır, bu gece için sessiz." } }
+      },
+      "block_order": ["c1","c2","c3","c4","c5","c6"] },
+    "cta":           { "type": "wango-cta", "settings": { "ground": "w-black", "cta_url": "shopify://collections/all" } }
+  },
+  "order": [
+    "origin_hero", "wordmark", "marquee", "transition", "moments",
+    "gallery", "morph", "wallpaper", "split", "scenarios", "cta"
+  ]
+}

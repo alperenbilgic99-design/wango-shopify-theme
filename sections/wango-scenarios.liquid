@@ -1,0 +1,78 @@
+{%- comment -%}
+  Scenario carousel — ported from scenario-carousel.tsx. A tab row above a
+  horizontally snapping track: pressing a tab scrolls the track, scrolling the
+  track re-highlights the tab, and the focused panel animates its clip-path
+  open while the others sit inset and dimmed.
+
+  Embla drove the snapping in React; here the browser's own CSS scroll-snap
+  does it and only the tab↔panel sync needs script.
+{%- endcomment -%}
+
+<section id="scenes" class="w-scenes" data-scenes>
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2 class="w-h2" style="max-width:20ch;font-size:clamp(1.9rem,4.4vw,3.1rem);line-height:1.05">{{ section.settings.heading }}</h2>
+
+    <div class="w-scenes__tabs" role="tablist">
+      {%- for block in section.blocks -%}
+        <button type="button" role="tab" data-scene-tab aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ block.settings.tab }}</button>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <div class="w-scenes__viewport" data-scenes-viewport>
+    <div class="w-scenes__track">
+      {%- for block in section.blocks -%}
+        <div class="w-scenes__slide{% if forloop.first %} is-active{% endif %}" data-scene-slide {{ block.shopify_attributes }}>
+          <article class="w-scenes__card">
+            {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy', sizes: '(min-width: 1024px) 700px, 90vw' %}
+            <div class="w-scenes__copy">
+              <em>{{ block.settings.number }} — {{ block.settings.tab }}</em>
+              <h3>{{ block.settings.title }}</h3>
+              <p>{{ block.settings.body }}</p>
+            </div>
+          </article>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <p class="w-scenes__hint">{{ section.settings.hint }}</p>
+</section>
+
+{% schema %}
+{
+  "name": "Origin · senaryolar",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "wango'nun yapıldığı anlar", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Gününün her tonuna uyan tek parça.", "label": "Başlık" },
+    { "type": "text", "id": "hint", "default": "↔ Sürükle ya da sekmelere bas — panel ile sekme birbirini takip eder.", "label": "İpucu" }
+  ],
+  "blocks": [
+    {
+      "type": "scene",
+      "name": "Senaryo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
+        { "type": "text", "id": "number", "label": "Numara" },
+        { "type": "text", "id": "tab", "label": "Sekme adı" },
+        { "type": "text", "id": "title", "label": "Başlık" },
+        { "type": "textarea", "id": "body", "label": "Metin" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Origin · senaryolar",
+    "blocks": [
+      { "type": "scene", "settings": { "image_asset": "wb-brief-16.jpg", "number": "01", "tab": "Kalabalıkta", "title": "Gürültünün ortasında bir ton serinlik", "body": "Kalabalık senin sesini bastırmasın. wango dışarıyı kısar, seni bırakır." } },
+      { "type": "scene", "settings": { "image_asset": "wb-brief-07.jpg", "number": "02", "tab": "Yolda", "title": "Sokakta, tıpkı bir küpe gibi", "body": "Örgüler, ince gümüşler ve kulakta wango. Aksesuar olarak, aksesuarla birlikte." } },
+      { "type": "scene", "settings": { "image_asset": "wb-brief-09.jpg", "number": "03", "tab": "Kombinlerken", "title": "Gümüşün ve incinin yanında", "body": "Yüzük, halka, zincir — wango koleksiyonun bir parçası. Renkle, dokuyla uyumlanır." } },
+      { "type": "scene", "settings": { "image_asset": "wb-brief-11.jpg", "number": "04", "tab": "Çantanda", "title": "Her gün yanında taşıdığın şey", "body": "Anahtarın, kartlığın, gözlüğünün yanında. Kaybolmayacak kadar kendine ait." } },
+      { "type": "scene", "settings": { "image_asset": "wb-brief-17.jpg", "number": "05", "tab": "Masanda", "title": "Çalışırken, bir obje gibi", "body": "Eskiz defteri, seramik fincan, wango. İnsandan bağımsız, kendi başına güzel." } },
+      { "type": "scene", "settings": { "image_asset": "wb-brief-13.jpg", "number": "06", "tab": "Gün biterken", "title": "Rafta, günün sonunda", "body": "Açık kutu, yerine oturmuş iki tıkaç. Yarın için hazır, bu gece için sessiz." } }
+    ]
+  }]
+}
+{% endschema %}

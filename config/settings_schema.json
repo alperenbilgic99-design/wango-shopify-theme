@@ -1,0 +1,24 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "wango Origin",
+    "theme_version": "1.0.0",
+    "theme_author": "wango",
+    "theme_documentation_url": "https://shopify.dev/docs/themes",
+    "theme_support_url": "https://shopify.dev/docs/themes"
+  },
+  {
+    "name": "Marka",
+    "settings": [
+      { "type": "paragraph", "content": "Renkler product-spec/wango-visual-lock.md dosyasındaki bağlayıcı değerlerdir. Değiştirmeden önce o dosyaya bak." },
+      { "type": "image_picker", "id": "favicon", "label": "Favicon" },
+      { "type": "image_picker", "id": "share_image", "label": "Paylaşım görseli", "info": "Sosyal medyada bağlantı paylaşıldığında görünür." }
+    ]
+  },
+  {
+    "name": "Medya (Dosyalar)",
+    "settings": [
+      { "type": "paragraph", "content": "Shopify tema dosyalarına video/ses yüklemeye izin vermez. Videoları ve MP3'ü Ayarlar → Dosyalar'a yükle, sonra CDN bağlantısını ilgili bölümün ayarına yapıştır. Bağlantı boşken bölümler poster görselle çalışmayı sürdürür." }
+    ]
+  }
+]

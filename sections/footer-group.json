@@ -1,0 +1,8 @@
+{
+  "type": "footer",
+  "name": "Alt bilgi",
+  "sections": {
+    "footer": { "type": "footer", "settings": {} }
+  },
+  "order": ["footer"]
+}

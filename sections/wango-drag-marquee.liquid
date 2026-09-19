@@ -1,0 +1,63 @@
+{%- comment -%}
+  Infinite drag marquee — ported from DragMarquee in lib/sliders.tsx.
+  A pure connective bridge between sections: no heading of its own.
+
+  Six looped copies of the deck sit in a flex track; wheel/touch nudges a
+  target-X and the current-X chases it at a fixed lerp, wrapping by one
+  sequence width so the loop never runs out.
+{%- endcomment -%}
+
+<div class="w-marquee-band">
+  <div class="w-marquee" data-marquee data-slide-count="{{ section.blocks.size }}">
+    <div class="w-marquee__track" data-marquee-track>
+      {%- comment -%}Six copies: the wrap needs a full sequence either side.{%- endcomment -%}
+      {%- for i in (1..6) -%}
+        {%- for block in section.blocks -%}
+          <div class="w-marquee__item" {{ block.shopify_attributes }}>
+            <div class="w-marquee__frame">
+              {% render 'wango-image',
+                 image: block.settings.image,
+                 asset: block.settings.image_asset,
+                 alt: block.settings.title,
+                 loading: 'lazy',
+                 sizes: '350px' %}
+            </div>
+            <div class="w-marquee__meta">
+              <span>{{ block.settings.title }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--w-white)" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Origin · sürüklenen şerit",
+  "max_blocks": 12,
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Kare",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)", "info": "Yukarısı boşsa kullanılır, ör. wp-real-sky-mirror.jpg" },
+        { "type": "text", "id": "title", "label": "Başlık" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Origin · sürüklenen şerit",
+    "blocks": [
+      { "type": "slide", "settings": { "image_asset": "wp-real-sky-mirror.jpg",   "title": "SESSİZLİK" } },
+      { "type": "slide", "settings": { "image_asset": "wp-real-sport-duffel.jpg", "title": "HAREKET" } },
+      { "type": "slide", "settings": { "image_asset": "wp-real-pocket-denim.jpg", "title": "GÜNDELİK" } },
+      { "type": "slide", "settings": { "image_asset": "wp-real-portrait-yellow.jpg", "title": "DOKUNUŞ" } },
+      { "type": "slide", "settings": { "image_asset": "wp-real-three-hands.jpg",  "title": "RİTİM" } },
+      { "type": "slide", "settings": { "image_asset": "wp-real-leather-bag.jpg",  "title": "AN" } }
+    ]
+  }]
+}
+{% endschema %}

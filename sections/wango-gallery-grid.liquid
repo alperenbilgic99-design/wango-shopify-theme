@@ -1,0 +1,64 @@
+{%- comment -%}
+  3D scroll grid — ported from Scroll3DGrid in lib/scroll-fx-1.tsx. A grid
+  inside a perspective wrapper; one scrubbed timeline sets each item's Z depth
+  (randomised per item) then tweens X/scale from off-canvas toward rest.
+{%- endcomment -%}
+
+<section class="w-black w-section">
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2 class="w-h2">{{ section.settings.heading }}</h2>
+  </div>
+
+  <div class="w-wrap">
+    <div class="s3g" data-grid3d>
+      <div class="s3g-wrap">
+        {%- for block in section.blocks limit: 12 -%}
+          <div class="s3g-item" {{ block.shopify_attributes }}>
+            <div class="s3g-item-inner">
+              {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: '', loading: 'lazy', sizes: '300px' %}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Origin · galeri",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Galeri", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Her detayda wango'nun izi.", "label": "Başlık" }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Kare",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Origin · galeri",
+    "blocks": [
+      { "type": "tile", "settings": { "image_asset": "wb-brief-01.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-07.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-16.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-11.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-09.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-13.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-06.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-19.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-08.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-04.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-14.jpg" } },
+      { "type": "tile", "settings": { "image_asset": "wb-brief-12.jpg" } }
+    ]
+  }]
+}
+{% endschema %}

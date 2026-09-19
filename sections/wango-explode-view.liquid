@@ -1,0 +1,62 @@
+{%- comment -%}
+  Exploded view — ported from ExplodedViewReveal in lib/product-story-fx.tsx.
+  The clip is paused and its currentTime is driven straight off scroll
+  progress, so the shell halves pull apart exactly as fast (or slow, or
+  backwards) as the visitor scrolls. The first ~70% of the scroll drives the
+  explode; the callouts only appear once it is mostly open.
+
+  The alpha WebM lets the case float on the page's own black ground; a plain
+  black-background MP4 rides along for browsers without VP9-alpha decoding.
+{%- endcomment -%}
+
+<div class="w-explode-outer" data-explode>
+  <div class="w-explode">
+    <div class="w-explode__head">
+      <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2>{{ section.settings.heading }}</h2>
+    </div>
+
+    {% render 'wango-video',
+       webm_url: section.settings.webm_url,
+       mp4_url: section.settings.mp4_url,
+       poster: 'wp-disc-macro.jpg',
+       label: section.settings.video_label,
+       attrs: 'muted playsinline preload="auto"' %}
+
+    <div class="w-explode__callouts">
+      {%- for block in section.blocks -%}
+        <div data-explode-callout {{ block.shopify_attributes }}>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.body }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Ürün · patlatılmış görünüm",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "url", "id": "webm_url", "label": "WebM URL'si (alfa kanallı)" },
+    { "type": "url", "id": "mp4_url", "label": "MP4 URL'si (yedek)" },
+    { "type": "text", "id": "video_label", "default": "wango Origin parçalarına ayrılıyor", "label": "Video açıklaması" },
+    { "type": "text", "id": "eyebrow", "default": "İçini gör", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Her parça, bir amaç için.", "label": "Başlık" }
+  ],
+  "blocks": [
+    { "type": "callout", "name": "Parça", "settings": [
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "body", "label": "Metin" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · patlatılmış görünüm",
+    "blocks": [
+      { "type": "callout", "settings": { "title": "Dış kabuk", "body": "Mat periwinkle yüzey, günlük kullanıma dayanıklı kaplama." } },
+      { "type": "callout", "settings": { "title": "Sürücü", "body": "Dengeli, sıcak ton — LDAC destekli sürücü ünitesi." } }
+    ]
+  }]
+}
+{% endschema %}

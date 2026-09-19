@@ -1,0 +1,70 @@
+{%- comment -%}
+  Morph switcher — ported from SilhouetteMorph in lib/story-fx.tsx.
+  A Canvas 2D crossfade between portraits; the swatch colours are sampled
+  from each frame's own dominant ground so the transition settles into it.
+{%- endcomment -%}
+
+{%- liquid
+  assign srcs = ''
+  for block in section.blocks
+    if block.settings.image != blank
+      assign one = block.settings.image | image_url: width: 900
+    else
+      assign one = block.settings.image_asset | asset_url
+    endif
+    if forloop.first
+      assign srcs = one
+    else
+      assign srcs = srcs | append: '|' | append: one
+    endif
+  endfor
+-%}
+
+<div class="w-morph" data-morph data-images="{{ srcs | escape }}">
+  <div class="w-morph__num"><span data-morph-readout>1.00</span></div>
+
+  <div class="w-morph__picks">
+    {%- for block in section.blocks -%}
+      <button type="button" data-morph-pick aria-label="{{ block.settings.label | escape }}" {{ block.shopify_attributes }}>
+        <i style="background: {{ block.settings.tone }}"></i>
+        <em>{{ forloop.index }}</em>
+      </button>
+    {%- endfor -%}
+  </div>
+
+  <div class="w-morph__frame">
+    <canvas aria-label="{{ section.settings.alt | escape }}" role="img"></canvas>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Origin · portre geçişi",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "alt", "default": "Kulağında wango olan kişiler", "label": "Görsel açıklaması" }
+  ],
+  "blocks": [
+    {
+      "type": "person",
+      "name": "Portre",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
+        { "type": "color", "id": "tone", "default": "#2f4038", "label": "Nokta rengi", "info": "Karenin baskın zemin rengi." },
+        { "type": "text", "id": "label", "label": "Etiket" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Origin · portre geçişi",
+    "blocks": [
+      { "type": "person", "settings": { "image_asset": "wp-real-man-green-tank.jpg",  "tone": "#2f4038", "label": "Origin" } },
+      { "type": "person", "settings": { "image_asset": "wp-real-pyjamas-cushion.jpg", "tone": "#b4542a", "label": "Sage" } },
+      { "type": "person", "settings": { "image_asset": "wb-brief-16.jpg",             "tone": "#2f588c", "label": "Cornflower" } },
+      { "type": "person", "settings": { "image_asset": "wp-real-sofa-laugh.jpg",      "tone": "#c9a227", "label": "Twilight" } },
+      { "type": "person", "settings": { "image_asset": "wb-brief-17.jpg",             "tone": "#3d6b6b", "label": "Mono" } }
+    ]
+  }]
+}
+{% endschema %}

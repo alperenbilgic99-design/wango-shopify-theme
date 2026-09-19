@@ -1,0 +1,54 @@
+<section class="w-black w-section" style="padding-top:8rem">
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h1 class="w-h2" style="margin-top:1rem">{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+      <div class="w-lede">{{ collection.description }}</div>
+    {%- endif -%}
+
+    {%- paginate collection.products by 12 -%}
+    <div class="w-coll">
+      {%- for product in collection.products -%}
+        <a class="w-coll__card" href="{{ product.url }}">
+          <div class="ptg-card__img">
+            {%- if product.featured_media -%}
+              <img src="{{ product.featured_media | image_url: width: 900 }}"
+                   srcset="{{ product.featured_media | image_url: width: 450 }} 450w, {{ product.featured_media | image_url: width: 900 }} 900w"
+                   sizes="(min-width: 1024px) 380px, 90vw"
+                   width="{{ product.featured_media.width }}" height="{{ product.featured_media.height }}"
+                   alt="{{ product.featured_media.alt | default: product.title | escape }}" loading="lazy">
+            {%- endif -%}
+          </div>
+          <div class="ptg-card__body">
+            <div class="ptg-card__row">
+              <h3>{{ product.title }}</h3>
+              <span>{{ product.price | money }}</span>
+            </div>
+            {%- unless product.available -%}
+              <p class="ptg-card__sub">{{ 'products.product.sold_out' | t }}</p>
+            {%- endunless -%}
+          </div>
+        </a>
+      {%- else -%}
+        <p class="w-lede">{{ 'sections.collection.empty' | t }}</p>
+      {%- endfor -%}
+    </div>
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="w-page__actions" aria-label="{{ 'general.pagination' | t }}">
+        {%- if paginate.previous -%}<a class="w-btn w-btn--ghost" href="{{ paginate.previous.url }}">&larr;</a>{%- endif -%}
+        {%- if paginate.next -%}<a class="w-btn w-btn--ghost" href="{{ paginate.next.url }}">&rarr;</a>{%- endif -%}
+      </nav>
+    {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Koleksiyon",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Setler", "label": "Üst etiket" }
+  ]
+}
+{% endschema %}

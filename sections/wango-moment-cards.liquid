@@ -1,0 +1,62 @@
+{%- comment -%}
+  Stacked "moment" cards — ported from StackedCardSlider in lib/sliders.tsx.
+  Click anywhere: the top card drops away and re-enters at the back of the
+  deck while the next card's title characters drop into place.
+{%- endcomment -%}
+
+<section class="w-paper w-section">
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2 class="w-h2">{{ section.settings.heading }}</h2>
+  </div>
+
+  <div class="w-wrap">
+    <div class="w-stack" data-stack role="button" tabindex="0" aria-label="{{ section.settings.hint }}">
+      <span class="w-stack__hint">{{ section.settings.hint }}</span>
+      {%- for block in section.blocks -%}
+        <article class="sl-card" {{ block.shopify_attributes }}>
+          {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy' %}
+          <div class="sl-card__scrim"></div>
+          <div class="sl-copy">
+            <h3 data-text="{{ block.settings.title | escape }}">{{ block.settings.title }}</h3>
+            <p data-text="{{ block.settings.meta | escape }}">{{ block.settings.meta }}</p>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Origin · anlar",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Anlar", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Günün her katmanında bir wango anı.", "label": "Başlık" },
+    { "type": "text", "id": "hint", "default": "herhangi bir yere dokun", "label": "İpucu" }
+  ],
+  "blocks": [
+    {
+      "type": "moment",
+      "name": "An",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
+        { "type": "text", "id": "title", "label": "Başlık" },
+        { "type": "text", "id": "meta", "label": "Alt yazı" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Origin · anlar",
+    "blocks": [
+      { "type": "moment", "settings": { "image_asset": "wp-real-canvas-gymbag.jpg", "title": "SABAH", "meta": "Kahve, sessizlik, ilk şarkı" } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-tray-flatlay.jpg",  "title": "YOLDA", "meta": "Şehrin gürültüsü kapanır" } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-three-on-mint.jpg", "title": "ODAK",  "meta": "Dünya beklesin, sen dinle" } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-leather-bag.jpg",   "title": "AKŞAM", "meta": "Kalabalıkta kendi ritmin" } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-claw-machine.jpg",  "title": "GECE",  "meta": "Gün biter, sessizlik kalır" } }
+    ]
+  }]
+}
+{% endschema %}

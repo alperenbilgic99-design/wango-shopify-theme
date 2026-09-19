@@ -1,0 +1,74 @@
+{%- comment -%}
+  Origin hero — ported from src/components/wango/origin-hero.tsx.
+
+  Opens on the painting full-bleed, holds for a breath, then one timed
+  timeline dissolves it away from the centre out (a noisy radial threshold
+  mask on the top layer, a darkness/grayscale/edge-glow ramp on the bottom)
+  to reveal the real product macro underneath, at which point the hero copy
+  fades in over it. Deliberately time-driven, not scroll-linked: it has to
+  read as an intentional reveal, and it keeps the section one viewport tall
+  instead of another multi-hundred-vh pin.
+{%- endcomment -%}
+
+{%- liquid
+  if section.settings.art_image != blank
+    assign art_src = section.settings.art_image | image_url: width: 2000
+  else
+    assign art_src = 'ws-creation-of-adam.jpg' | asset_url
+  endif
+  if section.settings.reveal_image != blank
+    assign reveal_src = section.settings.reveal_image | image_url: width: 2000
+  else
+    assign reveal_src = 'ws-banner-macro-wordmark.jpg' | asset_url
+  endif
+-%}
+
+<section class="w-origin" data-origin-hero data-art="{{ art_src }}" data-reveal="{{ reveal_src }}">
+  <div class="w-origin__host" data-origin-host>
+    {%- comment -%}
+      Reduced-motion fallback. Stays hidden on the normal path so there is no
+      premature flash of the "after" photo before the art texture loads; the
+      script reveals it directly when motion is off or WebGL is unavailable.
+    {%- endcomment -%}
+    <img class="w-origin__fallback" data-origin-fallback src="{{ reveal_src }}" alt="" fetchpriority="high">
+  </div>
+
+  <div class="w-origin__scrim" aria-hidden="true"></div>
+
+  <div class="w-origin__caption" data-origin-caption>
+    <span class="w-eyebrow" style="letter-spacing:.28em">{{ section.settings.art_eyebrow }}</span>
+    <p>{{ section.settings.art_caption }}</p>
+  </div>
+
+  <div class="w-origin__copy" data-origin-copy>
+    <h1>{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.body }}</p>
+    <div class="w-origin__cta" style="margin-top:1.5rem">
+      {%- if section.settings.cta1_url != blank -%}
+        <a class="w-btn w-btn--solid" href="{{ section.settings.cta1_url }}">{{ section.settings.cta1_label }}</a>
+      {%- endif -%}
+      {%- if section.settings.cta2_url != blank -%}
+        <a class="w-btn w-btn--ghost" href="{{ section.settings.cta2_url }}">{{ section.settings.cta2_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Origin · açılış",
+  "settings": [
+    { "type": "image_picker", "id": "art_image", "label": "Açılış görseli", "info": "Boşsa temanın kendi görseli kullanılır." },
+    { "type": "image_picker", "id": "reveal_image", "label": "Ortaya çıkan ürün görseli" },
+    { "type": "text", "id": "art_eyebrow", "default": "wango origin", "label": "Üst etiket" },
+    { "type": "text", "id": "art_caption", "default": "Yüzyıllar önce uzanan bir el. Şimdi kulağında bir sessizlik.", "label": "Açılış cümlesi" },
+    { "type": "text", "id": "heading", "default": "Origin", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Modern çağın analog filtresi. Kulağına takılan şey bir kulaklık değil, günün geri kalanını taşıyan sessiz bir eşya.", "label": "Metin" },
+    { "type": "text", "id": "cta1_label", "default": "Setleri gör", "label": "1. buton" },
+    { "type": "url", "id": "cta1_url", "label": "1. buton bağlantısı" },
+    { "type": "text", "id": "cta2_label", "default": "Anları gör", "label": "2. buton" },
+    { "type": "url", "id": "cta2_url", "label": "2. buton bağlantısı" }
+  ],
+  "presets": [{ "name": "Origin · açılış" }]
+}
+{% endschema %}

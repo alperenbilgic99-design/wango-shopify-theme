@@ -1,0 +1,63 @@
+{%- comment -%}
+  Static testimonial cards, carried over from product-detail.tsx.
+  These are content, not a review app: nothing here is pulled from real
+  verified orders, so treat the copy as marketing text and edit it in the
+  theme editor rather than presenting it as collected reviews.
+{%- endcomment -%}
+<section class="w-black w-section">
+  <div class="w-wrap">
+    <div class="w-reviews__head">
+      <div>
+        <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+        <h2>{{ section.settings.heading }}</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        {% render 'stars', filled: 5 %}
+        <span style="font-size:.9rem;color:var(--w-muted)">{{ section.settings.average }}</span>
+      </div>
+    </div>
+
+    <div class="w-reviews__grid">
+      {%- for block in section.blocks -%}
+        <div class="w-reveal" data-reveal-delay="{{ forloop.index0 | times: 0.08 }}" {{ block.shopify_attributes }}>
+          <div class="w-bezel">
+            <div class="w-reviews__card">
+              {% render 'stars', filled: block.settings.rating %}
+              <h3>{{ block.settings.title }}</h3>
+              <p>{{ block.settings.body }}</p>
+              <small>{{ block.settings.author }}</small>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · yorumlar",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Değerlendirmeler", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "312 kişi taktı, anlattı.", "label": "Başlık" },
+    { "type": "text", "id": "average", "default": "4.8 / 5 ortalama", "label": "Ortalama" }
+  ],
+  "blocks": [
+    { "type": "review", "name": "Yorum", "settings": [
+      { "type": "range", "id": "rating", "min": 1, "max": 5, "step": 1, "default": 5, "label": "Puan" },
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "body", "label": "Metin" },
+      { "type": "text", "id": "author", "label": "Yazan" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · yorumlar",
+    "blocks": [
+      { "type": "review", "settings": { "rating": 5, "title": "Kulakta durduğunu unutuyorum", "body": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "author": "Deniz K." } },
+      { "type": "review", "settings": { "rating": 5, "title": "Aksesuar gibi", "body": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "author": "Elif A." } },
+      { "type": "review", "settings": { "rating": 4, "title": "Filtre kademesi çok iyi", "body": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "author": "Mert Y." } }
+    ]
+  }]
+}
+{% endschema %}

@@ -1,0 +1,46 @@
+{%- comment -%}
+  Product-story hero — ported from BoxRevealHero in lib/product-story-fx.tsx.
+  Opens as a single centred stack (headline directly above the product,
+  perfectly symmetric); on wide viewports it then eases into two columns via
+  GSAP Flip, which tweens each element from its old rect to its new one so
+  nothing ever snaps.
+{%- endcomment -%}
+
+<section class="w-boxhero" data-boxhero>
+  <div class="w-boxhero__wrap" data-boxhero-wrap>
+    <div class="w-boxhero__text">
+      <h1>{{ section.settings.heading }} <em>{{ section.settings.heading_accent }}</em></h1>
+      <div class="w-boxhero__lines">
+        {%- if section.settings.line_1 != blank -%}<p>{{ section.settings.line_1 }}</p>{%- endif -%}
+        {%- if section.settings.line_2 != blank -%}<p>{{ section.settings.line_2 }}</p>{%- endif -%}
+      </div>
+      <p class="w-boxhero__sub">{{ section.settings.body }}</p>
+    </div>
+
+    <div class="w-boxhero__media">
+      <div>
+        {% render 'wango-video',
+           mp4_url: section.settings.video_url,
+           poster: 'wp-case-open-seated.jpg',
+           label: section.settings.video_label,
+           attrs: 'autoplay muted loop playsinline preload="auto"' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · kutu açılışı",
+  "settings": [
+    { "type": "url", "id": "video_url", "label": "Video URL'si", "info": "Ayarlar → Dosyalar'a yükleyip CDN bağlantısını yapıştır." },
+    { "type": "text", "id": "video_label", "default": "wango Origin kutusu açılıyor, tıkaçlar yükseliyor", "label": "Video açıklaması" },
+    { "type": "text", "id": "heading", "default": "wango", "label": "Başlık" },
+    { "type": "text", "id": "heading_accent", "default": "origin", "label": "Başlık (vurgulu)" },
+    { "type": "text", "id": "line_1", "default": "Kutudan çıkar,", "label": "1. satır" },
+    { "type": "text", "id": "line_2", "default": "kulağında kaybolur.", "label": "2. satır" },
+    { "type": "textarea", "id": "body", "default": "Aynı kutu, iki set. Kaydır, seni bekleyeni gör.", "label": "Metin" }
+  ],
+  "presets": [{ "name": "Ürün · kutu açılışı" }]
+}
+{% endschema %}

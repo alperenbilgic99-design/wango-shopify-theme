@@ -1,0 +1,21 @@
+<section class="w-page">
+  <div class="w-page__inner">
+    <h1>{{ 'customer.account.title' | t }}</h1>
+    <p class="w-page__lede">{{ customer.email }}</p>
+    <div class="w-page__actions">
+      <a class="w-btn w-btn--ghost" href="{{ routes.account_addresses_url }}">{{ 'customer.addresses.title' | t }}</a>
+      <a class="w-btn w-btn--ghost" href="{{ routes.account_logout_url }}">{{ 'customer.account.logout' | t }}</a>
+    </div>
+    <div style="margin-top:3rem;display:grid;gap:1rem">
+      {%- for order in customer.orders -%}
+        <a href="{{ order.customer_url }}" style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--w-line);padding-block:1rem">
+          <span>{{ order.name }}</span>
+          <span style="color:var(--w-muted)">{{ order.created_at | date: '%d.%m.%Y' }}</span>
+          <span>{{ order.total_price | money }}</span>
+        </a>
+      {%- else -%}
+        <p class="w-page__lede">{{ 'customer.orders.none' | t }}</p>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>

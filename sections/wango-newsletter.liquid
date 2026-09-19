@@ -1,0 +1,105 @@
+{%- comment -%}
+  Newsletter — ported from newsletter-view.tsx.
+
+  One real change: the React version warned that nothing was connected and the
+  address went nowhere. Here the form posts to Shopify's own customer endpoint,
+  so the address lands in the store's customer list with the `newsletter`
+  accepts-marketing flag. That demo disclaimer is therefore gone — the sign-up
+  is genuine, and the consent checkbox is what makes it lawful to send to.
+{%- endcomment -%}
+
+<section class="w-news" data-newsletter>
+  <div class="w-news__grid">
+    <div>
+      <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h1>{{ section.settings.heading }} <em>{{ section.settings.heading_accent }}</em></h1>
+      <p class="w-news__lede">{{ section.settings.body }}</p>
+
+      <dl class="w-news__perks">
+        {%- for block in section.blocks -%}
+          <div {{ block.shopify_attributes }}>
+            <div>
+              <dt>{{ block.settings.title }}</dt>
+              <dd>{{ block.settings.body }}</dd>
+            </div>
+          </div>
+        {%- endfor -%}
+      </dl>
+    </div>
+
+    <div class="w-news__card">
+      {%- form 'customer' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+
+        {%- if form.posted_successfully? -%}
+          <div class="w-formok">
+            <div class="w-formok__tick">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 12.5 5 5L20 7"/></svg>
+            </div>
+            <h2>{{ section.settings.success_heading }}</h2>
+            <p>{{ section.settings.success_body }}</p>
+            <a class="w-btn w-btn--ghost" style="margin-top:1.75rem" href="{{ routes.root_url }}">{{ section.settings.success_cta }}</a>
+          </div>
+        {%- else -%}
+          <h2>{{ section.settings.form_heading }}</h2>
+
+          <label class="w-field">
+            <span class="visually-hidden">{{ 'newsletter.email' | t }}</span>
+            <input type="email" name="contact[email]" placeholder="{{ section.settings.placeholder }}"
+                   autocomplete="email" required aria-describedby="wango-news-error">
+          </label>
+
+          <label class="w-consent">
+            <input type="checkbox" name="contact[accepts_marketing]" value="true">
+            <span>{{ section.settings.consent }}</span>
+          </label>
+
+          {%- if form.errors -%}
+            <p class="w-formerror" role="alert">{{ form.errors.messages['email'] | default: form.errors.messages['form'] }}</p>
+          {%- endif -%}
+          <p class="w-formerror" id="wango-news-error" role="alert" data-news-error hidden
+             data-msg-email="{{ section.settings.err_email | escape }}"
+             data-msg-consent="{{ section.settings.err_consent | escape }}"></p>
+
+          <button type="submit" class="w-btn w-btn--solid w-btn--block" style="margin-top:1.5rem">{{ section.settings.submit }}</button>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bülten",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Bülten", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "sessizliğe", "label": "Başlık" },
+    { "type": "text", "id": "heading_accent", "default": "abone ol", "label": "Başlık (vurgulu)" },
+    { "type": "textarea", "id": "body", "default": "Ayda bir e-posta. Yeni renkler, sınırlı setler ve arada bir sessizlik üzerine kısa bir yazı. Başka hiçbir şey.", "label": "Metin" },
+    { "type": "text", "id": "form_heading", "default": "E-posta adresin", "label": "Form başlığı" },
+    { "type": "text", "id": "placeholder", "default": "ad@ornek.com", "label": "Yer tutucu" },
+    { "type": "textarea", "id": "consent", "default": "wango'dan e-posta almayı ve adresimin bu amaçla işlenmesini kabul ediyorum. Dilediğim zaman çıkabilirim.", "label": "Onay metni" },
+    { "type": "text", "id": "submit", "default": "Bültene kaydol", "label": "Buton" },
+    { "type": "text", "id": "err_email", "default": "Geçerli bir e-posta adresi gir.", "label": "Hata · e-posta" },
+    { "type": "text", "id": "err_consent", "default": "Devam etmek için onay kutusunu işaretle.", "label": "Hata · onay" },
+    { "type": "text", "id": "success_heading", "default": "Kaydın alındı.", "label": "Başarı başlığı" },
+    { "type": "textarea", "id": "success_body", "default": "Adresin listeye eklendi. İstediğin zaman tek tıkla çıkabilirsin.", "label": "Başarı metni" },
+    { "type": "text", "id": "success_cta", "default": "Ana sayfaya dön", "label": "Başarı butonu" }
+  ],
+  "blocks": [
+    { "type": "perk", "name": "Madde", "settings": [
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "body", "label": "Metin" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Bülten",
+    "blocks": [
+      { "type": "perk", "settings": { "title": "Yeni renkler önce sana", "body": "Sınırlı üretim tonları, herkese açılmadan bir gün önce." } },
+      { "type": "perk", "settings": { "title": "Sessizlik üzerine", "body": "Ayda bir kısa mektup — ürün değil, üzerine düşündüğümüz şeyler." } },
+      { "type": "perk", "settings": { "title": "Sadece gerektiğinde", "body": "Ayda birden fazla yazmıyoruz. Tek tıkla çıkarsın." } }
+    ]
+  }]
+}
+{% endschema %}

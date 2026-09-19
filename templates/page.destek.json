@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "faq": { "type": "wango-faq",
+      "settings": { "cta1_url": "shopify://collections/all" },
+      "blocks": {
+        "q1": { "type": "qa", "settings": { "question": "Kargo ne kadar sürer?", "answer": "Tüm siparişlerde kargo ücretsiz. Kargo süresi ve takip bilgisi sipariş onayında paylaşılır." } },
+        "q2": { "type": "qa", "settings": { "question": "İade koşulları nedir?", "answer": "30 gün koşulsuz iade. Ürünü kutusuyla birlikte geri gönderdiğinde ücret iadesi yapılır." } },
+        "q3": { "type": "qa", "settings": { "question": "Garanti süresi ne kadar?", "answer": "2 yıl garanti. Üretim kaynaklı arızalarda ürün onarılır ya da değiştirilir." } },
+        "q4": { "type": "qa", "settings": { "question": "Tıkaçlar kulağıma oturmazsa?", "answer": "Kutudan 3 boy silikon uç çıkıyor. Doğru boy, kulakta hafif bir vakum hissi bırakan ve düşmeyen boydur." } },
+        "q5": { "type": "qa", "settings": { "question": "Pil ne kadar gidiyor?", "answer": "Tıkaçlar tek şarjla 7 saat, kutuyla birlikte toplam 28 saat. 10 dakikalık şarj 2 saat dinleme veriyor." } },
+        "q6": { "type": "qa", "settings": { "question": "Suya dayanıklı mı?", "answer": "IPX5 — tere ve yağmura karşı korumalı. Suya batırmak için tasarlanmadı." } }
+      },
+      "block_order": ["q1","q2","q3","q4","q5","q6"] }
+  },
+  "order": ["faq"]
+}

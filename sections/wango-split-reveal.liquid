@@ -1,0 +1,49 @@
+{%- comment -%}
+  Pinned split reveal — ported from SplitRevealPanel in lib/story-fx-2.tsx.
+  The two oversized headings start blended over the centre photo and, as the
+  section scrolls, "un-blend" out to flank it as clean text columns while a
+  second image appears bottom-right.
+
+  A sticky wrapper rather than ScrollTrigger's pin:true — pinning fights the
+  smooth-scroll wrapper.
+{%- endcomment -%}
+
+<div class="srp-outer" data-split>
+  <div class="srp">
+    <div class="srp__grid">
+      <div class="srp-left">
+        <h3>{{ section.settings.left_heading }}</h3>
+        <p>{{ section.settings.left_body }}</p>
+      </div>
+
+      <div class="srp-center-wrap">
+        {% render 'wango-image', image: section.settings.image, asset: section.settings.image_asset, alt: '', class: 'srp-center', loading: 'lazy' %}
+      </div>
+
+      <div class="srp-right">
+        <h3>{{ section.settings.right_heading }}</h3>
+        <p>{{ section.settings.right_body }}</p>
+        <div class="srp-second">
+          {% render 'wango-image', image: section.settings.image_secondary, asset: section.settings.image_secondary_asset, alt: '', loading: 'lazy', sizes: '260px' %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Origin · ikiye ayrılan panel",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Orta görsel" },
+    { "type": "text", "id": "image_asset", "default": "wb-brief-14.jpg", "label": "Orta görsel (tema dosyası)" },
+    { "type": "image_picker", "id": "image_secondary", "label": "İkinci görsel" },
+    { "type": "text", "id": "image_secondary_asset", "default": "wb-brief-18.jpg", "label": "İkinci görsel (tema dosyası)" },
+    { "type": "text", "id": "left_heading", "default": "Hareket", "label": "Sol başlık" },
+    { "type": "textarea", "id": "left_body", "default": "Günün her anına eşlik eden, fark edilmeyen bir sessizlik.", "label": "Sol metin" },
+    { "type": "text", "id": "right_heading", "default": "Sükunet", "label": "Sağ başlık" },
+    { "type": "textarea", "id": "right_body", "default": "Kalabalık dağılır, sadece kendi ritmin kalır.", "label": "Sağ metin" }
+  ],
+  "presets": [{ "name": "Origin · ikiye ayrılan panel" }]
+}
+{% endschema %}

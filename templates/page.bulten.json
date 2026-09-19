@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "news": { "type": "wango-newsletter",
+      "blocks": {
+        "p1": { "type": "perk", "settings": { "title": "Yeni renkler önce sana", "body": "Sınırlı üretim tonları, herkese açılmadan bir gün önce." } },
+        "p2": { "type": "perk", "settings": { "title": "Sessizlik üzerine", "body": "Ayda bir kısa mektup — ürün değil, üzerine düşündüğümüz şeyler." } },
+        "p3": { "type": "perk", "settings": { "title": "Sadece gerektiğinde", "body": "Ayda birden fazla yazmıyoruz. Tek tıkla çıkarsın." } }
+      },
+      "block_order": ["p1","p2","p3"] }
+  },
+  "order": ["news"]
+}

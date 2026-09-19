@@ -1,0 +1,27 @@
+{%- comment -%}The one action that closes a page.{%- endcomment -%}
+<section class="w-cta {{ section.settings.ground }}">
+  <h2>{{ section.settings.heading }}</h2>
+  {%- if section.settings.body != blank -%}<p>{{ section.settings.body }}</p>{%- endif -%}
+  {%- if section.settings.cta_url != blank -%}
+    <a class="w-btn w-btn--solid" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Kapanış çağrısı",
+  "settings": [
+    { "type": "select", "id": "ground", "label": "Zemin", "default": "w-black",
+      "options": [
+        { "value": "w-black", "label": "Siyah" },
+        { "value": "w-grad", "label": "Mor gradyan" },
+        { "value": "w-paper", "label": "Kağıt" }
+      ] },
+    { "type": "text", "id": "heading", "default": "Gürültüyü sen seç.", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Ücretsiz kargo, 30 gün koşulsuz iade, 2 yıl garanti.", "label": "Metin" },
+    { "type": "text", "id": "cta_label", "default": "Setleri gör", "label": "Buton" },
+    { "type": "url", "id": "cta_url", "label": "Buton bağlantısı" }
+  ],
+  "presets": [{ "name": "Kapanış çağrısı" }]
+}
+{% endschema %}

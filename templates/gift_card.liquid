@@ -1,0 +1,12 @@
+<section class="w-page">
+  <div class="w-page__inner" style="text-align:center">
+    <span class="w-eyebrow">{{ shop.name }}</span>
+    <h1>{{ 'gift_cards.issued.title' | t }}</h1>
+    <p class="w-page__lede" style="margin-inline:auto">{{ gift_card.balance | money }}</p>
+    <img src="{{ gift_card.qr_identifier }}" alt="" style="margin:2rem auto 0" width="200" height="200">
+    <p class="w-page__lede" style="margin-inline:auto;font-family:var(--font-brand);letter-spacing:.2em">{{ gift_card.code | format_code }}</p>
+    <div class="w-page__actions" style="justify-content:center">
+      <a class="w-btn w-btn--solid" href="{{ shop.url }}">{{ 'gift_cards.issued.shop_link' | t }}</a>
+    </div>
+  </div>
+</section>

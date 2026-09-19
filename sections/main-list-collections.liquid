@@ -1,0 +1,18 @@
+<section class="w-page">
+  <div class="w-page__inner">
+    <h1>{{ 'general.collections.title' | t }}</h1>
+    <div class="w-coll">
+      {%- for collection in collections -%}
+        <a class="w-coll__card" href="{{ collection.url }}">
+          <div class="ptg-card__img">
+            {%- if collection.featured_image -%}
+              <img src="{{ collection.featured_image | image_url: width: 900 }}" alt="{{ collection.title | escape }}" loading="lazy">
+            {%- endif -%}
+          </div>
+          <div class="ptg-card__body"><div class="ptg-card__row"><h3>{{ collection.title }}</h3></div></div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{% schema %}{ "name": "Koleksiyon listesi" }{% endschema %}

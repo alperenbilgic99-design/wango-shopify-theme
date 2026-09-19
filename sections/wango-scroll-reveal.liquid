@@ -1,0 +1,63 @@
+{%- comment -%}
+  Pinned scroll product reveal — ported from ProductScrollReveal in
+  lib/product-reveal.tsx. A tall outer wrapper + `position: sticky` on the
+  stage gives "stays put while you scroll through it" in pure CSS, so nothing
+  reparents a live node. One scroll progress value drives the eyebrow, a
+  circular scene-wipe, the title, a spec divider and two tooltips while the
+  case spins four full turns.
+
+  The model is drawn by assets/wango-case-3d.js (raw WebGL, no three.js) and
+  the case is the real wango clamshell per product-spec/wango-visual-lock.md.
+{%- endcomment -%}
+
+<div class="psr-outer" data-scroll-reveal>
+  <div class="psr-root">
+    <div class="psr-header-1"><h1>{{ section.settings.eyebrow }}</h1></div>
+
+    {%- comment -%}The mask is a centred circular scene-wipe in front of the model.{%- endcomment -%}
+    <div class="psr-mask">
+      <div class="psr-header-2"><h1>{{ section.settings.title }}</h1></div>
+
+      <div class="psr-tooltips">
+        {%- for block in section.blocks limit: 2 -%}
+          <div class="psr-tooltip" {{ block.shopify_attributes }}>
+            <div class="psr-reveal-wrap"><span class="psr-icon psr-reveal">{{ block.settings.icon }}</span></div>
+            <div class="psr-divider"></div>
+            <div class="psr-reveal-wrap" style="margin-top:.75rem"><h3 class="psr-reveal">{{ block.settings.title }}</h3></div>
+            <div class="psr-reveal-wrap" style="margin-top:.25rem"><p class="psr-reveal">{{ block.settings.description }}</p></div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="psr-model" data-psr-model role="img" aria-label="{{ section.settings.alt | escape }}"></div>
+    <div class="psr-outro">{{ section.settings.outro }}</div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Ürün · dönen kutu",
+  "max_blocks": 2,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Origin dönüyor", "label": "Üst başlık" },
+    { "type": "text", "id": "title", "default": "wango Origin", "label": "Başlık" },
+    { "type": "text", "id": "outro", "default": "Sadece giy — wango", "label": "Alt yazı" },
+    { "type": "text", "id": "alt", "default": "Dönen wango Origin kutusu", "label": "Model açıklaması (erişilebilirlik)" }
+  ],
+  "blocks": [
+    { "type": "tooltip", "name": "Not", "settings": [
+      { "type": "text", "id": "icon", "default": "◐", "label": "Simge" },
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "description", "label": "Metin" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · dönen kutu",
+    "blocks": [
+      { "type": "tooltip", "settings": { "icon": "◐", "title": "Tüm hafta", "description": "Tek şarjla bir hafta boyunca yanında — durmadan, kesintisiz." } },
+      { "type": "tooltip", "settings": { "icon": "◉", "title": "Senkron kal", "description": "Uygulama bağlantısıyla kullanımını takip et, hedef koy." } }
+    ]
+  }]
+}
+{% endschema %}

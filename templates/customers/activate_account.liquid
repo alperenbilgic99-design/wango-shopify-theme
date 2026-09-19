@@ -1,0 +1,12 @@
+<section class="w-page">
+  <div class="w-page__inner" style="max-width:440px">
+    <h1>{{ 'customer.activate_account.title' | t }}</h1>
+    {%- form 'activate_customer_password' -%}
+      {%- if form.errors -%}<p class="w-formerror" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+      <label class="w-field"><input type="password" name="customer[password]" placeholder="{{ 'customer.login.password' | t }}" autocomplete="new-password"></label>
+      <label class="w-field"><input type="password" name="customer[password_confirmation]" placeholder="{{ 'customer.reset_password.confirm' | t }}" autocomplete="new-password"></label>
+      <button type="submit" class="w-btn w-btn--solid w-btn--block" style="margin-top:1.5rem">{{ 'customer.activate_account.submit' | t }}</button>
+      <button type="submit" name="decline" class="w-btn w-btn--ghost w-btn--block" style="margin-top:.75rem">{{ 'customer.activate_account.decline' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>

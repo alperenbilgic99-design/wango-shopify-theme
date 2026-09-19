@@ -1,0 +1,68 @@
+{%- comment -%}
+  A live, mouse-scrubbable video revealed entirely through the shape of the
+  "wango" wordmark — ported from wordmark-story-reveal.tsx. ONE mechanic, no
+  layer-swap crossfade: the mask keeps zooming in on a guaranteed-solid point
+  inside a letter stroke until that letter's own fill covers the frame.
+
+  The video never autoplays: horizontal mouse movement scrubs currentTime,
+  and the same pointer drives a soft water-ripple across the surface.
+
+  The clip lives in Content → Files (Shopify's assets folder rejects video),
+  and its URL is a theme setting. With no URL set, the poster shows instead.
+{%- endcomment -%}
+
+{%- liquid
+  if section.settings.poster != blank
+    assign poster_src = section.settings.poster | image_url: width: 1600
+  else
+    assign poster_src = 'ws-hero-scrub-poster.jpg' | asset_url
+  endif
+-%}
+
+<div class="w-wordmark-outer" data-wordmark data-video="{{ section.settings.video_url }}">
+  <div class="w-wordmark-sticky" data-wordmark-sticky>
+    <img class="w-wordmark-poster" data-wordmark-poster src="{{ poster_src }}" alt="">
+    <div class="w-wordmark-host" data-wordmark-host></div>
+
+    <div class="w-wordmark-copy" data-wordmark-copy>
+      <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.body }}</p>
+      <div class="w-wordmark-actions">
+        {%- if section.settings.cta_url != blank -%}
+          <a class="w-btn w-btn--solid" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label }}</a>
+        {%- endif -%}
+        <button type="button" class="w-btn w-btn--ghost" data-wordmark-read>{{ section.settings.read_label }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="w-wordmark-continue" data-wordmark-continue>
+  <div>
+    <span class="w-eyebrow" style="letter-spacing:.28em">{{ section.settings.story_eyebrow }}</span>
+    <h2>{{ section.settings.story_heading }}</h2>
+    <p>{{ section.settings.story_body }}</p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Origin · kelime maskesi",
+  "settings": [
+    { "type": "url", "id": "video_url", "label": "Video URL'si", "info": "Videoyu Ayarlar → Dosyalar'a yükleyip CDN bağlantısını buraya yapıştır. Boşsa yalnızca poster görünür." },
+    { "type": "image_picker", "id": "poster", "label": "Poster görseli" },
+    { "type": "text", "id": "eyebrow", "default": "wango · an", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Origini hisset.", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Gözden kaçmayacak kadar ince, hissedilmeyecek kadar hafif. Bildirim sesi yok, göze çarpan bir cihaz yok — sadece sana ait, günün arka planında sessizce duran bir an.", "label": "Metin" },
+    { "type": "text", "id": "cta_label", "default": "Setleri gör", "label": "Buton" },
+    { "type": "url", "id": "cta_url", "label": "Buton bağlantısı" },
+    { "type": "text", "id": "read_label", "default": "Hikâyeyi oku", "label": "İkinci buton" },
+    { "type": "header", "content": "Devam eden hikâye" },
+    { "type": "text", "id": "story_eyebrow", "default": "wango · hikâye", "label": "Üst etiket" },
+    { "type": "textarea", "id": "story_heading", "default": "Her günün kendi ritmi var. wango sadece onu duyman için kenara çekilir.", "label": "Başlık" },
+    { "type": "textarea", "id": "story_body", "default": "Ne bir bildirim sesi, ne göze çarpan bir cihaz. Sadece sen ve etrafındaki sessizlik — geri kalanı zaten oradaydı.", "label": "Metin" }
+  ],
+  "presets": [{ "name": "Origin · kelime maskesi" }]
+}
+{% endschema %}

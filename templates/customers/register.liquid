@@ -1,0 +1,13 @@
+<section class="w-page">
+  <div class="w-page__inner" style="max-width:440px">
+    <h1>{{ 'customer.register.title' | t }}</h1>
+    {%- form 'create_customer' -%}
+      {%- if form.errors -%}<p class="w-formerror" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+      <label class="w-field"><input type="text" name="customer[first_name]" placeholder="{{ 'customer.register.first_name' | t }}" autocomplete="given-name"></label>
+      <label class="w-field"><input type="text" name="customer[last_name]" placeholder="{{ 'customer.register.last_name' | t }}" autocomplete="family-name"></label>
+      <label class="w-field"><input type="email" name="customer[email]" placeholder="{{ 'customer.login.email' | t }}" autocomplete="email"></label>
+      <label class="w-field"><input type="password" name="customer[password]" placeholder="{{ 'customer.login.password' | t }}" autocomplete="new-password"></label>
+      <button type="submit" class="w-btn w-btn--solid w-btn--block" style="margin-top:1.5rem">{{ 'customer.register.submit' | t }}</button>
+    {%- endform -%}
+  </div>
+</section>

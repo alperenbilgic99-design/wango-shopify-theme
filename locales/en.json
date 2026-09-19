@@ -1,0 +1,112 @@
+{
+  "general": {
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "pagination": "Pagination",
+    "404": {
+      "title": "Page not found",
+      "body": "The page you were looking for may have moved, or never existed.",
+      "home": "Back to home"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "What are you looking for?",
+      "results": "{{ count }} results"
+    },
+    "collections": {
+      "title": "Collections"
+    },
+    "password_page": {
+      "title": "Opening soon",
+      "password": "Password",
+      "enter": "Enter"
+    }
+  },
+  "accessibility": {
+    "skip_to_text": "Skip to content",
+    "main_nav": "Main navigation",
+    "footer_nav": "Footer navigation",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "sections": {
+    "cart": {
+      "title": "Cart",
+      "empty": "Your cart is empty.",
+      "continue": "Continue shopping",
+      "remove": "Remove",
+      "summary": "Summary",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "checkout": "Checkout",
+      "tax_note": "Shipping and taxes are calculated at checkout."
+    },
+    "collection": {
+      "empty": "No products here yet."
+    },
+    "sound": {
+      "mute": "Mute / unmute"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "added": "Added to cart",
+      "sold_out": "Sold out",
+      "unavailable": "This option is unavailable",
+      "saving": "off",
+      "media": "Image",
+      "reviews": "reviews",
+      "quantity": "Quantity",
+      "decrease": "Decrease",
+      "increase": "Increase",
+      "see_set": "— see this set"
+    }
+  },
+  "newsletter": {
+    "email": "Email"
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Your gift card",
+      "shop_link": "Start shopping"
+    }
+  },
+  "customer": {
+    "login": {
+      "title": "Log in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Log in"
+    },
+    "register": {
+      "title": "Create account",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "submit": "Create account"
+    },
+    "account": {
+      "title": "My account",
+      "logout": "Log out"
+    },
+    "orders": {
+      "none": "You have no orders yet."
+    },
+    "addresses": {
+      "title": "Addresses",
+      "none": "No saved addresses."
+    },
+    "reset_password": {
+      "title": "Reset password",
+      "confirm": "Confirm password",
+      "submit": "Save password"
+    },
+    "activate_account": {
+      "title": "Activate account",
+      "submit": "Activate",
+      "decline": "Decline"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{%- comment -%}
+  The SKU grid — ported from ProductTiltGrid in lib/product-story-fx.tsx
+  (cards fan in on scroll with a back.out settle). Unlike the React build this
+  reads real Shopify products from a collection, so prices, badges and
+  availability come from the store rather than a hardcoded array.
+{%- endcomment -%}
+
+{%- assign coll = collections[section.settings.collection] -%}
+
+<section class="w-paper w-section" data-tilt-grid>
+  <div class="w-wrap">
+    <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+    <h2 class="w-h2" style="max-width:20ch">{{ section.settings.heading }}</h2>
+
+    <div class="ptg">
+      {%- for product in coll.products limit: section.settings.limit -%}
+        <a class="ptg-card" href="{{ product.url }}">
+          <div class="ptg-card__img">
+            {%- if product.featured_media -%}
+              <img src="{{ product.featured_media | image_url: width: 1200 }}"
+                   srcset="{{ product.featured_media | image_url: width: 600 }} 600w,
+                           {{ product.featured_media | image_url: width: 1200 }} 1200w,
+                           {{ product.featured_media | image_url: width: 1800 }} 1800w"
+                   sizes="(min-width: 768px) 600px, 100vw"
+                   width="{{ product.featured_media.width }}" height="{{ product.featured_media.height }}"
+                   alt="{{ product.featured_media.alt | default: product.title | escape }}" loading="lazy">
+            {%- endif -%}
+            {%- if product.compare_at_price > product.price -%}
+              {%- assign saving = product.compare_at_price | minus: product.price -%}
+              <span class="w-badge">{{ saving | money }} {{ 'products.product.saving' | t }}</span>
+            {%- endif -%}
+          </div>
+          <div class="ptg-card__body">
+            <div class="ptg-card__row">
+              <h3>{{ product.title }}</h3>
+              <span>{{ product.price | money }}</span>
+            </div>
+            {%- if product.metafields.wango.subtitle != blank -%}
+              <p class="ptg-card__sub">{{ product.metafields.wango.subtitle }}</p>
+            {%- else -%}
+              <p class="ptg-card__sub">{{ product.description | strip_html | truncate: 60 }}</p>
+            {%- endif -%}
+            <span class="ptg-card__more">{{ section.settings.cta_label }} <i aria-hidden="true">&rarr;</i></span>
+          </div>
+        </a>
+      {%- else -%}
+        <p class="w-lede">{{ 'sections.collection.empty' | t }}</p>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · set ızgarası",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Koleksiyon" },
+    { "type": "range", "id": "limit", "min": 2, "max": 8, "step": 1, "default": 2, "label": "Ürün sayısı" },
+    { "type": "text", "id": "eyebrow", "default": "Setini seç", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "İki seçenek. Fazlası gereksiz.", "label": "Başlık" },
+    { "type": "text", "id": "cta_label", "default": "İncele", "label": "Kart bağlantı yazısı" }
+  ],
+  "presets": [{ "name": "Ürün · set ızgarası" }]
+}
+{% endschema %}

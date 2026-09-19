@@ -1,0 +1,56 @@
+{%- comment -%}Spec table on the warm paper ground — scroll relief between two black sections.{%- endcomment -%}
+<section class="w-paper w-section">
+  <div class="w-wrap">
+    <div class="w-specs__grid">
+      <div class="w-reveal">
+        <span class="w-specs__tag">{{ section.settings.tag }}</span>
+        <h2>{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.body }}</p>
+      </div>
+
+      <div class="w-reveal" data-reveal-delay="0.1">
+        <div class="w-bezel w-bezel--light">
+          <dl class="w-specs__table">
+            {%- for block in section.blocks -%}
+              <div {{ block.shopify_attributes }}>
+                <dt>{{ block.settings.key }}</dt>
+                <dd>{{ block.settings.value }}</dd>
+              </div>
+            {%- endfor -%}
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · teknik",
+  "max_blocks": 16,
+  "settings": [
+    { "type": "text", "id": "tag", "default": "Teknik", "label": "Etiket" },
+    { "type": "text", "id": "heading", "default": "Rakam olarak da iyi.", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "default": "Sessiz görünmesi, sessiz çalışmasından. Her satır ölçülmüş değer.", "label": "Metin" }
+  ],
+  "blocks": [
+    { "type": "spec", "name": "Satır", "settings": [
+      { "type": "text", "id": "key", "label": "Başlık" },
+      { "type": "text", "id": "value", "label": "Değer" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · teknik",
+    "blocks": [
+      { "type": "spec", "settings": { "key": "Sürücü", "value": "10 mm dinamik, mat sedef diyafram" } },
+      { "type": "spec", "settings": { "key": "Gürültü filtresi", "value": "Hibrit ANC · 3 kademe" } },
+      { "type": "spec", "settings": { "key": "Pil", "value": "7 sa tıkaç · 28 sa kutuyla" } },
+      { "type": "spec", "settings": { "key": "Şarj", "value": "USB-C · 10 dk = 2 sa" } },
+      { "type": "spec", "settings": { "key": "Bağlantı", "value": "Bluetooth 5.4 · çoklu cihaz" } },
+      { "type": "spec", "settings": { "key": "Dayanıklılık", "value": "IPX5 tere ve yağmura karşı" } },
+      { "type": "spec", "settings": { "key": "Kutu", "value": "44 mm çap · 20 mm kalınlık · 41 g" } },
+      { "type": "spec", "settings": { "key": "Kutuda", "value": "3 boy silikon uç, USB-C kablo, bileklik" } }
+    ]
+  }]
+}
+{% endschema %}
