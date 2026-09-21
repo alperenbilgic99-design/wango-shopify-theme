@@ -313,14 +313,20 @@
 
 /* ── exploded view ──────────────────────────────────────────────────────── */
 .w-explode-outer { position: relative; height: 320vh; width: 100%; background: var(--w-black); }
-.w-explode { position: sticky; top: 0; display: flex; height: 100vh; width: 100%; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding-inline: 1.5rem; }
-.w-explode__head { pointer-events: none; position: absolute; inset-inline: 0; top: 15%; z-index: 10; text-align: center; }
-.w-explode__head h2 { margin-top: 1rem; font-family: var(--font-brand); font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 600; line-height: 1.1; letter-spacing: -.02em; color: var(--w-white); }
-.w-explode video, .w-explode img.w-explode__still { position: relative; z-index: 0; width: 100%; max-width: 680px; }
-.w-explode__callouts { pointer-events: none; position: absolute; inset-inline: 0; bottom: 10%; z-index: 10; margin-inline: auto; display: flex; width: 100%; max-width: 560px; justify-content: center; gap: 2.5rem; padding-inline: 1.5rem; text-align: center; }
-.w-explode__callouts h3 { font-family: var(--font-brand); font-size: 1.05rem; font-weight: 600; color: var(--w-white); }
-.w-explode__callouts p { margin-top: .375rem; font-size: .85rem; line-height: 1.6; color: var(--w-muted); }
-.w-explode__callouts > div { max-width: 220px; }
+.w-explode { position: sticky; top: 0; display: flex; height: 100vh; width: 100%; align-items: center; justify-content: center; overflow: hidden; padding: 5.5rem 1.5rem 2rem; }
+.w-explode__inner { display: grid; width: 100%; max-width: var(--w-max); grid-template-columns: 1fr; align-items: center; gap: 2rem; }
+@media (min-width: 900px) { .w-explode__inner { grid-template-columns: 1fr 1fr; align-items: stretch; gap: 4rem; } }
+.w-explode__text { display: flex; flex-direction: column; justify-content: center; text-align: left; }
+.w-explode__text h2 { margin-top: 1rem; max-width: 14ch; font-family: var(--font-brand); font-size: clamp(2rem, 4.2vw, 3.4rem); font-weight: 600; line-height: 1.06; letter-spacing: -.025em; color: var(--w-white); }
+.w-explode__callouts { margin-top: 2.25rem; display: grid; gap: 1.5rem; }
+.w-explode__callouts > div { max-width: 44ch; border-top: 1px solid var(--w-line); padding-top: 1.1rem; }
+.w-explode__callouts h3 { font-family: var(--font-brand); font-size: 1.1rem; font-weight: 600; color: var(--w-white); }
+.w-explode__callouts p { margin-top: .375rem; font-size: .9rem; line-height: 1.6; color: var(--w-muted); }
+/* White card. The video's own ground is pure #fff, so multiply blending makes the
+   clip and the card one continuous surface with no seam or keyed fringe. */
+.w-explode__card { display: grid; place-items: center; overflow: hidden; border-radius: 2rem; background: #fff; padding: clamp(.75rem, 2vw, 1.5rem);
+  box-shadow: 0 40px 90px -40px rgba(106, 66, 168, .55), 0 0 0 1px rgba(255, 255, 255, .08); }
+.w-explode__card video, .w-explode__card img { display: block; width: 100%; height: auto; aspect-ratio: 1128 / 640; object-fit: contain; mix-blend-mode: multiply; }
 
 /* ── sound filter ───────────────────────────────────────────────────────── */
 .w-sound { position: relative; min-height: 100vh; width: 100%; overflow: hidden; background: #000; }

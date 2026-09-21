@@ -61,7 +61,7 @@
     var url = pick ? pick.src : video.currentSrc || video.src;
     if (!url) return Promise.resolve();
     return W.blobUrl(url).then(function (u) {
-      if (u === url) return;                       /* fetch failed: keep the CDN sources */
+      if (u === url) { video.preload = "auto"; video.load(); return; }   /* fetch failed: play from the CDN sources */
       srcs.forEach(function (s) { s.remove(); });
       video.src = u; video.load();
     });

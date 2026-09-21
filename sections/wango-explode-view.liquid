@@ -5,31 +5,35 @@
   backwards) as the visitor scrolls. The first ~70% of the scroll drives the
   explode; the callouts only appear once it is mostly open.
 
-  The alpha WebM lets the case float on the page's own black ground; a plain
-  black-background MP4 rides along for browsers without VP9-alpha decoding.
+  The clip is the generator's raw white-ground render, cropped tight and
+  encoded all-intra (every frame a keyframe) so scrubbing never has to decode a
+  run of frames. It sits in a white card, so there is no keyed edge to fringe.
 {%- endcomment -%}
 
 <div class="w-explode-outer" data-explode>
   <div class="w-explode">
-    <div class="w-explode__head">
-      <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
-      <h2>{{ section.settings.heading }}</h2>
-    </div>
+    <div class="w-explode__inner">
+      <div class="w-explode__text">
+        <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+        <h2>{{ section.settings.heading }}</h2>
 
-    {% render 'wango-video',
-       webm_url: section.settings.webm_url,
-       mp4_url: section.settings.mp4_url,
-       poster: 'wp-disc-macro.jpg',
-       label: section.settings.video_label,
-       attrs: 'muted playsinline preload="auto"' %}
-
-    <div class="w-explode__callouts">
-      {%- for block in section.blocks -%}
-        <div data-explode-callout {{ block.shopify_attributes }}>
-          <h3>{{ block.settings.title }}</h3>
-          <p>{{ block.settings.body }}</p>
+        <div class="w-explode__callouts">
+          {%- for block in section.blocks -%}
+            <div data-explode-callout {{ block.shopify_attributes }}>
+              <h3>{{ block.settings.title }}</h3>
+              <p>{{ block.settings.body }}</p>
+            </div>
+          {%- endfor -%}
         </div>
-      {%- endfor -%}
+      </div>
+
+      <div class="w-explode__card">
+        {% render 'wango-video',
+           mp4_url: section.settings.video_url,
+           poster: 'ws-explode-poster.jpg',
+           label: section.settings.video_label,
+           attrs: 'muted playsinline preload="none"' %}
+      </div>
     </div>
   </div>
 </div>
@@ -39,8 +43,7 @@
   "name": "Ürün · patlatma görünümü",
   "max_blocks": 3,
   "settings": [
-    { "type": "url", "id": "webm_url", "label": "WebM URL'si (alfa kanallı)" },
-    { "type": "url", "id": "mp4_url", "label": "MP4 URL'si (yedek)" },
+    { "type": "url", "id": "video_url", "label": "Video URL'si", "info": "Beyaz zeminli, her karesi anahtar kare olan MP4 (extras/media/wango-explode-white.mp4). Ayarlar → Dosyalar'a yükleyip CDN bağlantısını yapıştır." },
     { "type": "text", "id": "video_label", "default": "wango Origin parçalarına ayrılıyor", "label": "Video açıklaması" },
     { "type": "text", "id": "eyebrow", "default": "İçini gör", "label": "Üst etiket" },
     { "type": "text", "id": "heading", "default": "Her parça, bir amaç için.", "label": "Başlık" }

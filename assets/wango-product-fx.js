@@ -74,6 +74,7 @@
       // every callout rather than never revealing them.
       video.pause();
       video.addEventListener("loadedmetadata", function () { video.currentTime = video.duration || 0; }, { once: true });
+      video.preload = "auto"; video.load();
       callouts.forEach(function (el) { el.style.opacity = 1; el.style.transform = "none"; });
       return;
     }
@@ -88,7 +89,10 @@
     var ready = video.readyState >= 1, target = 0;
     video.addEventListener("loadedmetadata", function () { ready = true; });
     if (window.Wango && Wango.videoFromBlob) Wango.videoFromBlob(video);
-    gsap.set(callouts, { opacity: 0, y: 24 });
+    /* Dimmed, not hidden: the text column keeps its full height from the first
+       frame, so it stays balanced against the card instead of the heading
+       floating alone at the top. */
+    gsap.set(callouts, { opacity: 0.22, y: 12 });
     /* One seek in flight at a time, started from the ticker: a seek per scroll
        event cancelled the previous one before a frame landed. */
     gsap.ticker.add(function () {
@@ -106,9 +110,13 @@
         if (ready && video.duration) {
           target = gsap.utils.clamp(0, 1, p / 0.62) * video.duration;
         }
+        // The callouts light up over the same 0-62% range as the explode, one
+        // after another with a slight overlap: the first starts the instant the
+        // shell starts to open, the last finishes as it finishes opening.
+        var seg = 0.62 / callouts.length;
         callouts.forEach(function (el, i) {
-          var inAmt = gsap.utils.clamp(0, 1, (p - (0.66 + i * 0.15)) / 0.16);
-          gsap.set(el, { opacity: inAmt, y: 24 * (1 - inAmt) });
+          var inAmt = gsap.utils.clamp(0, 1, (p - i * seg * 0.8) / (seg * 1.2));
+          gsap.set(el, { opacity: 0.22 + 0.78 * inAmt, y: 12 * (1 - inAmt) });
         });
       }
     });
