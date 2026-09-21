@@ -128,8 +128,8 @@
     host.appendChild(cPhoto);
     host.appendChild(cArt);
 
-    var glArt = WangoGL.quad(cArt, { frag: FRAG_TOP });
-    var glPhoto = WangoGL.quad(cPhoto, { frag: FRAG_BOTTOM });
+    var glArt = WangoGL.quad(cArt, { frag: FRAG_TOP, maxDpr: 1 });
+    var glPhoto = WangoGL.quad(cPhoto, { frag: FRAG_BOTTOM, maxDpr: 1 });
     if (!glArt || !glPhoto) { fallback.style.opacity = 1; copy.style.opacity = 1; copy.style.transform = "none"; return; }
 
     glArt.set("uCenter", [0.5, 0.5]);
@@ -256,7 +256,7 @@
     mctx.fillStyle = "#000"; mctx.fillRect(0, 0, MW, MH);
     mctx.fillStyle = "#fff";
     mctx.textAlign = "center"; mctx.textBaseline = "middle";
-    mctx.font = '900 170px Quicksand, ui-rounded, system-ui, sans-serif';
+    mctx.font = '900 170px ui-rounded, system-ui, sans-serif';
     mctx.fillText("wango", MW / 2, MH / 2 + 8);
 
     var data = mctx.getImageData(0, 0, MW, MH).data;
@@ -283,7 +283,7 @@
 
     var canvas = document.createElement("canvas");
     host.appendChild(canvas);
-    var gl = WangoGL.quad(canvas, { frag: FRAG_WORDMARK });
+    var gl = WangoGL.quad(canvas, { frag: FRAG_WORDMARK, maxDpr: 1 });
     if (!gl) return showStatic();
 
     gl.set("uMaskTex", { texture: maskCanvas });
@@ -298,7 +298,6 @@
     gl.set("uProgress", 0);
 
     var videoEl = document.createElement("video");
-    videoEl.src = videoSrc;
     videoEl.muted = true; videoEl.playsInline = true; videoEl.preload = "auto";
     videoEl.loop = true; videoEl.crossOrigin = "anonymous";
 
@@ -311,7 +310,8 @@
       textured = true;
       applyZoom(st ? st.progress : 0);
     }, { once: true });
-    videoEl.load();
+    /* Scrubbed hard, so it is served from memory (see Wango.blobUrl). */
+    W.blobUrl(videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
 
     function applyZoom(p) {
       var t = Math.min(Math.max(p, 0), 1);
@@ -335,11 +335,14 @@
       /* Scrub is eased inside the rAF loop rather than applied straight off
          mousemove: a big pointer jump then plays out as a continuous glide
          instead of one hard seek that paints a frame and stalls. */
-      if (durationKnown && videoEl.readyState >= 2) {
+      /* Draw first (uploads the frame the last seek produced), then start the
+         next seek, and only when none is still in flight: re-seeking every
+         frame cancelled each seek before it landed. */
+      if (textured) gl.render();
+      if (durationKnown && !videoEl.seeking && videoEl.readyState >= 2) {
         var cur = videoEl.currentTime, d = targetTime - cur;
         if (Math.abs(d) > 0.0015) videoEl.currentTime = cur + d * 0.22;
       }
-      if (textured) gl.render();
       requestAnimationFrame(tick);
     })();
 

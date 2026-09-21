@@ -2,7 +2,7 @@
   "type": "header",
   "name": "Başlık",
   "sections": {
-    "header": { "type": "header", "settings": { "cta_label": "Satın al" } }
+    "header": { "type": "header", "settings": { "menu": "wango-origin-ust", "overlay_menu": "wango-origin-acilir", "cta_label": "Satın al", "cta_url": "shopify://collections/all" } }
   },
   "order": ["header"]
 }

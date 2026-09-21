@@ -49,9 +49,16 @@
     if (!window.ScrollTrigger) return;
 
     video.pause();
-    var ready = false;
+    var ready = false, target = 0;
     video.addEventListener("loadedmetadata", function () { ready = true; });
+    if (window.Wango && Wango.videoFromBlob) Wango.videoFromBlob(video);
     gsap.set(callouts, { opacity: 0, y: 24 });
+    /* One seek in flight at a time, started from the ticker: a seek per scroll
+       event cancelled the previous one before a frame landed. */
+    gsap.ticker.add(function () {
+      if (!ready || !video.duration || video.seeking) return;
+      if (Math.abs(video.currentTime - target) > 0.01) video.currentTime = target;
+    });
 
     ScrollTrigger.create({
       trigger: outer, start: "top top", end: "bottom bottom", scrub: 1,
@@ -60,8 +67,7 @@
         // The first ~70% drives the explode; the callouts arrive after, one
         // at a time, so they label the parts instead of competing with them.
         if (ready && video.duration) {
-          var t = gsap.utils.clamp(0, 1, p / 0.7) * video.duration;
-          if (Math.abs(video.currentTime - t) > 0.02) video.currentTime = t;
+          target = gsap.utils.clamp(0, 1, p / 0.7) * video.duration;
         }
         callouts.forEach(function (el, i) {
           var inAmt = gsap.utils.clamp(0, 1, (p - (0.72 + i * 0.1)) / 0.12);

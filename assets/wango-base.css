@@ -74,7 +74,7 @@ ul, ol { padding: 0; list-style: none; }
 }
 
 /* ── layout helpers ─────────────────────────────────────────────────────── */
-.w-wrap { margin-inline: auto; max-width: var(--w-max); padding-inline: 1.5rem; }
+.w-wrap { margin-inline: auto; max-width: calc(var(--w-max) + 3rem); padding-inline: 1.5rem; }
 .w-section { padding-block: 6rem; }
 @media (min-width: 768px) { .w-section { padding-block: 7rem; } }
 

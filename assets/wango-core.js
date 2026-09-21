@@ -37,6 +37,36 @@
     }
   }
 
+  /* ── scrub-able video: serve it from memory, not the CDN ─────────────────
+     Every `currentTime = x` on a network-backed <video> is a seek that may need
+     a range request; on a CDN that is tens of ms, so a pointer- or scroll-driven
+     scrub crawls at a few frames a second (measured: ~0.5 texture uploads/s).
+     Fetching the file once into a blob URL turns every seek into a local read,
+     which is what the file-on-disk build did. Falls back to the plain URL. */
+  var blobCache = {};
+  W.blobUrl = function (url) {
+    if (!url || !window.fetch || !window.URL || !URL.createObjectURL) return Promise.resolve(url);
+    if (!blobCache[url]) {
+      blobCache[url] = fetch(url, { mode: "cors", credentials: "omit" })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); })
+        .then(function (b) { return URL.createObjectURL(b); })
+        .catch(function () { return url; });
+    }
+    return blobCache[url];
+  };
+  /** Points a <video> at the first playable <source>, but from memory. */
+  W.videoFromBlob = function (video) {
+    var srcs = [].slice.call(video.querySelectorAll("source"));
+    var pick = srcs.filter(function (s) { return s.src && video.canPlayType(s.type) !== ""; })[0] || srcs[0];
+    var url = pick ? pick.src : video.currentSrc || video.src;
+    if (!url) return Promise.resolve();
+    return W.blobUrl(url).then(function (u) {
+      if (u === url) return;                       /* fetch failed: keep the CDN sources */
+      srcs.forEach(function (s) { s.remove(); });
+      video.src = u; video.load();
+    });
+  };
+
   /** Scrolls to an element through Lenis when it is running, natively otherwise. */
   W.scrollTo = function (el) {
     if (!el) return;
@@ -128,7 +158,18 @@
   function initHeader() {
     var header = document.querySelector("[data-header]");
     if (!header) return;
-    var onScroll = function () { header.classList.toggle("is-scrolled", window.scrollY > 40); };
+    /* Sections marked data-header-tone="light" flip the bar to dark type while
+       they sit under it (probe a point just inside the bar's vertical middle),
+       otherwise it is white-on-white. */
+    var onScroll = function () {
+      header.classList.toggle("is-scrolled", window.scrollY > 40);
+      var under = false, y = 30;
+      document.querySelectorAll('[data-header-tone="light"]').forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top <= y && r.bottom >= y) under = true;
+      });
+      header.classList.toggle("is-light", under);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 

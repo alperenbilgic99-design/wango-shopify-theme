@@ -2,7 +2,9 @@
   "sections": {
     "boxhero": {
       "type": "wango-box-reveal-hero",
-      "settings": {}
+      "settings": {
+        "video_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/wango-reveal-raw-1080p.mp4?v=1789826658"
+      }
     },
     "grid": {
       "type": "wango-product-grid",
@@ -12,6 +14,10 @@
     },
     "explode": {
       "type": "wango-explode-view",
+      "settings": {
+        "webm_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/wango-explode-alpha.webm?v=1789826654",
+        "mp4_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/wango-explode-black-720p.mp4?v=1789826656"
+      },
       "blocks": {
         "e1": {
           "type": "callout",
@@ -35,6 +41,9 @@
     },
     "sound": {
       "type": "wango-sound-filter",
+      "settings": {
+        "audio_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/pub-ambience.mp3?v=1789826652"
+      },
       "blocks": {
         "n1": {
           "type": "note",

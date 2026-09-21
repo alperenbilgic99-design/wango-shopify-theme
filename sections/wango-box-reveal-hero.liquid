@@ -6,7 +6,7 @@
   nothing ever snaps.
 {%- endcomment -%}
 
-<section class="w-boxhero" data-boxhero>
+<section class="w-boxhero" data-boxhero data-header-tone="light">
   <div class="w-boxhero__wrap" data-boxhero-wrap>
     <div class="w-boxhero__text">
       <h1>{{ section.settings.heading }} <em>{{ section.settings.heading_accent }}</em></h1>
@@ -21,7 +21,7 @@
       <div>
         {% render 'wango-video',
            mp4_url: section.settings.video_url,
-           poster: 'wp-case-open-seated.jpg',
+           poster: 'ws-reveal-poster.jpg',
            label: section.settings.video_label,
            attrs: 'autoplay muted loop playsinline preload="auto"' %}
       </div>
@@ -33,7 +33,7 @@
 {
   "name": "Ürün · kutu açılışı",
   "settings": [
-    { "type": "url", "id": "video_url", "label": "Video URL'si", "info": "Ayarlar → Dosyalar'a yükleyip CDN bağlantısını yapıştır." },
+    { "type": "url", "id": "video_url", "label": "Video URL'si", "info": "Üretimden çıkan ham video (wango-reveal-full-16s.mp4, beyaz zeminli). Ayarlar → Dosyalar'a yükleyip CDN bağlantısını yapıştır." },
     { "type": "text", "id": "video_label", "default": "wango Origin kutusu açılıyor, tıkaçlar yükseliyor", "label": "Video açıklaması" },
     { "type": "text", "id": "heading", "default": "wango", "label": "Başlık" },
     { "type": "text", "id": "heading_accent", "default": "origin", "label": "Başlık (vurgulu)" },

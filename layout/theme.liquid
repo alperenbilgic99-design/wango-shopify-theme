@@ -24,11 +24,13 @@
 
     {% render 'meta-tags' %}
 
-    {# Quicksand matches the rounded geometric `wango` wordmark on the product
+    {%- comment -%}
+       Quicksand matches the rounded geometric `wango` wordmark on the product
        itself; Bricolage carries the few big display headlines; Hanken is body.
        Loaded from Google rather than packaged, so the exact same faces as the
        React build render — swapping in Shopify's font_picker would change the
-       brand mark. #}
+       brand mark.
+    {%- endcomment -%}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap">

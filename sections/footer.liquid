@@ -1,11 +1,12 @@
-{%- comment -%}Ported from the shared footer on every Next.js page.{%- endcomment -%}
+{%- comment -%}Ported from the shared footer on every Next.js page (app/page.tsx).{%- endcomment -%}
 <footer class="w-footer">
   <div class="w-footer__inner">
     <div>
       <div class="w-wordmark" style="font-size:1.3rem;color:var(--w-white)">wang<i>o</i></div>
-      {%- if section.settings.blurb != blank -%}
-        <p style="margin-top:.5rem;max-width:46ch">{{ section.settings.blurb }}</p>
-      {%- endif -%}
+      <p style="margin-top:.5rem;max-width:46ch">
+        {{ section.settings.blurb }}
+        {%- if section.settings.products_url != blank %} <a class="w-footer__link" href="{{ section.settings.products_url }}">{{ section.settings.products_label }}</a>.{%- endif -%}
+      </p>
       {%- if section.settings.newsletter_url != blank -%}
         <p style="margin-top:.75rem">
           <a class="w-footer__link" href="{{ section.settings.newsletter_url }}">{{ section.settings.newsletter_label }}</a>
@@ -21,7 +22,9 @@
       </nav>
     {%- endif -%}
 
-    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</p>
+    {%- if section.settings.credit != blank -%}
+      <p style="font-size:.8rem">{{ section.settings.credit }}{% if section.settings.credit_code != blank %} <code class="w-footer__code">{{ section.settings.credit_code }}</code>{% endif %}</p>
+    {%- endif -%}
   </div>
 </footer>
 
@@ -29,10 +32,14 @@
 {
   "name": "Alt bilgi",
   "settings": [
-    { "type": "text", "id": "blurb", "default": "Modern çağın analog filtresi · seçici kulaklar", "label": "Kısa metin" },
-    { "type": "link_list", "id": "menu", "default": "footer", "label": "Alt menü" },
+    { "type": "text", "id": "blurb", "default": "Origin — marka hikâyesi. Setler ve satın alma", "label": "Kısa metin" },
+    { "type": "text", "id": "products_label", "default": "ürün sayfasında", "label": "Ürün bağlantısı yazısı" },
+    { "type": "url", "id": "products_url", "label": "Ürün bağlantısı" },
     { "type": "text", "id": "newsletter_label", "default": "Bültene kaydol", "label": "Bülten bağlantı yazısı" },
-    { "type": "url", "id": "newsletter_url", "label": "Bülten bağlantısı" }
+    { "type": "url", "id": "newsletter_url", "label": "Bülten bağlantısı" },
+    { "type": "link_list", "id": "menu", "label": "Alt menü (isteğe bağlı)" },
+    { "type": "text", "id": "credit", "label": "Sağ alt not", "info": "Orijinal sitedeki geliştirici notu. Yayına almadan önce boşaltın." },
+    { "type": "text", "id": "credit_code", "label": "Sağ alt not · kod etiketi" }
   ]
 }
 {% endschema %}

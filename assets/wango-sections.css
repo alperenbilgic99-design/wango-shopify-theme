@@ -5,7 +5,8 @@
    ========================================================================== */
 
 /* ── header ─────────────────────────────────────────────────────────────── */
-.w-header { position: sticky; top: 0; z-index: 50; width: 100%; min-height: var(--w-header-h); padding-block: 2px; }
+.shopify-section-group-header-group { position: sticky; top: 0; z-index: 50; }
+.w-header { position: relative; width: 100%; min-height: var(--w-header-h); padding-block: 2px; }
 .w-header__inner { position: relative; margin-inline: auto; max-width: var(--w-max); display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.5rem 1.5rem; }
 .w-header__glass {
   position: absolute; inset: 0 0.5rem; border-radius: 0.75rem;
@@ -22,7 +23,7 @@
 @media (min-width: 900px) { .w-header__nav { display: flex; } }
 @media (min-width: 1024px) { .w-header__nav { gap: 2rem; } }
 .w-header__link { position: relative; font-size: 0.93rem; font-weight: 500; color: var(--w-muted); transition: color .3s; }
-.w-header__link:hover, .w-header__link[aria-current="page"] { color: var(--w-white); }
+.w-header__link:hover { color: var(--w-white); }
 .w-header__link::after { content: ""; position: absolute; left: 0; bottom: -6px; height: 1px; width: 0; background: var(--w-accent); transition: width .4s; }
 .w-header__link:hover::after { width: 100%; }
 .w-cart-pill {
@@ -65,7 +66,7 @@
 .w-nav__foot div { display: flex; gap: 1.25rem; }
 
 /* ── 1 · Origin hero (WebGL dissolve) ───────────────────────────────────── */
-.w-origin { position: relative; min-height: 100svh; width: 100%; overflow: hidden; background: var(--w-black); margin-top: calc(-1 * var(--w-header-h)); }
+.w-origin { position: relative; min-height: 100svh; width: 100%; overflow: hidden; background: var(--w-black); margin-top: -86px; }
 .w-origin__host { position: absolute; inset: 0; }
 .w-origin__host canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .w-origin__fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
@@ -76,8 +77,9 @@
   opacity: 0; transform: translateY(10px); }
 .w-origin__caption p { max-width: 30ch; font-family: var(--font-brand); font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 500; line-height: 1.3; color: var(--w-white); }
 .w-origin__copy { position: absolute; inset-inline: 0; top: 23%; z-index: 10;
-  display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding-inline: 1.5rem; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0; padding-inline: 1.5rem; text-align: center;
   opacity: 0; transform: translateY(24px); }
+@media (min-width: 640px) { .w-origin__copy { padding-inline: 2.5rem; } }
 .w-origin__copy h1 {
   font-family: var(--font-display); font-size: clamp(2.6rem, 8vw, 5.4rem);
   font-weight: 700; text-transform: uppercase; line-height: .95; letter-spacing: .01em; color: var(--w-white);
@@ -109,6 +111,7 @@
 .w-wordmark-copy .w-btn { padding: .75rem 1.5rem; font-size: .85rem; }
 .w-wordmark-copy .w-btn--ghost { border-color: rgba(246,245,243,.5); backdrop-filter: blur(2px); }
 .w-wordmark-continue { background: var(--w-black); padding: 7rem 1.5rem; }
+@media (min-width: 768px) { .w-wordmark-continue { padding-block: 8rem; } }
 .w-wordmark-continue > div { margin-inline: auto; max-width: 720px; text-align: center; opacity: 0; }
 .w-wordmark-continue h2 { margin-top: 1.25rem; font-family: var(--font-brand); font-size: clamp(1.9rem, 4.2vw, 3rem); font-weight: 600; line-height: 1.12; letter-spacing: -.02em; text-wrap: balance; color: var(--w-white); }
 .w-wordmark-continue p { margin: 1.25rem auto 0; max-width: 52ch; color: var(--w-muted); }
@@ -128,7 +131,7 @@
 /* ── 4 · transition story (displacement crossfade) ──────────────────────── */
 .w-transition { position: relative; margin: 2.5rem auto 0; max-width: var(--w-max); }
 .w-xfade { position: relative; width: 100%; }
-.w-xfade__sticky { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; background: var(--w-black); border-radius: 2rem; }
+.w-xfade__sticky { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; background: var(--w-black); }
 .w-xfade__sticky canvas, .w-xfade__sticky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .w-transition__captions { pointer-events: none; margin-top: 2rem; display: grid; gap: 2rem; }
 @media (min-width: 640px) { .w-transition__captions { grid-template-columns: 1fr 1fr; } }
@@ -203,10 +206,10 @@
 .w-scenes__tabs button:hover { border-color: var(--w-accent); }
 .w-scenes__tabs button[aria-selected="true"] { border-color: var(--w-white); background: var(--w-white); color: var(--w-black); }
 .w-scenes__viewport { margin-top: 2.5rem; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch;
-  padding-inline: 1.5rem; }
-@media (min-width: 1240px) { .w-scenes__viewport { padding-inline: max(1.5rem, calc((100vw - var(--w-max)) / 2)); } }
+  --pad: 1.5rem; padding-inline: var(--pad); scroll-padding-inline: calc(var(--pad) - 1.25rem); }
+@media (min-width: 768px) { .w-scenes__viewport { --pad: max(1.5rem, calc((100vw - var(--w-max)) / 2)); } }
 .w-scenes__viewport::-webkit-scrollbar { display: none; }
-.w-scenes__track { display: flex; }
+.w-scenes__track { display: flex; margin-left: -1.25rem; }
 .w-scenes__slide { flex: 0 0 88%; min-width: 0; padding-left: 1.25rem; scroll-snap-align: start; }
 @media (min-width: 768px) { .w-scenes__slide { flex-basis: 64%; } }
 @media (min-width: 1024px) { .w-scenes__slide { flex-basis: 56%; } }
@@ -234,33 +237,45 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ── box-reveal hero (/urun top) ────────────────────────────────────────── */
-/* ONE layer only: the background itself. A separate glow overlay on a flat
-   ground made a visible rectangular seam; a single gradient has no overlay
-   edge. Solid stops throughout — never the bare `transparent` keyword, which
-   resolves to rgba(0,0,0,0) and interpolates toward BLACK. */
+/* The generator's own footage, untouched: its studio ground is WHITE but not a
+   flat colour — measured over the border pixels of 32 sampled frames it starts
+   near (244,249,249) and drifts to about (247,251,252) late in the clip. No
+   single page colour matches a drifting ground, so the page ground is the
+   middle of that range (#F6FAFB) and the video is feathered generously on all
+   four sides (mask below): the ±3 that remains is spread over a gradient too
+   gentle to read as an edge. Solid colour stops only. */
 .w-boxhero {
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 100svh; overflow: hidden; padding: 6rem 1.5rem;
-  background: radial-gradient(130% 95% at 50% 112%, #3A1E6E 0%, #241145 34%, #120B22 64%, #0B0B0D 100%);
+  min-height: 100svh; overflow: hidden; padding: 9.75rem 1.5rem 6rem;
+  /* reach up under the sticky bar so the page's black ground never shows as a
+     strip above the light hero */
+  margin-top: calc(-1 * var(--w-header-h) - 4px);
+  background: linear-gradient(180deg, #F6FAFB 0%, #F6FAFB 82%, #F6F4F0 100%);
+  color: var(--w-ink);
 }
+@media (min-width: 768px) { .w-boxhero { padding-top: 10.75rem; padding-bottom: 7rem; } }
 .w-boxhero__wrap { position: relative; z-index: 10; margin-inline: auto; width: 100%; max-width: var(--w-max); display: flex; flex-direction: column; align-items: center; gap: 2.5rem; }
 @media (min-width: 768px) { .w-boxhero__wrap.is-split { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 4rem; } }
 .w-boxhero__text { text-align: center; }
 .w-boxhero__wrap.is-split .w-boxhero__text { order: 2; }
 .w-boxhero__wrap.is-split .w-boxhero__media { order: 1; }
-.w-boxhero h1 { font-family: var(--font-display); font-size: clamp(3rem, 6.4vw, 5.2rem); font-weight: 800; text-transform: lowercase; line-height: .95; letter-spacing: -.01em; color: var(--w-white); }
-.w-boxhero h1 em { font-style: normal; color: var(--w-accent); }
+.w-boxhero h1 { font-family: var(--font-display); font-size: clamp(3rem, 6.4vw, 5.2rem); font-weight: 800; text-transform: lowercase; line-height: .95; letter-spacing: -.01em; color: var(--w-ink); }
+.w-boxhero h1 em { font-style: normal; color: var(--w-purple); }
 .w-boxhero__lines { margin-top: 1.5rem; }
-.w-boxhero__lines p { font-family: var(--font-brand); font-size: clamp(1.3rem, 2.8vw, 1.7rem); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; color: var(--w-muted); }
-.w-boxhero__sub { margin-top: 1.5rem; max-width: 42ch; line-height: 1.6; color: var(--w-muted); }
+.w-boxhero__lines p { font-family: var(--font-brand); font-size: clamp(1.3rem, 2.8vw, 1.7rem); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; color: var(--w-ink-soft); }
+.w-boxhero__sub { margin-top: 1.5rem; max-width: 42ch; line-height: 1.6; color: var(--w-ink-soft); }
 .w-boxhero__media { width: 100%; }
 .w-boxhero__media > div { position: relative; margin-inline: auto; width: 100%; max-width: 640px; }
-/* The render's ground is a measured (8,8,10), not pure black, so `screen`
-   would lift the backdrop ~8 levels inside the video box — a faint rectangle.
-   `lighten` (per-channel max) is exact: every gradient stop above is brighter
-   than (8,8,10) in all three channels, so the ground resolves to the backdrop
-   pixel for pixel. */
-.w-boxhero__media video { width: 100%; height: auto; mix-blend-mode: lighten; }
+/* No blend mode, no keying: just the raw clip, feathered into the page ground.
+   The bottom feather also lets the case "sink out of frame and fade" (per the
+   prompt) instead of being sliced by a hard video edge. */
+.w-boxhero__media video, .w-boxhero__media img {
+  width: 100%; height: auto;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 80%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 80%, transparent);
+  -webkit-mask-composite: source-in;
+          mask-composite: intersect;
+}
 
 /* ── product tilt grid ──────────────────────────────────────────────────── */
 .ptg { display: grid; gap: 2rem; margin-top: 3rem; }
@@ -520,3 +535,17 @@
 @media (min-width: 640px) { .sl-orbit-item { width: 240px; height: 160px; } }
 .sl-orbit-frame { height: 100%; width: 100%; overflow: hidden; border-radius: .4rem; }
 .sl-orbit-frame img { height: 100%; width: 100%; object-fit: cover; transform: scale(1.12); }
+.w-footer__code { border-radius: .25rem; background: var(--w-purple); padding: .125rem .375rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; color: inherit; }
+
+/* ── header over a light section ([data-header-tone="light"]) ─────────────── */
+.w-header.is-light .w-header__logo { color: var(--w-ink); }
+.w-header.is-light .w-header__logo span { color: var(--w-purple) !important; }
+.w-header.is-light .w-header__link { color: var(--w-ink-soft); }
+.w-header.is-light .w-header__link:hover, .w-header.is-light .w-header__link[aria-current="page"] { color: var(--w-ink); }
+.w-header.is-light .w-cart-pill { color: var(--w-ink); border-color: rgba(20,18,26,.2); }
+.w-header.is-light .w-cart-pill:hover { border-color: var(--w-purple); }
+.w-header.is-light .w-btn--solid { background: var(--w-ink); color: var(--w-white); }
+.w-header.is-light .w-btn--solid:hover { background: var(--w-purple); }
+.w-header.is-light .w-burger { border-color: rgba(20,18,26,.2); }
+.w-header.is-light .w-burger span { background: var(--w-ink) !important; }
+.w-header.is-light.is-scrolled .w-header__glass { border-color: rgba(20,18,26,.1); background: rgba(255,255,255,.55); }

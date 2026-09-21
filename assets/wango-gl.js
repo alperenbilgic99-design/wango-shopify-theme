@@ -77,6 +77,20 @@
       return locs[name];
     }
 
+    /* Resolution cap. Callers pass the cap the React build used for that
+       effect (the hero and the wordmark never called setPixelRatio, i.e. 1x;
+       the rest used min(devicePixelRatio, 2)). On top of that the cap steps
+       down when frames run long, so a heavy full-screen shader on a Retina
+       panel degrades resolution instead of frame rate. */
+    var cap = opts.maxDpr || 2, lastW = 1, lastH = 1;
+    var visible = true, lastT = 0, ema = 16.7, samples = 0;
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (es) {
+        visible = es[es.length - 1].isIntersecting;
+        lastT = 0;                       /* a gap while hidden is not a slow frame */
+      }, { rootMargin: "120px" }).observe(canvas);
+    }
+
     var textures = {};   // name -> {tex, unit, source, dynamic}
     var nextUnit = 0;
     var values = {};
@@ -115,6 +129,15 @@
           t.dynamic = !!value.dynamic;
           upload(t.tex, value.texture);
         }
+        /* requestVideoFrameCallback fires once per frame the video actually
+           presents (including after a seek), so the texture is re-uploaded
+           only then instead of gating on readyState, which sits at 1 for the
+           whole of a seek and starved the upload. */
+        if (t.dynamic && !t.rvfc && t.source.requestVideoFrameCallback) {
+          t.rvfc = true; t.dirty = true;
+          var src = t.source;
+          (function again() { t.dirty = true; src.requestVideoFrameCallback(again); })();
+        }
         return;
       }
       gl.useProgram(prog);
@@ -130,13 +153,21 @@
     }
 
     function resize(w, h, dpr) {
-      var d = dpr || Math.min(window.devicePixelRatio || 1, 2);
+      lastW = w; lastH = h;
+      var d = dpr || Math.min(window.devicePixelRatio || 1, cap);
       canvas.width = Math.max(1, Math.round(w * d));
       canvas.height = Math.max(1, Math.round(h * d));
       gl.viewport(0, 0, canvas.width, canvas.height);
     }
 
     function render() {
+      if (!visible) return;              /* nothing to see: skip the draw */
+      var now = performance.now();
+      if (lastT) {
+        ema += (Math.min(now - lastT, 100) - ema) * 0.08;
+        if (++samples > 90 && ema > 21 && cap > 1) { cap = Math.max(1, cap - 0.5); samples = 0; ema = 16.7; resize(lastW, lastH); }
+      }
+      lastT = now;
       gl.useProgram(prog);
       var i = 0;
       for (var name in textures) {
@@ -145,7 +176,7 @@
         gl.bindTexture(gl.TEXTURE_2D, t.tex);
         // A <video> keeps producing new frames, so its texture is re-uploaded
         // every draw; still images are uploaded once.
-        if (t.dynamic && t.source && t.source.readyState >= 2) upload(t.tex, t.source);
+        if (t.dynamic && t.source && t.source.readyState >= 2 && (!t.rvfc || t.dirty)) { upload(t.tex, t.source); t.dirty = false; }
         var l = uloc(name);
         if (l !== null) gl.uniform1i(l, t.unit);
         i++;

@@ -2,7 +2,15 @@
   "type": "footer",
   "name": "Alt bilgi",
   "sections": {
-    "footer": { "type": "footer", "settings": {} }
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "products_url": "shopify://pages/wango-setler",
+        "newsletter_url": "shopify://pages/wango-bulten",
+        "credit": "Görseller: Gemini 3 Pro Image · ürün kilidi",
+        "credit_code": "product-spec/wango-visual-lock.md"
+      }
+    }
   },
   "order": ["footer"]
 }

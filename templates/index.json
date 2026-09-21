@@ -1,7 +1,7 @@
 {
   "sections": {
     "origin_hero":   { "type": "wango-origin-hero",      "settings": { "cta1_url": "shopify://collections/all", "cta2_url": "/#scenes" } },
-    "wordmark":      { "type": "wango-wordmark-reveal",  "settings": { "cta_url": "shopify://collections/all" } },
+    "wordmark":      { "type": "wango-wordmark-reveal",  "settings": { "cta_url": "shopify://collections/all", "video_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/hero-scrub.mp4?v=1789826650" } },
     "marquee":       { "type": "wango-drag-marquee",
       "blocks": {
         "s1": { "type": "slide", "settings": { "image_asset": "wp-real-sky-mirror.jpg",      "title": "SESSİZLİK" } },

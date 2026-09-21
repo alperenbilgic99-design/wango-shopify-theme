@@ -18,7 +18,7 @@ CDN bağlantıları tema düzenleyicideki ilgili ayara yapıştırılır:
 | Dosya | Bölüm | Ayar |
 |---|---|---|
 | `hero-scrub.mp4` | Origin · kelime maskesi | Video URL'si |
-| `wango-reveal-raw-1080p.mp4` | Ürün · kutu açılışı | Video URL'si |
+| `wango-reveal-full-16s.mp4` | Ürün · kutu açılışı | Video URL'si (üretimden çıkan ham video, beyaz zeminli) |
 | `wango-explode-alpha.webm` | Ürün · patlatılmış görünüm | WebM URL'si |
 | `wango-explode-black-720p.mp4` | Ürün · patlatılmış görünüm | MP4 URL'si |
 | `pub-ambience.mp3` | Ürün · gürültü filtresi | Ortam sesi URL'si |
