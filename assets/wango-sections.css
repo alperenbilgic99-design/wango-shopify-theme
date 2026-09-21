@@ -278,7 +278,7 @@
 .w-boxhero h1 em { font-style: normal; color: var(--w-purple); }
 .w-boxhero__lines { margin-top: 1.5rem; }
 .w-boxhero__lines p { font-family: var(--font-brand); font-size: clamp(1.3rem, 2.8vw, 1.7rem); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; color: var(--w-ink-soft); }
-.w-boxhero__sub { margin-top: 1.5rem; max-width: 42ch; line-height: 1.6; color: var(--w-ink-soft); }
+.w-boxhero__sub { margin: 1.5rem auto 0; max-width: 42ch; line-height: 1.6; text-align: center; color: var(--w-ink-soft); }
 .w-boxhero__media { width: 100%; }
 .w-boxhero__media > div { position: relative; margin-inline: auto; width: 100%; max-width: 640px; }
 /* No blend mode, no keying: just the raw clip, feathered into the page ground.
