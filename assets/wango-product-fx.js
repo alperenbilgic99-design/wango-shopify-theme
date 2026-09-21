@@ -80,7 +80,12 @@
     if (!window.ScrollTrigger) return;
 
     video.pause();
-    var ready = false, target = 0;
+    /* The metadata may ALREADY be loaded when this runs (cached clip, or a
+       blob fallback that kept the original source): `loadedmetadata` then
+       never fires again, and waiting for the event alone left the video on
+       frame 0 while the callouts animated — the explode "not following the
+       scroll". */
+    var ready = video.readyState >= 1, target = 0;
     video.addEventListener("loadedmetadata", function () { ready = true; });
     if (window.Wango && Wango.videoFromBlob) Wango.videoFromBlob(video);
     gsap.set(callouts, { opacity: 0, y: 24 });
@@ -92,16 +97,17 @@
     });
 
     ScrollTrigger.create({
-      trigger: outer, start: "top top", end: "bottom bottom", scrub: 1,
+      trigger: outer, start: "top top", end: "bottom bottom", scrub: true,
       onUpdate: function (self) {
         var p = self.progress;
-        // The first ~70% drives the explode; the callouts arrive after, one
-        // at a time, so they label the parts instead of competing with them.
+        // The first 62% drives the explode; the callouts then arrive one at a
+        // time, the last finishing at 97% — the animation ends when the scroll
+        // does, with no long finished-but-still-pinned tail.
         if (ready && video.duration) {
-          target = gsap.utils.clamp(0, 1, p / 0.7) * video.duration;
+          target = gsap.utils.clamp(0, 1, p / 0.62) * video.duration;
         }
         callouts.forEach(function (el, i) {
-          var inAmt = gsap.utils.clamp(0, 1, (p - (0.72 + i * 0.1)) / 0.12);
+          var inAmt = gsap.utils.clamp(0, 1, (p - (0.66 + i * 0.15)) / 0.16);
           gsap.set(el, { opacity: inAmt, y: 24 * (1 - inAmt) });
         });
       }
@@ -405,7 +411,11 @@
 
     /* Driven with gsap.set (no per-tick tween churn) so nothing snaps
        alignment mid-move. */
-    function choreo(p) {
+    /* Every beat is authored on a 0…1 track whose last one (the second
+       tooltip) ends at 0.94; rescaling by 1/0.97 completes the WHOLE
+       choreography at 97% of the pin. */
+    function choreo(raw) {
+      var p = Math.min(raw / 0.97, 1);
       var e = easeOut(clamp01((p - 0.04) / 0.16));
       gsap.set(header1, { yPercent: -64 * e, autoAlpha: 1 - e, filter: "blur(" + (5 * e).toFixed(2) + "px)" });
 
@@ -426,7 +436,13 @@
     choreo(0);
 
     ScrollTrigger.create({
-      trigger: outer, start: "top top", end: "bottom bottom", pin: false, scrub: 0.6,
+      trigger: outer, start: "top top",
+      /* The stage is 90vh (min 560px), not a full viewport, so it lets go of
+         the screen when the wrapper's bottom reaches the STAGE's bottom edge —
+         10vh before "bottom bottom". Ending there made the last tenth of the
+         choreography play while the stage was already scrolling away. */
+      end: function () { return "bottom top+=" + root.offsetHeight; },
+      invalidateOnRefresh: true, pin: false, scrub: true,
       onUpdate: function (self) { scrollP = self.progress; choreo(self.progress); }
     });
   }

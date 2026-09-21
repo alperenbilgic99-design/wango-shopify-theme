@@ -89,7 +89,7 @@
 .w-origin__cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
 
 /* ── 2 · wordmark video reveal ──────────────────────────────────────────── */
-.w-wordmark-outer { position: relative; height: 460vh; width: 100%; background: var(--w-black); }
+.w-wordmark-outer { position: relative; height: 400vh; width: 100%; background: var(--w-black); }
 .w-wordmark-sticky { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; background: var(--w-black); }
 .w-wordmark-sticky canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .w-wordmark-host { position: absolute; inset: 0; }
@@ -129,24 +129,39 @@
 .w-marquee__meta span { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .14em; color: var(--w-white); }
 
 /* ── 4 · transition story (displacement crossfade) ──────────────────────── */
-.w-transition { position: relative; margin: 2.5rem auto 0; max-width: var(--w-max); }
+.w-transition { position: relative; margin: 2.5rem auto 0; max-width: var(--w-max); padding-inline: 1.5rem; }
+/* The frame is sticky at 72px (clear of the header) with 24px under it; JS uses
+   the same two numbers for its ScrollTrigger range, so pin and progress agree. */
 .w-xfade { position: relative; width: 100%; }
-.w-xfade__sticky { position: sticky; top: 0; height: 100vh; width: 100%; overflow: hidden; background: var(--w-black); }
-.w-xfade__sticky canvas, .w-xfade__sticky img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.w-transition__captions { pointer-events: none; margin-top: 2rem; display: grid; gap: 2rem; }
-@media (min-width: 640px) { .w-transition__captions { grid-template-columns: 1fr 1fr; } }
+.w-xfade__sticky { position: sticky; top: 72px; height: calc(100svh - 96px); min-height: 480px; width: 100%; overflow: hidden; background: var(--w-black); border-radius: 2rem; }
+.w-xfade__sticky > canvas, .w-xfade__sticky > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Scrims: dark at both edges, clear in the middle so the picture still reads.
+   Explicit same-colour zero-alpha stops, never the bare `transparent` keyword. */
+.w-xfade__scrim { position: absolute; inset: 0; z-index: 10; pointer-events: none;
+  background: linear-gradient(180deg, rgba(11,11,13,.82) 0%, rgba(11,11,13,.5) 24%, rgba(11,11,13,0) 42%, rgba(11,11,13,0) 58%, rgba(11,11,13,.5) 76%, rgba(11,11,13,.82) 100%); }
 @media (min-width: 1024px) {
-  .w-transition__captions { position: absolute; inset-inline: 0; top: 50%; transform: translateY(-50%); margin-top: 0; gap: 0; padding-inline: 2rem; }
+  .w-xfade__scrim { background: linear-gradient(90deg, rgba(11,11,13,.8) 0%, rgba(11,11,13,.55) 22%, rgba(11,11,13,0) 46%, rgba(11,11,13,0) 54%, rgba(11,11,13,.55) 78%, rgba(11,11,13,.8) 100%); }
 }
-.w-caption { max-width: 30ch; }
-@media (min-width: 1024px) { .w-caption { max-width: 22ch; } }
-.w-caption--right { justify-self: end; text-align: right; margin-left: auto; }
-.w-caption h3 { margin-top: .75rem; font-family: var(--font-brand); font-size: 1.15rem; font-weight: 600; line-height: 1.2; letter-spacing: -.015em; color: var(--w-white); }
-.w-caption p { margin-top: .5rem; font-size: .88rem; line-height: 1.6; color: var(--w-muted); }
-.w-transition__dots { margin-top: 1.5rem; display: flex; align-items: center; justify-content: center; gap: .5rem; }
-@media (min-width: 1024px) { .w-transition__dots { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); margin-top: 0; } }
-.w-transition__dots i { display: block; height: 4px; width: 10px; border-radius: 999px; background: rgba(246,245,243,.25); transition: all .5s; }
-.w-transition__dots i.is-on { width: 28px; background: var(--w-accent); }
+/* Mirror-symmetric: equal width, equal inset from its own edge, one shared
+   vertical axis, identical eyebrow · title · body anatomy. On < lg the two
+   slots become the top and bottom bands. Captions stack in the same two
+   slots; JS drives each one's opacity from the same scroll position the
+   shader uses. */
+.w-xfade__captions { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+.w-caption { position: absolute; width: min(30rem, 84%); left: 50%; transform: translateX(-50%); text-align: center; opacity: 0; visibility: hidden; }
+.w-caption--left  { top: 9%; }
+.w-caption--right { bottom: 13%; }
+@media (min-width: 1024px) {
+  .w-caption { width: min(22rem, 34%); top: 50%; bottom: auto; left: auto; transform: translateY(-50%); }
+  .w-caption--left  { left: 6%;  text-align: left; }
+  .w-caption--right { right: 6%; text-align: right; }
+}
+.w-caption .w-eyebrow { display: block; font-size: .72rem; letter-spacing: .26em; text-shadow: 0 1px 12px rgba(0,0,0,.6); }
+.w-caption h3 { margin-top: .75rem; font-family: var(--font-brand); font-size: clamp(1.5rem, 2.6vw, 2.2rem); font-weight: 600; line-height: 1.1; letter-spacing: -.02em; color: var(--w-white); text-shadow: 0 2px 24px rgba(0,0,0,.55); }
+.w-caption p { margin-top: .75rem; font-size: clamp(.95rem, 1.15vw, 1.06rem); line-height: 1.6; color: rgba(246,245,243,.85); text-shadow: 0 1px 16px rgba(0,0,0,.6); }
+.w-xfade__dots { position: absolute; inset-inline: 0; bottom: 1.5rem; z-index: 20; display: flex; align-items: center; justify-content: center; gap: .5rem; pointer-events: none; }
+.w-xfade__dots i { display: block; height: 4px; width: 10px; border-radius: 999px; background: rgba(246,245,243,.3); transition: width .3s, background .3s; }
+.w-xfade__dots i.is-on { width: 28px; background: var(--w-accent); }
 
 /* ── 5 · stacked cards ──────────────────────────────────────────────────── */
 .w-stack { position: relative; height: 70vh; min-height: 420px; width: 100%; cursor: pointer; overflow: hidden; border-radius: 2rem; background: var(--w-black); perspective: 300px; margin-top: 2.5rem; }
@@ -509,7 +524,7 @@
 .w-cta .w-btn { margin-top: 2rem; }
 
 /* ── scroll product reveal ("Origin dönüyor") ───────────────────────────── */
-.psr-outer { position: relative; height: 690vh; width: 100%; background: var(--w-black); }
+.psr-outer { position: relative; height: 520vh; width: 100%; background: var(--w-black); }
 .psr-root { position: sticky; top: 0; height: 90vh; min-height: 560px; width: 100%; overflow: hidden; border-radius: 2rem; background: var(--w-black); }
 .psr-header-1 { pointer-events: none; position: absolute; inset-inline: 0; top: 0; z-index: 30; display: flex; justify-content: center; padding: 13vh 2rem 0; text-align: center; will-change: transform; }
 .psr-header-1 h1 { overflow: hidden; font-family: var(--font-brand); font-size: clamp(1.55rem, 4.6vw, 3rem); font-weight: 700; text-transform: uppercase; line-height: 1.05; letter-spacing: .05em; color: var(--w-white); }

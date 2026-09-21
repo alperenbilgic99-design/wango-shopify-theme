@@ -58,11 +58,14 @@
       requestAnimationFrame(tick);
     })();
 
+    /* The wheel NUDGES the strip but never swallows the event: a preventDefault
+       here made the whole 60vh band a scroll trap — with the pointer over it
+       the page would not scroll on at all. Now the page keeps scrolling and
+       the strip drifts along with it. */
     root.addEventListener("wheel", function (e) {
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      e.preventDefault();
       s.targetX -= Math.max(Math.min(e.deltaY * 1.75, 150), -150);
-    }, { passive: false });
+    }, { passive: true });
 
     function down(x) { s.dragging = true; s.startX = x; s.lastX = s.targetX; }
     function move(x) { if (s.dragging) s.targetX = s.lastX + (x - s.startX) * 1.5; }
@@ -102,31 +105,61 @@
     "  gl_FragColor = mix(tex0, tex1, smoothstep(0.0, 1.0, u_progress));" +
     "}";
 
+  /* Sticky frame geometry — must match .w-xfade__sticky in the CSS, so the
+     pin and the progress can never disagree. */
+  var XFADE_TOP = 72, XFADE_BOTTOM = 24;
+
+  /* Each gap between two pictures is split hold 30% · blend 40% · hold 30%: a
+     picture is always seen at rest for a beat before it dissolves, and the
+     dissolve is a pure function of scroll — no timers, nothing that can finish
+     after (or before) the visitor has stopped scrolling. */
+  function xfadeBlend(seg, n) {
+    var s = Math.min(Math.max(seg, 0), n - 1);
+    var i = Math.min(Math.floor(s), n - 2);
+    var t = Math.min(Math.max((s - i - 0.3) / 0.4, 0), 1);
+    return { i: i, b: t * t * (3 - 2 * t) };
+  }
+  /* A caption is fully visible within FULL of its frame, gone beyond GONE. */
+  var CAP_FULL = 0.24, CAP_GONE = 0.5;
+
   function initXfade(outer) {
     var sticky = outer.querySelector("[data-xfade-sticky]");
-    var fallbackImg = sticky && sticky.querySelector("img");
+    var fallbackImg = sticky && sticky.querySelector(":scope > img");
     var srcs = (outer.dataset.images || "").split("|").filter(Boolean);
-    var captions = outer.parentElement.querySelectorAll("[data-xfade-caption]");
-    var dots = outer.parentElement.querySelectorAll("[data-xfade-dots] i");
+    var n = srcs.length;
+    var caps = [].slice.call(outer.querySelectorAll("[data-xfade-caption]"));
+    var dots = [].slice.call(outer.querySelectorAll("[data-xfade-dots] i"));
 
-    outer.style.height = (srcs.length * 100) + "vh";
+    /* n + ½ screens: each gap gets ~1¼ screens of scroll, of which the dissolve
+       itself is the middle 40%. */
+    outer.style.height = ((n + 0.5) * 100) + "svh";
 
-    function showCaption(i) {
-      captions.forEach(function (c) {
-        var on = parseInt(c.dataset.frame, 10) === i;
-        c.hidden = !on;
-        if (on) { c.classList.remove("w-fadeup"); void c.offsetWidth; c.classList.add("w-fadeup"); }
+    /* Captions are locked to scroll, written straight to the DOM. */
+    function paint(seg) {
+      var nearest = Math.round(seg);
+      caps.forEach(function (el) {
+        var k = parseInt(el.dataset.frame, 10);
+        var d = Math.abs(seg - k);
+        var o = Math.min(Math.max(1 - (d - CAP_FULL) / (CAP_GONE - CAP_FULL), 0), 1);
+        var y = (1 - o) * 14 * (seg > k ? -1 : 1);   /* leaving drift up, arriving rise from below */
+        el.style.opacity = o;
+        el.style.visibility = o < 0.01 ? "hidden" : "visible";
+        /* the wide layout centres with translateY(-50%); the narrow with translateX(-50%) */
+        el.style.translate = "0 " + y.toFixed(1) + "px";
       });
-      dots.forEach(function (d, n) { d.classList.toggle("is-on", n === i); });
+      dots.forEach(function (d, k) { d.classList.toggle("is-on", k === nearest); });
     }
-    showCaption(0);
+    paint(0);
 
-    if (reduced || srcs.length < 2 || !window.WangoGL) return;
+    if (reduced || n < 2 || !window.WangoGL) {
+      /* no WebGL: still readable — show the first pair and stop */
+      return;
+    }
 
     var canvas = document.createElement("canvas");
-    sticky.appendChild(canvas);
+    sticky.insertBefore(canvas, sticky.firstChild);
     var gl = WangoGL.quad(canvas, { frag: FRAG_XFADE });
-    if (!gl) return;
+    if (!gl) { canvas.remove(); return; }
     if (fallbackImg) fallbackImg.style.display = "none";
 
     /* Generated noise displacement map, standing in for the source's own file. */
@@ -151,45 +184,29 @@
     resize();
     new ResizeObserver(resize).observe(sticky);
 
-    var images = [], loaded = 0, current = 0, target = 0, busy = false;
-    srcs.forEach(function (src, n) {
-      WangoGL.loadImage(src).then(function (img) {
-        images[n] = img;
-        if (++loaded === srcs.length) {
-          gl.set("u_texture0", { texture: images[0] });
-          gl.set("u_texture1", { texture: images[0] });
-          gl.set("u_textureResolution0", [images[0].naturalWidth, images[0].naturalHeight]);
-          gl.set("u_textureResolution1", [images[0].naturalWidth, images[0].naturalHeight]);
-        }
-      }).catch(function () {});
+    var images = [], loaded = 0, seg = 0, pair = -1;
+    function apply() {
+      if (loaded !== n) return;
+      var st = xfadeBlend(seg, n);
+      if (st.i !== pair) {
+        pair = st.i;
+        gl.set("u_texture0", { texture: images[st.i] });
+        gl.set("u_texture1", { texture: images[st.i + 1] });
+        gl.set("u_textureResolution0", [images[st.i].naturalWidth, images[st.i].naturalHeight]);
+        gl.set("u_textureResolution1", [images[st.i + 1].naturalWidth, images[st.i + 1].naturalHeight]);
+      }
+      gl.set("u_progress", st.b);
+    }
+    srcs.forEach(function (src, k) {
+      WangoGL.loadImage(src).then(function (img) { images[k] = img; loaded++; apply(); }).catch(function () {});
     });
 
-    function transitionTo(index) {
-      if (index !== current) showCaption(index);
-      if (index === current || busy || !images[index] || loaded !== srcs.length) { target = index; return; }
-      target = index; busy = true;
-      gl.set("u_texture1", { texture: images[index] });
-      gl.set("u_textureResolution1", [images[index].naturalWidth, images[index].naturalHeight]);
-      var p = { v: 0 };
-      gsap.to(p, {
-        v: 1, duration: 0.8, ease: "power3.inOut",
-        onUpdate: function () { gl.set("u_progress", p.v); },
-        onComplete: function () {
-          gl.set("u_texture0", { texture: images[index] });
-          gl.set("u_textureResolution0", [images[index].naturalWidth, images[index].naturalHeight]);
-          gl.set("u_progress", 0);
-          current = index; busy = false;
-          if (target !== current) transitionTo(target);
-        }
-      });
-    }
-
     ScrollTrigger.create({
-      trigger: outer, start: "top top", end: "bottom bottom", scrub: true,
-      onUpdate: function (self) {
-        if (loaded !== srcs.length) return;
-        transitionTo(Math.round(self.progress * (srcs.length - 1)));
-      }
+      trigger: outer,
+      start: "top " + XFADE_TOP + "px",
+      end: "bottom bottom-=" + XFADE_BOTTOM + "px",
+      scrub: true,
+      onUpdate: function (self) { seg = self.progress * (n - 1); apply(); paint(seg); }
     });
 
     (function tick() { gl.render(); requestAnimationFrame(tick); })();
@@ -365,7 +382,7 @@
     gsap.set(right, { xPercent: -140, opacity: 0.15, scale: 1.6 });
     gsap.set(second, { autoAlpha: 0, y: 40 });
     // A sticky wrapper rather than pin:true — pinning fights Lenis.
-    gsap.timeline({ scrollTrigger: { trigger: outer, start: "top top", end: "bottom bottom", scrub: 1 } })
+    gsap.timeline({ scrollTrigger: { trigger: outer, start: "top top", end: "bottom bottom", scrub: true } })
       .to(left, { xPercent: 0, opacity: 1, scale: 1, ease: "power2.out" }, 0)
       .to(right, { xPercent: 0, opacity: 1, scale: 1, ease: "power2.out" }, 0)
       .to(center, { scale: 1, ease: "power2.out" }, 0)

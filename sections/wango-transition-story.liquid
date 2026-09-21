@@ -33,29 +33,37 @@
 
   <div class="w-transition">
     <div class="w-xfade" data-xfade data-images="{{ srcs | escape }}">
+      {%- comment -%}
+        The captions live INSIDE the sticky frame. They used to sit in a sibling
+        block positioned at top:50% of the whole scroll wrapper — (frames + ½)
+        screens tall — so their vertical middle was hundreds of pixels below the
+        visible picture: frame 1 showed no text and the rest were off-screen.
+      {%- endcomment -%}
       <div class="w-xfade__sticky" data-xfade-sticky>
-        {%- comment -%}Shown when WebGL is off or motion is reduced.{%- endcomment -%}
         {%- assign first = section.blocks.first -%}
         {% render 'wango-image', image: first.settings.image, asset: first.settings.image_asset, alt: '', loading: 'lazy' %}
+
+        <div class="w-xfade__scrim" aria-hidden="true"></div>
+
+        <div class="w-xfade__captions">
+          {%- for block in section.blocks -%}
+            <div class="w-caption w-caption--left" data-xfade-caption data-frame="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              <span class="w-eyebrow">{{ block.settings.kicker }}</span>
+              <h3>{{ block.settings.left_title }}</h3>
+              <p>{{ block.settings.left_body }}</p>
+            </div>
+            <div class="w-caption w-caption--right" data-xfade-caption data-frame="{{ forloop.index0 }}">
+              <span class="w-eyebrow">0{{ forloop.index }} / 0{{ section.blocks.size }}</span>
+              <h3>{{ block.settings.right_title }}</h3>
+              <p>{{ block.settings.right_body }}</p>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="w-xfade__dots" data-xfade-dots aria-hidden="true">
+          {%- for block in section.blocks -%}<i{% if forloop.first %} class="is-on"{% endif %}></i>{%- endfor -%}
+        </div>
       </div>
-    </div>
-
-    <div class="w-transition__captions">
-      {%- for block in section.blocks -%}
-        <div class="w-caption" data-xfade-caption data-frame="{{ forloop.index0 }}" {% unless forloop.first %}hidden{% endunless %} {{ block.shopify_attributes }}>
-          <span class="w-eyebrow" style="font-size:.68rem">{{ block.settings.kicker }}</span>
-          <h3>{{ block.settings.left_title }}</h3>
-          <p>{{ block.settings.left_body }}</p>
-        </div>
-        <div class="w-caption w-caption--right" data-xfade-caption data-frame="{{ forloop.index0 }}" {% unless forloop.first %}hidden{% endunless %}>
-          <h3>{{ block.settings.right_title }}</h3>
-          <p>{{ block.settings.right_body }}</p>
-        </div>
-      {%- endfor -%}
-    </div>
-
-    <div class="w-transition__dots" data-xfade-dots aria-hidden="true">
-      {%- for block in section.blocks -%}<i{% if forloop.first %} class="is-on"{% endif %}></i>{%- endfor -%}
     </div>
   </div>
 </section>

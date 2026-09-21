@@ -361,13 +361,18 @@
 
     gsap.set(sideCopy, { opacity: 0, yPercent: -50, xPercent: -50, y: 24, scale: 0.985 });
     var st = ScrollTrigger.create({
-      trigger: outer, start: "top top", end: "bottom bottom", scrub: 1,
+      /* scrub:true = 1:1 with the scroll. `scrub: 1` trailed it by a full
+         second, so the animation was still finishing after the visitor had
+         already left the section. */
+      trigger: outer, start: "top top", end: "bottom bottom", scrub: true,
       onUpdate: function (self) {
         applyZoom(self.progress);
-        // The wordmark is visually gone well before t=1; 0.86–0.98 lands the
-        // panel right after the shape disappears and lets it settle before the
-        // pin releases.
-        var sideIn = gsap.utils.clamp(0, 1, (self.progress - 0.86) / 0.12);
+        // The mask has filled the frame by t ≈ 0.80 (zoom ≈ 40 puts the whole
+        // viewport inside one letter stroke; derived from START_ZOOM ·
+        // (MAX_ZOOM/START_ZOOM)^t, not pixel-measured). The panel arrives right
+        // after and is fully in by 0.96, so only the last 4% of the pin is a
+        // hold — the section does not sit finished while the scroll goes on.
+        var sideIn = gsap.utils.clamp(0, 1, (self.progress - 0.82) / 0.14);
         var e = gsap.parseEase("power2.out")(sideIn);
         gsap.set(sideCopy, { opacity: e, y: 24 * (1 - e), scale: 0.985 + 0.015 * e });
       }
@@ -376,7 +381,7 @@
     if (cont) {
       gsap.set(cont, { opacity: 0, y: 40 });
       ScrollTrigger.create({
-        trigger: continueOuter, start: "top 75%", end: "top 35%", scrub: 1,
+        trigger: continueOuter, start: "top 75%", end: "top 35%", scrub: true,
         onUpdate: function (self) { gsap.set(cont, { opacity: self.progress, y: 40 * (1 - self.progress) }); }
       });
     }

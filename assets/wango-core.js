@@ -67,6 +67,32 @@
     });
   };
 
+  /* ── Calibration ─────────────────────────────────────────────────────────
+     ScrollTrigger measures a section's start/end ONCE, when it is created.
+     Fonts, lazy images and videos then change the page height and move every
+     section below them, so the trigger points stop matching where the section
+     really is — animations begin early/late and finish before the section
+     does. Re-measure whenever the document's height genuinely changes (and
+     on load / fonts / media metadata), debounced, and only on a real change:
+     refreshing on every callback would itself make the scroll jitter. */
+  if (window.ScrollTrigger) {
+    ScrollTrigger.config({ ignoreMobileResize: true });
+    var lastH = document.documentElement.scrollHeight, calTimer = 0;
+    var recalibrate = function () {
+      clearTimeout(calTimer);
+      calTimer = setTimeout(function () {
+        var h = document.documentElement.scrollHeight;
+        if (Math.abs(h - lastH) > 1) { lastH = h; ScrollTrigger.refresh(); }
+      }, 120);
+    };
+    if ("ResizeObserver" in window) new ResizeObserver(recalibrate).observe(document.body);
+    document.addEventListener("load", recalibrate, true);        /* img load does not bubble */
+    document.addEventListener("loadedmetadata", recalibrate, true);
+    window.addEventListener("load", recalibrate);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(recalibrate);
+    setTimeout(function () { ScrollTrigger.refresh(); }, 800);   /* one unconditional settle pass */
+  }
+
   /** Scrolls to an element through Lenis when it is running, natively otherwise. */
   W.scrollTo = function (el) {
     if (!el) return;
