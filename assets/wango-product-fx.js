@@ -7,28 +7,59 @@
   var reduced = W.reduced ? W.reduced() : false;
 
   /* ── box-reveal hero: centred stack easing into two columns ───────────────
-     Flip tweens each element straight from its old rect to its new one, so
-     nothing ever snaps. Below md (and under reduced motion) the centred stack
-     IS the permanent layout — there is nothing to split into. */
+     A hand-rolled FLIP, NOT Flip.from({ absolute: true }).
+
+     `absolute: true` pulls both elements out of flow for the whole tween. The
+     wrapper's height then collapses to 0, and the section (which centres its
+     content) re-centres around nothing; on the last frame the elements return
+     to flow and the video jumps ~112px straight up in a single frame. That
+     was the "teleport" — measured by seeking the tween: the video's centre-y
+     went 609 → 542 across 95% of the tween, then 542 → 430 on the final frame.
+
+     Here the layout switches ONCE, instantly, to its final state; every
+     element is then pulled back to where it visibly was with a transform and
+     eased to rest. Nothing leaves the flow, so the wrapper never collapses and
+     there is no frame at which anything jumps. The video rides a diagonal
+     path (left and up); the copy rides the mirror path (right and down).
+     Below md (and under reduced motion) the centred stack IS the permanent
+     layout, so there is nothing to animate. */
+  function centreOf(r) { return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; }
+
   function initBoxHero(section) {
     var wrap = section.querySelector("[data-boxhero-wrap]");
-    if (!wrap || reduced || !window.Flip) return;
+    if (!wrap || reduced || !window.gsap) return;
     if (!window.matchMedia("(min-width: 768px)").matches) return;
     var text = wrap.querySelector(".w-boxhero__text");
     var media = wrap.querySelector(".w-boxhero__media");
-    if (!text || !media) return;
+    var visual = media && media.firstElementChild;   /* the max-width box the eye actually sees */
+    if (!text || !media || !visual) return;
 
     setTimeout(function () {
       if (wrap.classList.contains("is-split")) return;
       gsap.killTweensOf([text, media]);
-      var state = Flip.getState([text, media]);
-      wrap.classList.add("is-split");
-      // Pre-promote both so the first animated frame is already composited.
-      gsap.set([text, media], { willChange: "transform" });
-      Flip.from(state, {
-        duration: 1.6, ease: "power2.out", absolute: true,
-        onComplete: function () { gsap.set([text, media], { clearProps: "willChange" }); }
-      });
+
+      var tFirst = centreOf(text.getBoundingClientRect());
+      var vFirst = centreOf(visual.getBoundingClientRect());
+
+      wrap.classList.add("is-split");                   /* final layout, instantly */
+
+      var tLast = centreOf(text.getBoundingClientRect());
+      var vLast = centreOf(visual.getBoundingClientRect());
+      var mRect = media.getBoundingClientRect();
+      var scale = vFirst.w / vLast.w;
+
+      var EASE = "power2.inOut", DUR = 1.7;
+      /* copy: translate only — scaling text would distort it */
+      gsap.fromTo(text,
+        { x: tFirst.x - tLast.x, y: tFirst.y - tLast.y },
+        { x: 0, y: 0, duration: DUR, ease: EASE, clearProps: "transform" });
+
+      /* video: scale about the visual's own centre, so it neither drifts nor
+         pops while it settles into the narrower column */
+      gsap.fromTo(media,
+        { x: vFirst.x - vLast.x, y: vFirst.y - vLast.y, scale: scale,
+          transformOrigin: (vLast.x - mRect.left) + "px " + (vLast.y - mRect.top) + "px" },
+        { x: 0, y: 0, scale: 1, duration: DUR, ease: EASE, clearProps: "transform,transformOrigin" });
     }, 2400); /* lets the intro settle first */
   }
 
