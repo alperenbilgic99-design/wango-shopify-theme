@@ -1,0 +1,91 @@
+{%- comment -%}
+  Container scroll — ported from container-scroll-animation.tsx (React +
+  framer-motion). A framed "screen" starts tilted back (rotateX 20deg, scale
+  1.05) and levels out as the section scrolls through the viewport, while the
+  heading drifts up 100px. In the original the screen shows one image; here it
+  holds the product box and steps through the blocks as you scroll (frame: clean white
+  card by default, the original tablet bezel or no frame at all as options):
+  closed box, then open, then the close-up, cross-fading with a small push-in.
+
+  The tilt, scale and heading drift use the original numbers. Progress is the
+  same as framer's default for useScroll({ target }): 0 when the section's top
+  reaches the bottom of the viewport, 1 when its bottom reaches the top.
+
+  The stages are a scroll-scrubbed dissolve between stills, not footage of the
+  lid opening. Swap in a real clip later by putting a video in a stage.
+{%- endcomment -%}
+
+<section class="w-cscroll w-cscroll--{{ section.settings.frame }} {{ section.settings.ground }}" data-cscroll>
+  <div class="w-cscroll__stage" data-cscroll-stage>
+    <div class="w-cscroll__persp">
+      <div class="w-cscroll__head" data-cscroll-head>
+        {%- if section.settings.eyebrow != blank -%}<span class="w-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h2>
+          {%- if section.settings.lead != blank -%}<span class="w-cscroll__lead">{{ section.settings.lead }}</span>{%- endif -%}
+          <span class="w-cscroll__big">{{ section.settings.heading }}</span>
+        </h2>
+      </div>
+
+      <div class="w-cscroll__card" data-cscroll-card>
+        <div class="w-cscroll__screen">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              if block.settings.image != blank
+                assign src = block.settings.image | image_url: width: 2000
+              else
+                assign src = block.settings.image_asset | asset_url
+              endif
+            -%}
+            <div class="w-cscroll__layer{% if forloop.first %} is-first{% endif %}" data-cscroll-layer {{ block.shopify_attributes }}>
+              <img src="{{ src }}" alt="{{ block.settings.alt | escape }}" width="1600" height="900"
+                   class="w-cscroll__img w-cscroll__img--{{ block.settings.fit }}"
+                   {% unless forloop.first %}loading="lazy"{% endunless %} draggable="false">
+              {%- if block.settings.caption != blank -%}<span class="w-cscroll__chip">{{ block.settings.caption }}</span>{%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · kaydırmalı kutu",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "select", "id": "ground", "label": "Zemin", "default": "w-paper", "options": [
+      { "value": "w-paper", "label": "Açık" },
+      { "value": "w-black", "label": "Koyu" }
+    ]},
+    { "type": "select", "id": "frame", "label": "Çerçeve", "default": "clean", "options": [
+      { "value": "clean", "label": "Temiz beyaz kart" },
+      { "value": "tablet", "label": "Tablet çerçevesi (orijinal bileşen)" },
+      { "value": "bare", "label": "Çerçevesiz (yalnızca açık zeminde)" }
+    ]},
+    { "type": "text", "id": "eyebrow", "default": "Kutu", "label": "Üst etiket" },
+    { "type": "text", "id": "lead", "default": "Kutuyu açtığın an", "label": "Küçük başlık" },
+    { "type": "text", "id": "heading", "default": "sessizlik başlar.", "label": "Büyük başlık" }
+  ],
+  "blocks": [
+    { "type": "stage", "name": "Aşama", "settings": [
+      { "type": "image_picker", "id": "image", "label": "Görsel" },
+      { "type": "text", "id": "image_asset", "default": "ws-box-closed.webp", "label": "Tema görseli (görsel seçilmediyse)" },
+      { "type": "select", "id": "fit", "label": "Sığdırma", "default": "cover", "options": [
+        { "value": "cover", "label": "Kırparak doldur" },
+        { "value": "contain", "label": "Tamamı görünsün" }
+      ]},
+      { "type": "text", "id": "caption", "label": "Etiket (isteğe bağlı)" },
+      { "type": "text", "id": "alt", "label": "Alternatif metin" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · kaydırmalı kutu",
+    "blocks": [
+      { "type": "stage", "settings": { "image_asset": "ws-box-closed.webp", "fit": "contain", "caption": "Kapalı kutu", "alt": "wango Origin Tropical Indigo kutusu" } },
+      { "type": "stage", "settings": { "image_asset": "ws-box-open.webp", "fit": "cover", "caption": "Kutu açık", "alt": "Açık kutu: wango kutusu ve kulak uçları" } },
+      { "type": "stage", "settings": { "image_asset": "ws-box-detail.webp", "fit": "cover", "caption": "İçindekiler", "alt": "Kutunun içi, yakın çekim" } }
+    ]
+  }]
+}
+{% endschema %}

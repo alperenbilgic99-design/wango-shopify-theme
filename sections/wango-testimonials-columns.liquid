@@ -1,0 +1,88 @@
+{%- comment -%}
+  Testimonials wall — three columns of cards drifting upward in an endless
+  loop, ported from testimonials-columns-1.tsx (React + motion).
+
+  The React build animated translateY to -50% with motion; here it is one CSS
+  keyframe on the compositor, no script. Each column renders its cards twice,
+  so a -50% shift lands exactly on the start of the second copy and the loop is
+  seamless. The second copy is aria-hidden so screen readers read each card once.
+
+  Cards are dealt to the columns round-robin (1st, 4th, 7th ... to column one),
+  so any number of blocks fills all three evenly.
+
+  This is content, not a review app: nothing here is pulled from verified
+  orders. Replace the sample text in the theme editor with real customer words
+  before presenting it as collected reviews.
+{%- endcomment -%}
+
+{%- assign durations = '15,19,17' | split: ',' -%}
+
+<section class="w-black w-section w-tcols-section">
+  <div class="w-wrap">
+    <div class="w-tcols__head w-reveal">
+      {%- if section.settings.eyebrow != blank -%}<div class="w-tcols__pill">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      <h2 class="w-tcols__title">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subheading != blank -%}<p>{{ section.settings.subheading }}</p>{%- endif -%}
+    </div>
+
+    <div class="w-tcols">
+      {%- for col in (0..2) -%}
+        <div class="w-tcol w-tcol--{{ col }}" style="--w-tcol-dur: {{ durations[col] }}s">
+          <div class="w-tcol__track">
+            {%- for copy in (1..2) -%}
+              <div class="w-tcol__copy"{% if copy == 2 %} aria-hidden="true"{% endif %}>
+                {%- for block in section.blocks -%}
+                  {%- assign slot = forloop.index0 | modulo: 3 -%}
+                  {%- if slot == col -%}
+                    <figure class="w-tcard"{% if copy == 1 %} {{ block.shopify_attributes }}{% endif %}>
+                      <blockquote>{{ block.settings.text }}</blockquote>
+                      <figcaption>
+                        {%- if block.settings.image != blank -%}
+                          <img class="w-tcard__avatar" src="{{ block.settings.image | image_url: width: 80, height: 80, crop: 'center' }}" width="40" height="40" alt="{{ block.settings.name | escape }}" loading="lazy">
+                        {%- else -%}
+                          <span class="w-tcard__avatar w-tcard__avatar--initial" aria-hidden="true">{{ block.settings.name | strip | slice: 0 | upcase }}</span>
+                        {%- endif -%}
+                        <span class="w-tcard__who">
+                          <strong>{{ block.settings.name }}</strong>
+                          {%- if block.settings.role != blank -%}<small>{{ block.settings.role }}</small>{%- endif -%}
+                        </span>
+                      </figcaption>
+                    </figure>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Yorumlar · akan sütunlar",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "default": "Yorumlar", "label": "Etiket" },
+    { "type": "text", "id": "heading", "default": "Kulaktakiler anlatıyor.", "label": "Başlık" },
+    { "type": "textarea", "id": "subheading", "default": "wango taşıyanların kendi cümleleri.", "label": "Alt metin" }
+  ],
+  "blocks": [
+    { "type": "testimonial", "name": "Yorum", "settings": [
+      { "type": "textarea", "id": "text", "label": "Yorum" },
+      { "type": "text", "id": "name", "label": "Ad" },
+      { "type": "text", "id": "role", "label": "Unvan / not (isteğe bağlı)" },
+      { "type": "image_picker", "id": "image", "label": "Fotoğraf (isteğe bağlı)", "info": "Boşsa adın baş harfi gösterilir." }
+    ]}
+  ],
+  "presets": [{
+    "name": "Yorumlar · akan sütunlar",
+    "blocks": [
+      { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K." } },
+      { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Elif A." } },
+      { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "name": "Mert Y." } }
+    ]
+  }]
+}
+{% endschema %}

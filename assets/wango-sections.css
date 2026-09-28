@@ -570,3 +570,92 @@
 .w-header.is-light .w-burger { border-color: rgba(20,18,26,.2); }
 .w-header.is-light .w-burger span { background: var(--w-ink) !important; }
 .w-header.is-light.is-scrolled .w-header__glass { border-color: rgba(20,18,26,.1); background: rgba(255,255,255,.55); }
+
+/* ── testimonials wall (three columns drifting upward) ──────────────────── */
+.w-tcols__head { display: flex; flex-direction: column; align-items: center; max-width: 540px; margin-inline: auto; text-align: center; }
+.w-tcols__pill { border: 1px solid var(--w-line); border-radius: .5rem; padding: .25rem 1rem; font-size: .9rem; color: var(--w-muted); }
+.w-tcols__title { margin-top: 1.25rem; font-family: var(--font-brand); font-size: clamp(1.8rem, 4.4vw, 3rem); font-weight: 700; line-height: 1.06; letter-spacing: -.035em; text-wrap: balance; color: var(--w-white); }
+.w-tcols__head p { margin-top: 1.25rem; opacity: .75; color: var(--w-white); }
+.w-tcols { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2.5rem; max-height: 740px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent); }
+.w-tcol--1 { display: none; }
+.w-tcol--2 { display: none; }
+@media (min-width: 768px)  { .w-tcol--1 { display: block; } }
+@media (min-width: 1024px) { .w-tcol--2 { display: block; } }
+/* One keyframe on the compositor. The track holds the cards twice, so -50% is
+   exactly one copy and the loop restarts unseen. */
+.w-tcol__track { display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 1.5rem; background: var(--w-black);
+  animation: w-tcol-drift var(--w-tcol-dur, 15s) linear infinite; will-change: transform; }
+.w-tcol__copy { display: flex; flex-direction: column; gap: 1.5rem; }
+@keyframes w-tcol-drift { to { transform: translateY(-50%); } }
+.w-tcols:hover .w-tcol__track { animation-play-state: paused; }
+.w-tcard { margin: 0; width: 100%; max-width: 20rem; padding: 2.5rem; border: 1px solid var(--w-line); border-radius: 1.5rem; background: var(--w-surface);
+  box-shadow: 0 10px 30px -10px rgba(106, 66, 168, .35); color: var(--w-white); }
+.w-tcard blockquote { margin: 0; font-size: .95rem; line-height: 1.6; color: rgba(246, 245, 243, .88); }
+.w-tcard figcaption { display: flex; align-items: center; gap: .5rem; margin-top: 1.25rem; }
+.w-tcard__avatar { display: block; flex: none; width: 2.5rem; height: 2.5rem; border-radius: 999px; object-fit: cover; }
+.w-tcard__avatar--initial { display: grid; place-items: center; background: var(--w-purple); font-family: var(--font-brand); font-weight: 700; color: var(--w-white); }
+.w-tcard__who { display: flex; flex-direction: column; }
+.w-tcard__who strong { font-weight: 500; letter-spacing: -.01em; line-height: 1.25rem; }
+.w-tcard__who small { font-size: inherit; line-height: 1.25rem; letter-spacing: -.01em; opacity: .6; }
+@media (max-width: 480px) { .w-tcard { padding: 1.75rem; } }
+@media (prefers-reduced-motion: reduce) {
+  .w-tcol__track { animation: none; }
+  .w-tcol__copy[aria-hidden="true"] { display: none; }
+  .w-tcols { max-height: none; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+}
+
+/* ── container scroll: tilted screen that levels out as you scroll ───────── */
+.w-cscroll { position: relative; overflow-x: clip; }
+.w-cscroll__stage { position: relative; display: flex; align-items: center; justify-content: center; height: 60rem; padding: .5rem; }
+@media (min-width: 768px) { .w-cscroll__stage { height: 80rem; padding: 5rem; } }
+.w-cscroll__persp { position: relative; width: 100%; padding-block: 2.5rem; perspective: 1000px; }
+@media (min-width: 768px) { .w-cscroll__persp { padding-block: 10rem; } }
+.w-cscroll__head { max-width: 64rem; margin-inline: auto; text-align: center; }
+.w-cscroll__head h2 { margin-top: 1rem; font-family: var(--font-brand); font-weight: 600; line-height: 1.05; letter-spacing: -.03em; color: var(--w-ink); }
+.w-black .w-cscroll__head h2 { color: var(--w-white); }
+.w-cscroll__lead { display: block; font-size: clamp(1.6rem, 3vw, 2.25rem); }
+.w-cscroll__big { display: block; margin-top: .25rem; font-family: var(--font-display); font-size: clamp(2.6rem, 8vw, 6rem); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.w-cscroll__card { position: relative; width: 100%; max-width: 64rem; height: 30rem; margin: -3rem auto 0;
+  transform: rotateX(20deg) scale(1.05); transform-origin: 50% 50%; will-change: transform; }
+@media (min-width: 768px) { .w-cscroll__card { height: 40rem; } }
+/* tablet: the original bezel */
+.w-cscroll--tablet .w-cscroll__card { padding: .5rem; border: 4px solid #6c6c6c; border-radius: 30px; background: #222;
+  box-shadow: 0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003; }
+@media (min-width: 768px) { .w-cscroll--tablet .w-cscroll__card { padding: 1.5rem; } }
+.w-cscroll--tablet .w-cscroll__screen { border-radius: 1rem; }
+/* clean: a white rounded card, no bezel */
+.w-cscroll--clean .w-cscroll__card { overflow: hidden; border-radius: 2rem; background: #fff;
+  box-shadow: 0 70px 120px -50px rgba(75, 42, 126, .5), 0 30px 60px -30px rgba(20, 18, 26, .35), 0 0 0 1px rgba(20, 18, 26, .06); }
+/* bare: no frame; multiply lets the stills' white ground melt into the section */
+.w-cscroll--bare .w-cscroll__card { mix-blend-mode: multiply; }
+.w-cscroll--bare .w-cscroll__screen { background: transparent; }
+.w-cscroll__screen { position: relative; height: 100%; width: 100%; overflow: hidden; background: #fff; }
+.w-cscroll__layer { position: absolute; inset: 0; opacity: 0; will-change: opacity, transform; }
+.w-cscroll__layer.is-first { opacity: 1; }                       /* no-JS / first paint */
+.w-cscroll__img { display: block; width: 100%; height: 100%; user-select: none; }
+.w-cscroll__img--cover { object-fit: cover; }
+.w-cscroll__img--contain { object-fit: contain; }
+.w-cscroll__chip { position: absolute; left: 1rem; bottom: 1rem; border-radius: 999px; background: rgba(20, 18, 26, .72); padding: .375rem .9rem;
+  font-size: .78rem; font-weight: 600; letter-spacing: .04em; color: var(--w-white); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: reduce) { .w-cscroll__card { transform: none; } }
+
+/* ── open-box scroll: the product box is the tilting "screen" ───────────── */
+.w-bscroll { position: relative; height: calc(100vh + var(--bs-scroll, 170vh)); }
+.w-bscroll__stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: clip; background: var(--w-paper); }
+.w-bscroll__persp { position: relative; display: flex; flex-direction: column; align-items: center; height: 100%; padding: 5.5rem 1rem 1rem; perspective: 1000px; background: var(--w-paper); }
+.w-bscroll__head { position: relative; z-index: 2; flex: none; max-width: 64rem; text-align: center; }
+.w-bscroll__head h2 { margin-top: .75rem; font-family: var(--font-brand); font-weight: 600; line-height: 1.05; letter-spacing: -.03em; color: var(--w-ink); }
+.w-bscroll__lead { display: block; font-size: clamp(1.3rem, 2.4vw, 2rem); }
+.w-bscroll__big { display: block; margin-top: .2rem; font-family: var(--font-display); font-size: clamp(2.2rem, 6.4vw, 5rem); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+/* Flex-centred so a render wider than the screen (phones) stays centred. */
+/* no z-index here: a stacking context would trap the multiply blend of its child */
+.w-bscroll__box { display: flex; flex: 1 1 0; min-height: 0; width: 100%; justify-content: center; margin-top: -1.5rem; }
+/* multiply: the render's white ground melts into the page (the perspective parent
+   paints the paper colour so the blend has something to multiply against). */
+.w-bscroll__obj { flex: none; height: 100%; mix-blend-mode: multiply; will-change: transform;
+  transform-origin: var(--bs-fx, 50%) var(--bs-fy, 54%); transform: rotateX(20deg) rotateY(10deg) scale(1.05); }
+.w-bscroll__obj img { display: block; height: 100%; width: auto; max-width: none; user-select: none; }
+@media (max-width: 767px) { .w-bscroll__persp { padding-top: 4.5rem; } }
+@media (prefers-reduced-motion: reduce) { .w-bscroll { height: auto; } .w-bscroll__stage { position: relative; } .w-bscroll__obj { transform: none; } }

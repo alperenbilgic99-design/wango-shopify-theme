@@ -65,10 +65,23 @@
         "c6": { "type": "scene", "settings": { "image_asset": "wb-brief-13.jpg", "number": "06", "tab": "Gün biterken", "title": "Rafta, günün sonunda", "body": "Açık kutu, yerine oturmuş iki tıkaç. Yarın için hazır, bu gece için sessiz." } }
       },
       "block_order": ["c1","c2","c3","c4","c5","c6"] },
+    "reviews": {
+      "type": "wango-testimonials-columns",
+      "blocks": {
+        "t1": { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K." } },
+        "t2": { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Elif A." } },
+        "t3": { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "name": "Mert Y." } },
+        "t4": { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "name": "Mert Y." } },
+        "t5": { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K." } },
+        "t6": { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Elif A." } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4", "t5", "t6"],
+      "settings": {}
+    },
     "cta":           { "type": "wango-cta", "settings": { "ground": "w-black", "cta_url": "shopify://collections/all" } }
   },
   "order": [
     "origin_hero", "wordmark", "marquee", "transition", "moments",
-    "gallery", "morph", "wallpaper", "split", "scenarios", "cta"
+    "gallery", "morph", "wallpaper", "split", "scenarios", "reviews", "cta"
   ]
 }

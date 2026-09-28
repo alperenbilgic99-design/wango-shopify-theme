@@ -1,0 +1,70 @@
+{%- comment -%}
+  Open-box scroll — the container-scroll idea (container-scroll-animation.tsx:
+  a screen that starts tilted back and levels out as you scroll), except the
+  "screen" is the product box itself. There is no tablet bezel: the box's own
+  silhouette is the frame.
+
+  Scroll story:
+    entry   while the section scrolls into view, the box glides in along a curve
+            and levels out: rotateX 20 -> 0, rotateY 10 -> 0, a sideways arc,
+            scale 1.05 -> 1. It ends up facing the viewer, lid open as in the
+            render.
+    pinned  the stage is sticky for `scroll_length` vh of scrolling while the box
+            pushes in on its middle (the case and the ear tips), so the centre
+            of the box fills the screen. Then the pin releases and the section
+            ends.
+
+  The render has a white ground, so the card is blended with `multiply` and the
+  ground melts into the page; only the box and its own soft shadow remain.
+{%- endcomment -%}
+
+{%- liquid
+  if section.settings.image != blank
+    assign src = section.settings.image | image_url: width: 2400
+  else
+    assign src = section.settings.image_asset | asset_url
+  endif
+-%}
+
+<section class="w-bscroll w-paper" data-bscroll
+         data-zoom="{{ section.settings.zoom }}" data-tilt="{{ section.settings.tilt }}"
+         style="--bs-fx: {{ section.settings.focus_x }}%; --bs-fy: {{ section.settings.focus_y }}%; --bs-scroll: {{ section.settings.scroll_length }}vh">
+  <div class="w-bscroll__stage" data-bscroll-stage>
+    <div class="w-bscroll__persp">
+      <div class="w-bscroll__head" data-bscroll-head>
+        {%- if section.settings.eyebrow != blank -%}<span class="w-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h2>
+          {%- if section.settings.lead != blank -%}<span class="w-bscroll__lead">{{ section.settings.lead }}</span>{%- endif -%}
+          <span class="w-bscroll__big">{{ section.settings.heading }}</span>
+        </h2>
+      </div>
+
+      <div class="w-bscroll__box">
+        <div class="w-bscroll__obj" data-bscroll-box>
+          <img src="{{ src }}" alt="{{ section.settings.alt | escape }}" width="2000" height="1124" draggable="false">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ürün · açık kutu",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Kutu görseli", "info": "Beyaz zeminli, kapağı açık kutu render'ı." },
+    { "type": "text", "id": "image_asset", "default": "ws-box-open-hero.webp", "label": "Tema görseli (görsel seçilmediyse)" },
+    { "type": "text", "id": "alt", "default": "Kapağı açık wango Origin kutusu: kutu ve kulak uçları", "label": "Alternatif metin" },
+    { "type": "text", "id": "eyebrow", "default": "Kutu", "label": "Üst etiket" },
+    { "type": "text", "id": "lead", "default": "Kutuyu açtığın an", "label": "Küçük başlık" },
+    { "type": "text", "id": "heading", "default": "sessizlik başlar.", "label": "Büyük başlık" },
+    { "type": "header", "content": "Hareket" },
+    { "type": "range", "id": "tilt", "min": 0, "max": 30, "step": 1, "default": 20, "unit": "°", "label": "Başlangıç eğimi" },
+    { "type": "range", "id": "scroll_length", "min": 60, "max": 300, "step": 10, "default": 170, "unit": "vh", "label": "Sabit kalma uzunluğu (yaklaşma süresi)" },
+    { "type": "range", "id": "zoom", "min": 1, "max": 3.5, "step": 0.1, "default": 2.3, "label": "Ortaya yaklaşma oranı" },
+    { "type": "range", "id": "focus_x", "min": 0, "max": 100, "step": 1, "default": 50, "unit": "%", "label": "Yaklaşılacak nokta · yatay" },
+    { "type": "range", "id": "focus_y", "min": 0, "max": 100, "step": 1, "default": 54, "unit": "%", "label": "Yaklaşılacak nokta · dikey" }
+  ],
+  "presets": [{ "name": "Ürün · açık kutu" }]
+}
+{% endschema %}

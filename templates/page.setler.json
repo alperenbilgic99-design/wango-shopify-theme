@@ -13,6 +13,10 @@
         "limit": 2
       }
     },
+    "boxscroll": {
+      "type": "wango-box-scroll",
+      "settings": {}
+    },
     "explode": {
       "type": "wango-explode-view",
       "settings": {
@@ -214,6 +218,7 @@
   "order": [
     "boxhero",
     "grid",
+    "boxscroll",
     "explode",
     "sound",
     "story",

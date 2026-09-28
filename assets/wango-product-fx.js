@@ -520,8 +520,99 @@
     })();
   }
 
+  /* ── container scroll: tilted screen that levels out, stages cross-fade ───
+     Numbers are the React build's (rotateX 20 -> 0, scale 1.05 -> 1, or
+     0.7 -> 0.9 on phones, heading -100px). Progress matches framer's default
+     for useScroll({ target }): 0 as the top meets the viewport bottom, 1 as the
+     bottom meets the viewport top. The stages step through the 0.40-0.66 band. */
+  function initContainerScroll(root) {
+    var stage = root.querySelector("[data-cscroll-stage]");
+    var head = root.querySelector("[data-cscroll-head]");
+    var card = root.querySelector("[data-cscroll-card]");
+    var layers = [].slice.call(root.querySelectorAll("[data-cscroll-layer]"));
+    if (!stage || !card || !layers.length) return;
+
+    if (reduced || !window.ScrollTrigger) {
+      // No scrub: settle on the last stage, level and full size.
+      layers.forEach(function (el, i) { el.style.opacity = i === layers.length - 1 ? 1 : 0; });
+      return;
+    }
+
+    var clamp = gsap.utils.clamp;
+    var mobile = window.innerWidth <= 768;
+    window.addEventListener("resize", function () { mobile = window.innerWidth <= 768; });
+    var last = layers.length - 1;
+
+    function paint(p) {
+      gsap.set(card, { rotationX: 20 * (1 - p), scale: mobile ? 0.7 + 0.2 * p : 1.05 - 0.05 * p });
+      if (head) gsap.set(head, { y: -100 * p });
+      // The card is centred in the viewport at p = 0.5 and fully in view from
+      // ~0.4, so the stages step through 0.40-0.66. Each layer only ever fades
+      // IN over the one beneath (which stays opaque), so there is never a
+      // half-transparent overlap of two poses.
+      var f = clamp(0, 1, (p - 0.4) / 0.26) * last;
+      layers.forEach(function (el, i) {
+        var d = f - i;                                   // <0: still to come, >0: already passed
+        var w = d >= 0 ? 1 : clamp(0, 1, 1 + d);
+        w = w * w * (3 - 2 * w);                         // smoothstep
+        gsap.set(el, { opacity: w, scale: d < 0 ? 1 + 0.1 * -d : 1 + 0.18 * d });
+      });
+    }
+    paint(0);
+    ScrollTrigger.create({
+      trigger: stage, start: "top bottom", end: "bottom top", scrub: true,
+      onUpdate: function (self) { paint(self.progress); },
+      onRefresh: function (self) { paint(self.progress); }
+    });
+  }
+
+  /* ── open box: the product box is the tilting "screen" ────────────────────
+     Two phases off two triggers. ENTRY (section top: viewport bottom -> top):
+     the box glides in on a curve and levels out (rotateX, rotateY, a sideways
+     arc, scale 1.05 -> 1). PINNED (the sticky stage holds still): it pushes in
+     on the middle of the box, the heading drifts up 100px and fades. When the
+     pin releases the section is over. */
+  function initBoxScroll(root) {
+    var stage = root.querySelector("[data-bscroll-stage]");
+    var head = root.querySelector("[data-bscroll-head]");
+    var box = root.querySelector("[data-bscroll-box]");
+    if (!stage || !box) return;
+    if (reduced || !window.ScrollTrigger) return;          // static, level, full size
+
+    var clamp = gsap.utils.clamp;
+    var tilt = parseFloat(root.dataset.tilt) || 20;
+    var zoom = parseFloat(root.dataset.zoom) || 2.3;
+    var mobile = window.innerWidth <= 768;
+    window.addEventListener("resize", function () { mobile = window.innerWidth <= 768; });
+    var smooth = function (t) { return t * t * (3 - 2 * t); };
+    var entry = 0, hold = 0;
+
+    function paint() {
+      var u = 1 - smooth(entry);                             // 1 -> 0 while the box levels out
+      var push = smooth(clamp(0, 1, hold / 0.88));           // 0 -> 1 while it pushes in
+      gsap.set(box, {
+        rotationX: tilt * u,
+        rotationY: (mobile ? 5 : 10) * u,
+        x: mobile ? 0 : window.innerWidth * 0.09 * u * u,    // the arc
+        scale: (1.05 - 0.05 * (1 - u)) * (1 + (zoom - 1) * push)
+      });
+      if (head) gsap.set(head, { y: -100 * (entry * 0.5 + hold * 0.5), opacity: 1 - clamp(0, 1, hold / 0.25) });
+    }
+    paint();
+    ScrollTrigger.create({
+      trigger: root, start: "top bottom", end: "top top", scrub: true,
+      onUpdate: function (self) { entry = self.progress; paint(); },
+      onRefresh: function (self) { entry = self.progress; paint(); }
+    });
+    ScrollTrigger.create({
+      trigger: root, start: "top top", end: "bottom bottom", scrub: true,
+      onUpdate: function (self) { hold = self.progress; paint(); },
+      onRefresh: function (self) { hold = self.progress; paint(); }
+    });
+  }
+
   var MAP = [["[data-boxhero]", initBoxHero], ["[data-explode]", initExplode], ["[data-sound]", initSound],
-             ["[data-scroll-reveal]", initScrollReveal], ["[data-orbit]", initOrbit]];
+             ["[data-scroll-reveal]", initScrollReveal], ["[data-orbit]", initOrbit], ["[data-cscroll]", initContainerScroll], ["[data-bscroll]", initBoxScroll]];
   function boot(scope) {
     MAP.forEach(function (pair) {
       (scope || document).querySelectorAll(pair[0]).forEach(function (el) {
