@@ -297,21 +297,40 @@
     gl.set("uZoom", START_ZOOM);
     gl.set("uProgress", 0);
 
+    /* The clip is scrubbed by horizontal MOUSE movement. A touch device fires
+       no mousemove, so on one the video would download 8.4 MB only to sit on a
+       single frame behind the mask. Measured on a phone profile it was the
+       page's whole weight. There the mask is fed the poster instead (~80 KB):
+       the scroll-driven zoom reveal and the ripple still run, and the only
+       thing lost is a scrub that could not happen anyway. */
+    var coarse = window.matchMedia && window.matchMedia("(hover: none), (pointer: coarse)").matches;
     var videoEl = document.createElement("video");
     videoEl.muted = true; videoEl.playsInline = true; videoEl.preload = "auto";
     videoEl.loop = true; videoEl.crossOrigin = "anonymous";
 
     var textured = false, durationKnown = false, targetTime = 0;
-    videoEl.addEventListener("loadedmetadata", function () { durationKnown = true; });
-    videoEl.addEventListener("loadeddata", function () {
-      videoEl.currentTime = 0;
-      gl.set("uTexture", { texture: videoEl, dynamic: true });
-      gl.set("uImageResolution", [videoEl.videoWidth, videoEl.videoHeight]);
-      textured = true;
-      applyZoom(st ? st.progress : 0);
-    }, { once: true });
-    /* Scrubbed hard, so it is served from memory (see Wango.blobUrl). */
-    W.blobUrl(videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
+
+    if (coarse) {
+      var stillSrc = (poster && (poster.currentSrc || poster.src)) || "";
+      if (!stillSrc) return showStatic();
+      WangoGL.loadImage(stillSrc).then(function (img) {
+        gl.set("uTexture", { texture: img });
+        gl.set("uImageResolution", [img.naturalWidth, img.naturalHeight]);
+        textured = true;
+        applyZoom(st ? st.progress : 0);
+      }).catch(showStatic);
+    } else {
+      videoEl.addEventListener("loadedmetadata", function () { durationKnown = true; });
+      videoEl.addEventListener("loadeddata", function () {
+        videoEl.currentTime = 0;
+        gl.set("uTexture", { texture: videoEl, dynamic: true });
+        gl.set("uImageResolution", [videoEl.videoWidth, videoEl.videoHeight]);
+        textured = true;
+        applyZoom(st ? st.progress : 0);
+      }, { once: true });
+      /* Scrubbed hard, so it is served from memory (see Wango.blobUrl). */
+      W.blobUrl(videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
+    }
 
     function applyZoom(p) {
       var t = Math.min(Math.max(p, 0), 1);
@@ -339,7 +358,7 @@
          next seek, and only when none is still in flight: re-seeking every
          frame cancelled each seek before it landed. */
       if (textured) gl.render();
-      if (durationKnown && !videoEl.seeking && videoEl.readyState >= 2) {
+      if (!coarse && durationKnown && !videoEl.seeking && videoEl.readyState >= 2) {
         var cur = videoEl.currentTime, d = targetTime - cur;
         if (Math.abs(d) > 0.0015) videoEl.currentTime = cur + d * 0.22;
       }

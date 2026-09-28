@@ -44,15 +44,6 @@
         "g12": { "type": "tile", "settings": { "image_asset": "wb-brief-12.jpg" } }
       },
       "block_order": ["g1","g2","g3","g4","g5","g6","g7","g8","g9","g10","g11","g12"] },
-    "morph":         { "type": "wango-silhouette-morph",
-      "blocks": {
-        "p1": { "type": "person", "settings": { "image_asset": "wp-real-man-green-tank.jpg",  "tone": "#2f4038", "label": "Origin" } },
-        "p2": { "type": "person", "settings": { "image_asset": "wp-real-pyjamas-cushion.jpg", "tone": "#b4542a", "label": "Sage" } },
-        "p3": { "type": "person", "settings": { "image_asset": "wb-brief-16.jpg",             "tone": "#2f588c", "label": "Cornflower" } },
-        "p4": { "type": "person", "settings": { "image_asset": "wp-real-sofa-laugh.jpg",      "tone": "#c9a227", "label": "Twilight" } },
-        "p5": { "type": "person", "settings": { "image_asset": "wb-brief-17.jpg",             "tone": "#3d6b6b", "label": "Mono" } }
-      },
-      "block_order": ["p1","p2","p3","p4","p5"] },
     "wallpaper":     { "type": "wango-word-wallpaper",   "settings": { "word": "wango", "rows": 4 } },
     "split":         { "type": "wango-split-reveal",     "settings": {} },
     "scenarios":     { "type": "wango-scenarios",
@@ -68,20 +59,23 @@
     "reviews": {
       "type": "wango-testimonials-columns",
       "blocks": {
-        "t1": { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K." } },
-        "t2": { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Elif A." } },
-        "t3": { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "name": "Mert Y." } },
-        "t4": { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "name": "Mert Y." } },
-        "t5": { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K." } },
-        "t6": { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Elif A." } }
+        "t1": { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K.", "role": "Origin Obsidian Black" } },
+        "t2": { "type": "testimonial", "settings": { "text": "Açık ofiste klavye sesi ve konuşmalar kayboluyor, müzik dinlemiyorum bile. Sadece sessizlik.", "name": "Elif A.", "role": "Origin Tropical Indigo" } },
+        "t3": { "type": "testimonial", "settings": { "text": "Uçakta motor uğultusunu aldı, anons duyulmaya devam etti. Tam istediğim denge.", "name": "Mert Y.", "role": "Origin Obsidian Black" } },
+        "t4": { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Selin T.", "role": "Origin Tropical Indigo" } },
+        "t5": { "type": "testimonial", "settings": { "text": "Konserden çınlamayla çıkmamak yıllar sonra ilk. Müziğin tadı da kaçmadı.", "name": "Burak Ö.", "role": "Origin Obsidian Black" } },
+        "t6": { "type": "testimonial", "settings": { "text": "Yan odadaki televizyon sesi bitti, uykuya dalma süresi yarıya indi.", "name": "Ayşe N.", "role": "Origin Tropical Indigo" } },
+        "t7": { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Kademe farkı gerçekten hissediliyor.", "name": "Can D.", "role": "Origin Obsidian Black" } },
+        "t8": { "type": "testimonial", "settings": { "text": "Üç farklı uç geliyor, ortancası kulağıma oturdu. Koşarken bile yerinden oynamıyor.", "name": "Zeynep K.", "role": "Origin Tropical Indigo" } },
+        "t9": { "type": "testimonial", "settings": { "text": "Kütüphanede kullanıyorum. Taktığımı kimse fark etmiyor, ben de kimseyi duymuyorum.", "name": "Emre S.", "role": "Origin Obsidian Black" } }
       },
-      "block_order": ["t1", "t2", "t3", "t4", "t5", "t6"],
+      "block_order": ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9"],
       "settings": {}
     },
     "cta":           { "type": "wango-cta", "settings": { "ground": "w-black", "cta_url": "shopify://collections/all" } }
   },
   "order": [
     "origin_hero", "wordmark", "marquee", "transition", "moments",
-    "gallery", "morph", "wallpaper", "split", "scenarios", "reviews", "cta"
+    "gallery", "wallpaper", "split", "scenarios", "reviews", "cta"
   ]
 }

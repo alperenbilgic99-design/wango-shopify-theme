@@ -571,16 +571,15 @@
 .w-header.is-light .w-burger span { background: var(--w-ink) !important; }
 .w-header.is-light.is-scrolled .w-header__glass { border-color: rgba(20,18,26,.1); background: rgba(255,255,255,.55); }
 
-/* ── testimonials wall (three columns drifting upward) ──────────────────── */
+/* ── testimonials wall — testimonials-columns-1.tsx metrics ──────────────── */
 .w-tcols__head { display: flex; flex-direction: column; align-items: center; max-width: 540px; margin-inline: auto; text-align: center; }
 .w-tcols__pill { border: 1px solid var(--w-line); border-radius: .5rem; padding: .25rem 1rem; font-size: .9rem; color: var(--w-muted); }
-.w-tcols__title { margin-top: 1.25rem; font-family: var(--font-brand); font-size: clamp(1.8rem, 4.4vw, 3rem); font-weight: 700; line-height: 1.06; letter-spacing: -.035em; text-wrap: balance; color: var(--w-white); }
-.w-tcols__head p { margin-top: 1.25rem; opacity: .75; color: var(--w-white); }
+.w-tcols__title { margin-top: 1.25rem; font-family: var(--font-brand); font-size: clamp(1.4rem, 4.4vw, 3rem); font-weight: 700; line-height: 1.05; letter-spacing: -.05em; text-wrap: balance; color: var(--w-white); }
+.w-tcols__sub { margin-top: 1.25rem; opacity: .75; color: var(--w-white); }
 .w-tcols { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2.5rem; max-height: 740px; overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent); }
-.w-tcol--1 { display: none; }
-.w-tcol--2 { display: none; }
+.w-tcol--1, .w-tcol--2 { display: none; }
 @media (min-width: 768px)  { .w-tcol--1 { display: block; } }
 @media (min-width: 1024px) { .w-tcol--2 { display: block; } }
 /* One keyframe on the compositor. The track holds the cards twice, so -50% is
@@ -590,56 +589,29 @@
 .w-tcol__copy { display: flex; flex-direction: column; gap: 1.5rem; }
 @keyframes w-tcol-drift { to { transform: translateY(-50%); } }
 .w-tcols:hover .w-tcol__track { animation-play-state: paused; }
-.w-tcard { margin: 0; width: 100%; max-width: 20rem; padding: 2.5rem; border: 1px solid var(--w-line); border-radius: 1.5rem; background: var(--w-surface);
-  box-shadow: 0 10px 30px -10px rgba(106, 66, 168, .35); color: var(--w-white); }
-.w-tcard blockquote { margin: 0; font-size: .95rem; line-height: 1.6; color: rgba(246, 245, 243, .88); }
-.w-tcard figcaption { display: flex; align-items: center; gap: .5rem; margin-top: 1.25rem; }
+/* Card: the source's `p-10 rounded-3xl border shadow-lg shadow-primary/10
+   max-w-xs w-full` — same ground as the section, told apart by border + shadow. */
+.w-tcard { margin: 0; width: 100%; max-width: 20rem; padding: 2.5rem; border: 1px solid var(--w-line); border-radius: 1.5rem;
+  background: var(--w-black); box-shadow: 0 10px 15px -3px rgba(106, 66, 168, .22), 0 4px 6px -4px rgba(106, 66, 168, .18); color: var(--w-white); }
+.w-tcard__text { margin: 0; font-size: .95rem; line-height: 1.6; color: rgba(246, 245, 243, .88); }
+.w-tcard__by { display: flex; align-items: center; gap: .5rem; margin-top: 1.25rem; }
 .w-tcard__avatar { display: block; flex: none; width: 2.5rem; height: 2.5rem; border-radius: 999px; object-fit: cover; }
 .w-tcard__avatar--initial { display: grid; place-items: center; background: var(--w-purple); font-family: var(--font-brand); font-weight: 700; color: var(--w-white); }
-.w-tcard__who { display: flex; flex-direction: column; }
+.w-tcard__who { display: flex; flex-direction: column; min-width: 0; }
 .w-tcard__who strong { font-weight: 500; letter-spacing: -.01em; line-height: 1.25rem; }
 .w-tcard__who small { font-size: inherit; line-height: 1.25rem; letter-spacing: -.01em; opacity: .6; }
+/* Light ground swaps the card and type colours with the paper tokens. */
+.w-tcols-section.w-paper .w-tcols__title, .w-tcols-section.w-paper .w-tcols__sub { color: var(--w-ink); }
+.w-tcols-section.w-paper .w-tcols__pill { border-color: var(--w-paper-line); color: var(--w-ink-soft); }
+.w-tcols-section.w-paper .w-tcol__track { background: var(--w-paper); }
+.w-tcols-section.w-paper .w-tcard { background: var(--w-paper); border-color: var(--w-paper-line); color: var(--w-ink); }
+.w-tcols-section.w-paper .w-tcard__text { color: var(--w-ink); }
 @media (max-width: 480px) { .w-tcard { padding: 1.75rem; } }
 @media (prefers-reduced-motion: reduce) {
   .w-tcol__track { animation: none; }
   .w-tcol__copy[aria-hidden="true"] { display: none; }
   .w-tcols { max-height: none; overflow: visible; -webkit-mask-image: none; mask-image: none; }
 }
-
-/* ── container scroll: tilted screen that levels out as you scroll ───────── */
-.w-cscroll { position: relative; overflow-x: clip; }
-.w-cscroll__stage { position: relative; display: flex; align-items: center; justify-content: center; height: 60rem; padding: .5rem; }
-@media (min-width: 768px) { .w-cscroll__stage { height: 80rem; padding: 5rem; } }
-.w-cscroll__persp { position: relative; width: 100%; padding-block: 2.5rem; perspective: 1000px; }
-@media (min-width: 768px) { .w-cscroll__persp { padding-block: 10rem; } }
-.w-cscroll__head { max-width: 64rem; margin-inline: auto; text-align: center; }
-.w-cscroll__head h2 { margin-top: 1rem; font-family: var(--font-brand); font-weight: 600; line-height: 1.05; letter-spacing: -.03em; color: var(--w-ink); }
-.w-black .w-cscroll__head h2 { color: var(--w-white); }
-.w-cscroll__lead { display: block; font-size: clamp(1.6rem, 3vw, 2.25rem); }
-.w-cscroll__big { display: block; margin-top: .25rem; font-family: var(--font-display); font-size: clamp(2.6rem, 8vw, 6rem); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
-.w-cscroll__card { position: relative; width: 100%; max-width: 64rem; height: 30rem; margin: -3rem auto 0;
-  transform: rotateX(20deg) scale(1.05); transform-origin: 50% 50%; will-change: transform; }
-@media (min-width: 768px) { .w-cscroll__card { height: 40rem; } }
-/* tablet: the original bezel */
-.w-cscroll--tablet .w-cscroll__card { padding: .5rem; border: 4px solid #6c6c6c; border-radius: 30px; background: #222;
-  box-shadow: 0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003; }
-@media (min-width: 768px) { .w-cscroll--tablet .w-cscroll__card { padding: 1.5rem; } }
-.w-cscroll--tablet .w-cscroll__screen { border-radius: 1rem; }
-/* clean: a white rounded card, no bezel */
-.w-cscroll--clean .w-cscroll__card { overflow: hidden; border-radius: 2rem; background: #fff;
-  box-shadow: 0 70px 120px -50px rgba(75, 42, 126, .5), 0 30px 60px -30px rgba(20, 18, 26, .35), 0 0 0 1px rgba(20, 18, 26, .06); }
-/* bare: no frame; multiply lets the stills' white ground melt into the section */
-.w-cscroll--bare .w-cscroll__card { mix-blend-mode: multiply; }
-.w-cscroll--bare .w-cscroll__screen { background: transparent; }
-.w-cscroll__screen { position: relative; height: 100%; width: 100%; overflow: hidden; background: #fff; }
-.w-cscroll__layer { position: absolute; inset: 0; opacity: 0; will-change: opacity, transform; }
-.w-cscroll__layer.is-first { opacity: 1; }                       /* no-JS / first paint */
-.w-cscroll__img { display: block; width: 100%; height: 100%; user-select: none; }
-.w-cscroll__img--cover { object-fit: cover; }
-.w-cscroll__img--contain { object-fit: contain; }
-.w-cscroll__chip { position: absolute; left: 1rem; bottom: 1rem; border-radius: 999px; background: rgba(20, 18, 26, .72); padding: .375rem .9rem;
-  font-size: .78rem; font-weight: 600; letter-spacing: .04em; color: var(--w-white); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-@media (prefers-reduced-motion: reduce) { .w-cscroll__card { transform: none; } }
 
 /* ── open-box scroll: the product box is the tilting "screen" ───────────── */
 .w-bscroll { position: relative; height: calc(100vh + var(--bs-scroll, 170vh)); }
@@ -659,3 +631,87 @@
 .w-bscroll__obj img { display: block; height: 100%; width: auto; max-width: none; user-select: none; }
 @media (max-width: 767px) { .w-bscroll__persp { padding-top: 4.5rem; } }
 @media (prefers-reduced-motion: reduce) { .w-bscroll { height: auto; } .w-bscroll__stage { position: relative; } .w-bscroll__obj { transform: none; } }
+
+/* ==========================================================================
+   Mobile pass — measured at 390px on a touch profile, not guessed.
+   Three kinds of fix, kept together so they are easy to review or revert:
+   1. layout blowouts that produced real horizontal scrolling,
+   2. a 12px floor for label type that fell to 10-11.5px on phones,
+   3. touch targets raised to ~44px.
+   ========================================================================== */
+
+/* 1a · Grid blowout: a grid item's default `min-width:auto` lets its widest
+   unbreakable row (title + price, which cannot wrap) push the card past its
+   track — the card measured 371px inside a 342px column and scrolled the whole
+   page sideways. Letting the item shrink, and the row wrap, fixes it at source
+   rather than clipping the symptom. */
+.ptg-card { min-width: 0; }
+.ptg-card__row { flex-wrap: wrap; }
+.ptg-card__row h3, .ptg-card__row span { min-width: 0; overflow-wrap: anywhere; }
+
+/* 1b · Product gallery: five 64px thumbs plus gaps need 368px, more than the
+   342px a phone leaves. The strip scrolls on its own instead of the page. */
+@media (max-width: 767px) {
+  .w-pdp__thumbs { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity; padding-bottom: .25rem; }
+  .w-pdp__thumbs::-webkit-scrollbar { display: none; }
+  .w-pdp__thumbs button { scroll-snap-align: start; }
+}
+
+/* 1c · The wordmark panel is pinned to left:33% so it clears the subject on a
+   wide frame. On a phone that anchor puts the text box partly off-screen, so it
+   returns to the middle and takes the full column. */
+@media (max-width: 767px) {
+  .w-wordmark-copy { left: 50%; width: min(92vw, 420px); padding-inline: 1.5rem; }
+}
+
+/* 2 · Type floor. These labels are uppercase with wide tracking, which reads
+   smaller than its nominal size; below 12px they stop being legible on a phone. */
+@media (max-width: 767px) {
+  .w-eyebrow,
+  .w-badge,
+  .w-marquee__meta span,
+  .w-caption .w-eyebrow,
+  .sl-copy p,
+  .w-story__row em,
+  .w-pdp__opt-head b { font-size: .78rem; }
+  .w-scenes__copy em { font-size: .78rem; }
+  .w-specs__tag { font-size: .75rem; }
+  .w-sound__labels b { font-size: .72rem; }
+  .psr-outro { font-size: .75rem; }
+  .w-footer__code { font-size: .75rem; word-break: break-word; }
+  .w-cart__note { font-size: .82rem; }
+}
+
+/* 3 · Touch targets. The logo and the cart pill were under the 44px a finger
+   needs; the overlay's own links are already full-width rows. */
+@media (max-width: 767px) {
+  .w-header__logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .w-burger { min-width: 44px; min-height: 44px; }
+  .w-cart-pill { min-height: 44px; }
+  .w-footer a, .w-footer__link { display: inline-block; padding-block: .35rem; }
+}
+
+/* Safety net for the two sections whose decorations are transformed or wider
+   than the column: clip only the horizontal axis, so nothing here can widen the
+   document. `clip` rather than `hidden` — hidden would turn these into scroll
+   containers and break any sticky descendant. */
+[data-tilt-grid], .w-pdp { overflow-x: clip; }
+
+/* The story eyebrow used to carry an inline font-size, which no media query
+   could override; the size lives here now so the mobile floor can reach it. */
+.w-story__row .w-eyebrow { font-size: .7rem; }
+@media (max-width: 767px) {
+  .w-story__row .w-eyebrow { font-size: .78rem; }
+  .w-nav__item em { font-size: .78rem; }
+  .w-stack__hint { font-size: .75rem; }
+  .w-specs__table dt { font-size: .75rem; }
+  .w-morph__picks em { font-size: .75rem; }
+}
+
+/* The quantity stepper's 36px buttons are under the ~44px a fingertip needs;
+   they grow on touch layouts only, so the desktop control keeps its size. */
+@media (max-width: 767px) {
+  .w-qty button { width: 44px; height: 44px; }
+  .w-qty input { width: 48px; font-size: 1rem; }
+}

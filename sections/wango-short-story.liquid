@@ -14,7 +14,7 @@
           {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy', sizes: '(min-width: 768px) 550px, 100vw' %}
         </figure>
         <div>
-          <span class="w-eyebrow" style="font-size:.7rem">{{ block.settings.eyebrow }}</span>
+          <span class="w-eyebrow">{{ block.settings.eyebrow }}</span>
           <h3>{{ block.settings.title }}</h3>
           <p>{{ block.settings.body }}</p>
           <em>0{{ forloop.index }} / 0{{ section.blocks.size }}</em>

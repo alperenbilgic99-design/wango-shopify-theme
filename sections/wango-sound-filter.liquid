@@ -13,7 +13,7 @@
 
 <div class="w-sound" data-sound data-earbud="{{ 'ws-earbud-black-bg.png' | asset_url }}">
   {%- if section.settings.audio_url != blank -%}
-    <audio src="{{ section.settings.audio_url }}" loop preload="auto" crossorigin="anonymous"></audio>
+    <audio src="{{ section.settings.audio_url }}" loop preload="metadata" crossorigin="anonymous"></audio>
   {%- else -%}
     <audio loop preload="none"></audio>
   {%- endif -%}

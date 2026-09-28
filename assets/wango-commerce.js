@@ -13,7 +13,12 @@
     if (reduced || !window.gsap || !window.ScrollTrigger) return;
     var items = root.querySelectorAll(".ptg-card");
     if (!items.length) return;
-    gsap.set(items, { y: 140, rotate: function (i) { return i % 2 === 0 ? -10 : 10; }, opacity: 0 });
+    /* A rotated card's axis-aligned box is wider than the card: at 10deg a
+       342px card measures 415px, which on a 390px phone widened the document
+       and gave the whole page a horizontal scroll. The tilt is decorative, so
+       it shrinks on narrow screens instead of being clipped. */
+    var tilt = window.innerWidth < 768 ? 4 : 10;
+    gsap.set(items, { y: 140, rotate: function (i) { return i % 2 === 0 ? -tilt : tilt; }, opacity: 0 });
     gsap.to(items, {
       y: 0, rotate: 0, opacity: 1, duration: 1, ease: "back.out(1.5)", stagger: 0.15,
       scrollTrigger: { trigger: root, start: "top 78%" }

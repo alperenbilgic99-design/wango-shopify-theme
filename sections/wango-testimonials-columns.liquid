@@ -1,28 +1,44 @@
 {%- comment -%}
-  Testimonials wall — three columns of cards drifting upward in an endless
-  loop, ported from testimonials-columns-1.tsx (React + motion).
+  Testimonials wall — a faithful port of testimonials-columns-1.tsx (React +
+  motion). Three columns of cards drift upward in an endless loop behind a
+  top-and-bottom fade.
 
-  The React build animated translateY to -50% with motion; here it is one CSS
-  keyframe on the compositor, no script. Each column renders its cards twice,
-  so a -50% shift lands exactly on the start of the second copy and the loop is
-  seamless. The second copy is aria-hidden so screen readers read each card once.
+  Differences from the React source, and why:
+  · motion's `animate={{translateY:"-50%"}}` is one CSS keyframe here — no
+    script, and it runs on the compositor. Each column prints its cards twice,
+    so -50% lands exactly on the second copy and the seam never shows. The
+    second copy is aria-hidden, so a screen reader reads each card once.
+  · Blocks are split into three CONTIGUOUS groups, matching the source's
+    slice(0,3) / slice(3,6) / slice(6,9) — not round-robin — so a column never
+    repeats the card next to it.
+  · Card, pill, heading and column metrics are the source's Tailwind values:
+    p-10, rounded-3xl, border, shadow-lg shadow-primary/10, max-w-xs, gap-6,
+    max-h-[740px], durations 15/19/17.
 
-  Cards are dealt to the columns round-robin (1st, 4th, 7th ... to column one),
-  so any number of blocks fills all three evenly.
-
-  This is content, not a review app: nothing here is pulled from verified
-  orders. Replace the sample text in the theme editor with real customer words
-  before presenting it as collected reviews.
+  This is content, not a review app: nothing here comes from verified orders.
+  Replace the sample text in the theme editor with real customer words before
+  presenting it as collected reviews.
 {%- endcomment -%}
 
-{%- assign durations = '15,19,17' | split: ',' -%}
+{%- liquid
+  assign durations = '15,19,17' | split: ','
+  assign total = section.blocks.size
+  assign per_col = total | plus: 2 | divided_by: 3
+  if per_col < 1
+    assign per_col = 1
+  endif
+-%}
 
-<section class="w-black w-section w-tcols-section">
+<section class="w-tcols-section {{ section.settings.ground }} w-section">
   <div class="w-wrap">
     <div class="w-tcols__head w-reveal">
-      {%- if section.settings.eyebrow != blank -%}<div class="w-tcols__pill">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="w-tcols__pill">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
       <h2 class="w-tcols__title">{{ section.settings.heading }}</h2>
-      {%- if section.settings.subheading != blank -%}<p>{{ section.settings.subheading }}</p>{%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="w-tcols__sub">{{ section.settings.subheading }}</p>
+      {%- endif -%}
     </div>
 
     <div class="w-tcols">
@@ -32,15 +48,19 @@
             {%- for copy in (1..2) -%}
               <div class="w-tcol__copy"{% if copy == 2 %} aria-hidden="true"{% endif %}>
                 {%- for block in section.blocks -%}
-                  {%- assign slot = forloop.index0 | modulo: 3 -%}
+                  {%- assign slot = forloop.index0 | divided_by: per_col -%}
                   {%- if slot == col -%}
                     <figure class="w-tcard"{% if copy == 1 %} {{ block.shopify_attributes }}{% endif %}>
-                      <blockquote>{{ block.settings.text }}</blockquote>
-                      <figcaption>
+                      <blockquote class="w-tcard__text">{{ block.settings.text }}</blockquote>
+                      <figcaption class="w-tcard__by">
                         {%- if block.settings.image != blank -%}
-                          <img class="w-tcard__avatar" src="{{ block.settings.image | image_url: width: 80, height: 80, crop: 'center' }}" width="40" height="40" alt="{{ block.settings.name | escape }}" loading="lazy">
+                          <img class="w-tcard__avatar"
+                               src="{{ block.settings.image | image_url: width: 80, height: 80, crop: 'center' }}"
+                               width="40" height="40" alt="{{ block.settings.name | escape }}" loading="lazy">
                         {%- else -%}
-                          <span class="w-tcard__avatar w-tcard__avatar--initial" aria-hidden="true">{{ block.settings.name | strip | slice: 0 | upcase }}</span>
+                          <span class="w-tcard__avatar w-tcard__avatar--initial" aria-hidden="true">
+                            {{- block.settings.name | strip | slice: 0 | upcase -}}
+                          </span>
                         {%- endif -%}
                         <span class="w-tcard__who">
                           <strong>{{ block.settings.name }}</strong>
@@ -61,27 +81,37 @@
 
 {% schema %}
 {
-  "name": "Yorumlar · akan sütunlar",
+  "name": "Yorumlar · sütunlar",
   "max_blocks": 12,
   "settings": [
+    { "type": "select", "id": "ground", "label": "Zemin", "default": "w-black", "options": [
+      { "value": "w-black", "label": "Koyu" },
+      { "value": "w-paper", "label": "Açık" }
+    ]},
     { "type": "text", "id": "eyebrow", "default": "Yorumlar", "label": "Etiket" },
-    { "type": "text", "id": "heading", "default": "Kulaktakiler anlatıyor.", "label": "Başlık" },
+    { "type": "text", "id": "heading", "default": "Kullananlar ne diyor?", "label": "Başlık" },
     { "type": "textarea", "id": "subheading", "default": "wango taşıyanların kendi cümleleri.", "label": "Alt metin" }
   ],
   "blocks": [
     { "type": "testimonial", "name": "Yorum", "settings": [
       { "type": "textarea", "id": "text", "label": "Yorum" },
       { "type": "text", "id": "name", "label": "Ad" },
-      { "type": "text", "id": "role", "label": "Unvan / not (isteğe bağlı)" },
+      { "type": "text", "id": "role", "label": "Alt satır (isteğe bağlı)" },
       { "type": "image_picker", "id": "image", "label": "Fotoğraf (isteğe bağlı)", "info": "Boşsa adın baş harfi gösterilir." }
     ]}
   ],
   "presets": [{
-    "name": "Yorumlar · akan sütunlar",
+    "name": "Yorumlar · sütunlar",
     "blocks": [
-      { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K." } },
-      { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Elif A." } },
-      { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "name": "Mert Y." } }
+      { "type": "testimonial", "settings": { "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "name": "Deniz K.", "role": "Origin Obsidian Black" } },
+      { "type": "testimonial", "settings": { "text": "Açık ofiste klavye sesi ve konuşmalar kayboluyor, müzik dinlemiyorum bile. Sadece sessizlik.", "name": "Elif A.", "role": "Origin Tropical Indigo" } },
+      { "type": "testimonial", "settings": { "text": "Uçakta motor uğultusunu aldı, anons duyulmaya devam etti. Tam istediğim denge.", "name": "Mert Y.", "role": "Origin Obsidian Black" } },
+      { "type": "testimonial", "settings": { "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "name": "Selin T.", "role": "Origin Tropical Indigo" } },
+      { "type": "testimonial", "settings": { "text": "Konserden çınlamayla çıkmamak yıllar sonra ilk. Müziğin tadı da kaçmadı.", "name": "Burak Ö.", "role": "Origin Obsidian Black" } },
+      { "type": "testimonial", "settings": { "text": "Yan odadaki televizyon sesi bitti, uykuya dalma süresi yarıya indi.", "name": "Ayşe N.", "role": "Origin Tropical Indigo" } },
+      { "type": "testimonial", "settings": { "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Kademe farkı gerçekten hissediliyor.", "name": "Can D.", "role": "Origin Obsidian Black" } },
+      { "type": "testimonial", "settings": { "text": "Üç farklı uç geliyor, ortancası kulağıma oturdu. Koşarken bile yerinden oynamıyor.", "name": "Zeynep K.", "role": "Origin Tropical Indigo" } },
+      { "type": "testimonial", "settings": { "text": "Kütüphanede kullanıyorum. Taktığımı kimse fark etmiyor, ben de kimseyi duymuyorum.", "name": "Emre S.", "role": "Origin Obsidian Black" } }
     ]
   }]
 }
