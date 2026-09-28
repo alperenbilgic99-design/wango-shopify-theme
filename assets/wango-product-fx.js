@@ -376,7 +376,32 @@
       if (tips) { tips.style.position = "relative"; tips.style.bottom = "auto"; tips.style.marginTop = "2rem"; }
     }
 
-    var view = reduced || !window.WangoCase3D ? null : WangoCase3D.create(host);
+    var vid = host.querySelector("video");
+    var view = null;
+    if (vid && !reduced) {
+      vid.muted = true; vid.pause();
+      /* Some hosts (Shopify's theme-dev proxy, plain static servers) answer
+         without byte-range support, which leaves the video unseekable — every
+         currentTime write snaps back to 0. A blob URL is always seekable. */
+      var vsrc = vid.getAttribute("data-src");
+      if (vsrc) {
+        fetch(vsrc).then(function (r) { return r.blob(); })
+          .then(function (b) { vid.src = URL.createObjectURL(b); vid.load(); })
+          .catch(function () { vid.src = vsrc; });
+      }
+      var lastT = -1;
+      view = {
+        setSpin: function (rad) {
+          if (!vid.duration || vid.readyState < 2) return;
+          var t = Math.min(rad / (SPINS * Math.PI * 2), 1) * (vid.duration - 0.04);
+          if (Math.abs(t - lastT) < 1 / 120) return;
+          lastT = t; vid.currentTime = t;
+        },
+        render: function () {}
+      };
+    } else if (!reduced && window.WangoCase3D) {
+      view = WangoCase3D.create(host);
+    }
     if (!view) { showStatic(); return; }
 
     /* eyebrow: split into chars that rise once the section is reached */
@@ -398,12 +423,15 @@
       } catch (e) { charSpans = []; }
     }
 
+    var spinEnd = vid && !reduced ? 0.5 : 1;
+    /* the wipe starts while the last part of the turn is still playing */
+    var choreoStart = 0.34;
     var SPINS = 4, scrollP = 0, curSpin = 0, last = performance.now();
     (function loop() {
       var now = performance.now();
       var dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      curSpin += (scrollP * SPINS * Math.PI * 2 - curSpin) * (1 - Math.exp(-dt * 6));
+      curSpin += (scrollP * SPINS * Math.PI * 2 - curSpin) * (1 - Math.exp(-dt * 10));
       view.setSpin(curSpin);
       view.render(dt);
       requestAnimationFrame(loop);
@@ -425,7 +453,7 @@
     function choreo(raw) {
       var p = Math.min(raw / 0.97, 1);
       var e = easeOut(clamp01((p - 0.04) / 0.16));
-      gsap.set(header1, { yPercent: -64 * e, autoAlpha: 1 - e, filter: "blur(" + (5 * e).toFixed(2) + "px)" });
+      if (header1) gsap.set(header1, { yPercent: -64 * e, autoAlpha: 1 - e, filter: "blur(" + (5 * e).toFixed(2) + "px)" });
 
       var m = clamp01((p - 0.12) / 0.15);
       gsap.set(mask, { clipPath: "circle(" + (m * 122).toFixed(2) + "% at 50% 50%)" });
@@ -451,7 +479,12 @@
          choreography play while the stage was already scrolling away. */
       end: function () { return "bottom top+=" + root.offsetHeight; },
       invalidateOnRefresh: true, pin: false, scrub: true,
-      onUpdate: function (self) { scrollP = self.progress; choreo(self.progress); }
+      onUpdate: function (self) {
+        /* With the spin clip the turn plays over 0…spinEnd of the pin; the wipe /
+           title / tooltips choreography starts at choreoStart, overlapping its tail. */
+        scrollP = Math.min(self.progress / spinEnd, 1);
+        choreo(spinEnd < 1 ? Math.max(0, (self.progress - choreoStart) / (1 - choreoStart)) : self.progress);
+      }
     });
   }
 

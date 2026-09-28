@@ -6,14 +6,13 @@
   circular scene-wipe, the title, a spec divider and two tooltips while the
   case spins four full turns.
 
-  The model is drawn by assets/wango-case-3d.js (raw WebGL, no three.js) and
-  the case is the real wango clamshell per product-spec/wango-visual-lock.md.
+  The case is a pre-rendered spin clip (assets/ws-spin-black.mp4, black
+  ground, every frame a keyframe) scrubbed by scroll; assets/wango-case-3d.js
+  remains as the fallback when the clip is absent.
 {%- endcomment -%}
 
 <div class="psr-outer" data-scroll-reveal>
   <div class="psr-root">
-    <div class="psr-header-1"><h1>{{ section.settings.eyebrow }}</h1></div>
-
     {%- comment -%}The mask is a centred circular scene-wipe in front of the model.{%- endcomment -%}
     <div class="psr-mask">
       <div class="psr-header-2"><h1>{{ section.settings.title }}</h1></div>
@@ -30,7 +29,9 @@
       </div>
     </div>
 
-    <div class="psr-model" data-psr-model role="img" aria-label="{{ section.settings.alt | escape }}"></div>
+    <div class="psr-model" data-psr-model role="img" aria-label="{{ section.settings.alt | escape }}">
+      <video class="psr-video" data-src="{{ 'ws-spin-black.mp4' | asset_url }}" muted playsinline preload="auto" disablepictureinpicture tabindex="-1"></video>
+    </div>
     <div class="psr-outro">{{ section.settings.outro }}</div>
   </div>
 </div>
@@ -40,7 +41,6 @@
   "name": "Ürün · dönen kutu",
   "max_blocks": 2,
   "settings": [
-    { "type": "text", "id": "eyebrow", "default": "Origin dönüyor", "label": "Üst başlık" },
     { "type": "text", "id": "title", "default": "wango Origin", "label": "Başlık" },
     { "type": "text", "id": "outro", "default": "Sadece giy — wango", "label": "Alt yazı" },
     { "type": "text", "id": "alt", "default": "Dönen wango Origin kutusu", "label": "Model açıklaması (erişilebilirlik)" }

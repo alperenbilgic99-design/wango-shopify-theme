@@ -545,7 +545,8 @@
 .psr-divider { margin-top: .75rem; height: 1px; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--w-paper-line); }
 .psr-tooltip h3 { font-family: var(--font-brand); font-size: 1.15rem; font-weight: 600; text-transform: uppercase; letter-spacing: -.02em; color: var(--w-ink); }
 .psr-tooltip p { font-size: .85rem; line-height: 1.6; color: var(--w-ink-soft); }
-.psr-model { position: absolute; inset: 0; z-index: 10; }
+.psr-model { position: absolute; inset: 0; z-index: 10; display: grid; place-items: center; background: #000; }
+.psr-video { width: min(100%, 76vh); max-height: 100%; aspect-ratio: 1; object-fit: contain; display: block; pointer-events: none; }
 .psr-outro { pointer-events: none; position: absolute; inset-inline: 0; bottom: 1.5rem; z-index: 20; text-align: center; font-size: .7rem; text-transform: uppercase; letter-spacing: .3em; color: var(--w-muted); }
 .psr-outer .char { display: inline-block; }
 .psr-outer .char > span { display: inline-block; }
