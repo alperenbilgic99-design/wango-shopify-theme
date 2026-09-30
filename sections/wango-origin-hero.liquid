@@ -21,16 +21,24 @@
   else
     assign reveal_src = 'ws-banner-macro-wordmark.jpg' | asset_url
   endif
+  if section.settings.reveal_image_portrait != blank
+    assign reveal_portrait = section.settings.reveal_image_portrait | image_url: width: 1200
+  else
+    assign reveal_portrait = 'ws-banner-macro-wordmark-portrait.jpg' | asset_url
+  endif
 -%}
 
-<section class="w-origin" data-origin-hero data-art="{{ art_src }}" data-reveal="{{ reveal_src }}">
+<section class="w-origin" data-origin-hero data-header-tone="lavender" data-art="{{ art_src }}" data-reveal="{{ reveal_src }}" data-reveal-portrait="{{ reveal_portrait }}">
   <div class="w-origin__host" data-origin-host>
     {%- comment -%}
       Reduced-motion fallback. Stays hidden on the normal path so there is no
       premature flash of the "after" photo before the art texture loads; the
       script reveals it directly when motion is off or WebGL is unavailable.
     {%- endcomment -%}
-    <img class="w-origin__fallback" data-origin-fallback src="{{ reveal_src }}" alt="" fetchpriority="high">
+    <picture>
+      <source media="(max-aspect-ratio: 1/1)" srcset="{{ reveal_portrait }}">
+      <img class="w-origin__fallback" data-origin-fallback src="{{ reveal_src }}" alt="" fetchpriority="high">
+    </picture>
   </div>
 
   <div class="w-origin__scrim" aria-hidden="true"></div>
@@ -60,6 +68,7 @@
   "settings": [
     { "type": "image_picker", "id": "art_image", "label": "Açılış görseli", "info": "Boşsa temanın kendi görseli kullanılır." },
     { "type": "image_picker", "id": "reveal_image", "label": "Ortaya çıkan ürün görseli" },
+    { "type": "image_picker", "id": "reveal_image_portrait", "label": "Ortaya çıkan görsel · dikey (telefon)", "info": "Boşsa temanın dikey sürümü kullanılır. 1200×2400 civarı, yazı genişliğin %85'ini kaplayacak biçimde." },
     { "type": "text", "id": "art_eyebrow", "default": "wango origin", "label": "Üst etiket" },
     { "type": "text", "id": "art_caption", "default": "Yüzyıllar önce uzanan bir el. Şimdi kulağında bir sessizlik.", "label": "Açılış cümlesi" },
     { "type": "text", "id": "heading", "default": "Origin", "label": "Başlık" },

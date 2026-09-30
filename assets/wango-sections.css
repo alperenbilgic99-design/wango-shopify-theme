@@ -716,3 +716,51 @@
   .w-qty button { width: 44px; height: 44px; }
   .w-qty input { width: 48px; font-size: 1rem; }
 }
+
+/* Wordmark reveal on touch: swipe hint under the head, shown only when the head
+   is fully revealed and the clip is scrubbable. */
+.w-wordmark-hint { display: none; }
+@media (hover: none), (pointer: coarse) {
+  .w-wordmark-hint { display: block; position: absolute; left: 50%; bottom: 2.25rem; z-index: 11; margin: 0; transform: translateX(-50%);
+    opacity: 0; pointer-events: none; white-space: nowrap; border-radius: 999px; background: rgba(11, 11, 13, .6);
+    padding: .5rem 1rem; font-size: .8rem; font-weight: 600; letter-spacing: .02em; color: var(--w-white);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+}
+
+/* 3D scroll grid: four columns at phone width made 60px tiles. Three columns
+   make them ~108px, and with 12 images that is four rows, which is what fits the
+   frame; two columns needed six rows and clipped the bottom four away. */
+@media (max-width: 767px) {
+  .s3g { height: 80vh; min-height: 560px; border-radius: 1.5rem; }
+  .s3g-wrap { grid-template-columns: repeat(3, 1fr); gap: .75rem; padding: 1.25rem; }
+}
+
+/* Split reveal portrait: the wide centre image is cover-cropped into a 50vh
+   strip, and the default centre focus plus a 1.3x scale cut the top of the head
+   off. Focus rises and the zoom relaxes on phones. */
+@media (max-width: 767px) {
+  .srp-center { object-position: 50% 4%; transform: scale(1.02); }
+}
+
+/* Phones: the head sits in the upper half and the copy panel drops beneath it,
+   over a dark gradient so white type stays readable on the clouds. (On desktop
+   the panel sits left of the head, so no scrim is needed.) */
+.w-wordmark-scrim { display: none; }
+@media (max-width: 767px) {
+  .w-wordmark-scrim { display: block; position: absolute; inset: 0; z-index: 9; pointer-events: none; opacity: 0;
+    background: linear-gradient(180deg, rgba(11,11,13,0) 38%, rgba(11,11,13,.62) 60%, rgba(11,11,13,.94) 100%); }
+  .w-wordmark-copy { top: 78%; }
+  .w-wordmark-copy h2 { font-size: 1.75rem; }
+  .w-wordmark-copy p { font-size: .9rem; }
+  .w-wordmark-hint { bottom: auto; top: 5.25rem; }
+}
+
+/* sound filter: notes flow below the controls on narrow screens instead of stacking over them */
+@media (max-width: 639px) {
+  .w-sound { min-height: 130vh; display: flex; flex-direction: column; justify-content: flex-end; }
+  .w-sound__notes { position: relative; inset: auto; bottom: auto; padding: 0 1.5rem 2.5rem; }
+  .w-sound__notes > div { gap: 1.25rem; }
+}
+
+/* header over the lavender hero: the periwinkle "o" would vanish into it */
+.w-header.is-lavender .w-header__logo span { color: var(--w-white) !important; }

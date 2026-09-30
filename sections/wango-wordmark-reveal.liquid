@@ -17,12 +17,22 @@
   else
     assign poster_src = 'ws-hero-scrub-poster.jpg' | asset_url
   endif
+  if section.settings.poster_portrait != blank
+    assign poster_portrait = section.settings.poster_portrait | image_url: width: 900
+  else
+    assign poster_portrait = 'ws-hero-scrub-poster-m.jpg' | asset_url
+  endif
 -%}
 
-<div class="w-wordmark-outer" data-wordmark data-video="{{ section.settings.video_url }}">
+<div class="w-wordmark-outer" data-wordmark data-video="{{ section.settings.video_url }}" data-video-mobile="{{ section.settings.video_url_mobile }}">
   <div class="w-wordmark-sticky" data-wordmark-sticky>
-    <img class="w-wordmark-poster" data-wordmark-poster src="{{ poster_src }}" alt="">
+    <picture>
+      <source media="(max-aspect-ratio: 1/1)" srcset="{{ poster_portrait }}">
+      <img class="w-wordmark-poster" data-wordmark-poster src="{{ poster_src }}" alt="">
+    </picture>
     <div class="w-wordmark-host" data-wordmark-host></div>
+    <div class="w-wordmark-scrim" data-wordmark-scrim aria-hidden="true"></div>
+    <p class="w-wordmark-hint" data-wordmark-hint aria-hidden="true">{{ section.settings.touch_hint }}</p>
 
     <div class="w-wordmark-copy" data-wordmark-copy>
       <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
@@ -51,7 +61,10 @@
   "name": "Origin · kelime maskesi",
   "settings": [
     { "type": "url", "id": "video_url", "label": "Video URL'si", "info": "Videoyu Ayarlar → Dosyalar'a yükleyip CDN bağlantısını buraya yapıştır. Boşsa yalnızca poster görünür." },
+    { "type": "url", "id": "video_url_mobile", "label": "Video URL'si · telefon", "info": "Kafanın etrafından dikey kırpılmış, hafif sürüm (hero-scrub-mobile.mp4). Boşsa telefonda yalnızca poster görünür." },
     { "type": "image_picker", "id": "poster", "label": "Poster görseli" },
+    { "type": "image_picker", "id": "poster_portrait", "label": "Poster görseli · dikey (telefon)", "info": "Boşsa temanın dikey posteri kullanılır." },
+    { "type": "text", "id": "touch_hint", "default": "Kafayı çevirmek için sağa sola kaydır", "label": "Dokunmatik ipucu" },
     { "type": "text", "id": "eyebrow", "default": "wango · an", "label": "Üst etiket" },
     { "type": "text", "id": "heading", "default": "Origini hisset.", "label": "Başlık" },
     { "type": "textarea", "id": "body", "default": "Gözden kaçmayacak kadar ince, hissedilmeyecek kadar hafif. Bildirim sesi yok, göze çarpan bir cihaz yok — sadece sana ait, günün arka planında sessizce duran bir an.", "label": "Metin" },

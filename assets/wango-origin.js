@@ -110,7 +110,11 @@
     if (!host || !fallback || !caption || !copy) return;
 
     var artSrc = section.dataset.art;
-    var revealSrc = section.dataset.reveal;
+    /* A landscape photo cover-cropped into a portrait screen keeps about a third
+       of its width: the embossed "wango" was cut to two letters. Portrait
+       screens get a portrait composition of the same photo instead. */
+    var portrait = window.innerHeight > window.innerWidth * 1.1;
+    var revealSrc = (portrait && section.dataset.revealPortrait) || section.dataset.reveal;
 
     // No motion: skip the WebGL dissolve, land on the end state.
     if (W.reduced() || !window.WangoGL) {
@@ -193,7 +197,7 @@
     "uniform sampler2D uTexture; uniform sampler2D uMaskTex;" +
     "uniform vec2 uResolution; uniform vec2 uImageResolution;" +
     "uniform vec2 uAnchor; uniform vec2 uWordCentre; uniform float uZoom; uniform float uProgress;" +
-    "uniform float uPhotoPosX; uniform float uPhotoScale;" +
+    "uniform float uPhotoPosX; uniform float uPhotoScale; uniform float uPhotoShiftY;" +
     "uniform vec2 uMouse; uniform float uMouseStrength; uniform float uTime;" +
     "varying vec2 vUv;" +
     "vec2 cover(vec2 uv, vec2 res, vec2 imgRes, vec2 pos){" +
@@ -205,6 +209,7 @@
     "void main(){" +
     "  vec2 photoUv = cover(vUv, uResolution, uImageResolution, vec2(uPhotoPosX, 0.5));" +
     "  photoUv = (photoUv - 0.5) / uPhotoScale + 0.5;" +
+    "  photoUv.y += uPhotoShiftY;" +
     "  float aspect = uResolution.x / uResolution.y;" +
     "  vec2 toMouse = (vUv - uMouse) * vec2(aspect, 1.0);" +
     "  float dist = length(toMouse);" +
@@ -223,7 +228,7 @@
     "}";
 
   var SCRUB_SENSITIVITY = 0.8, START_ZOOM = 0.04, MAX_ZOOM = 220;
-  var WORD_CENTRE = [0.5 - 0.06, 0.5], PHOTO_POS_X = 0.42, PHOTO_SCALE = 1.0;
+  var WORD_CENTRE = [0.5 - 0.06, 0.5], PHOTO_POS_X = 0.42, PHOTO_SCALE = 1.0, PHOTO_SHIFT_Y = 0;   // re-framed per screen inside initWordmark
 
   function initWordmark(outer) {
     var sticky = outer.querySelector("[data-wordmark-sticky]");
@@ -233,6 +238,9 @@
     var continueOuter = document.querySelector("[data-wordmark-continue]");
     var cont = continueOuter && continueOuter.firstElementChild;
     var videoSrc = outer.dataset.video;
+    var videoMobile = outer.dataset.videoMobile;
+    var hint = outer.querySelector("[data-wordmark-hint]");
+    var scrim = outer.querySelector("[data-wordmark-scrim]");
 
     var readBtn = outer.querySelector("[data-wordmark-read]");
     if (readBtn && continueOuter) {
@@ -242,6 +250,7 @@
     function showStatic() {
       if (poster) poster.style.opacity = 1;
       if (sideCopy) { sideCopy.style.opacity = 1; sideCopy.style.transform = "translate(-50%,-50%)"; }
+      if (scrim) scrim.style.opacity = 1;
       if (cont) { cont.style.opacity = 1; cont.style.transform = "none"; }
     }
     if (!sticky || !host || !videoSrc || W.reduced() || !window.WangoGL) return showStatic();
@@ -297,20 +306,35 @@
     gl.set("uZoom", START_ZOOM);
     gl.set("uProgress", 0);
 
-    /* The clip is scrubbed by horizontal MOUSE movement. A touch device fires
-       no mousemove, so on one the video would download 8.4 MB only to sit on a
-       single frame behind the mask. Measured on a phone profile it was the
-       page's whole weight. There the mask is fed the poster instead (~80 KB):
-       the scroll-driven zoom reveal and the ripple still run, and the only
-       thing lost is a scrub that could not happen anyway. */
+    /* The clip is scrubbed by horizontal pointer movement. On a touch device the
+       full 8.4 MB, 16:9 clip is the wrong asset twice over: too heavy, and a
+       phone's cover crop keeps a quarter of its width, so the head (which sits
+       in the right third) fell off screen. Phones get a 640x804 crop centred on
+       the head instead (1.8 MB), scrubbed by a horizontal swipe. Without that
+       file the mask is fed the poster and only the scrub is lost. */
     var coarse = window.matchMedia && window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    var mobileClip = coarse && !!videoMobile;
+    var portraitScreen = window.innerHeight > window.innerWidth * 1.1;
+    if (mobileClip) {
+      /* crop is 640 wide with the head centred; scale 0.85 zooms out just enough
+         that the head stays inside the window through the whole turn */
+      PHOTO_POS_X = 0.5; PHOTO_SCALE = 0.72; PHOTO_SHIFT_Y = -0.15;   // head in the upper half, copy below it
+    } else if (portraitScreen) {
+      /* a portrait desktop window on the full clip: centre the window on the head */
+      PHOTO_POS_X = 0.72; PHOTO_SCALE = 0.82;
+    }
+    /* The uniforms were written above with the desktop framing, before this
+       block ran, so the re-framing above did nothing until they are set again. */
+    gl.set("uPhotoPosX", PHOTO_POS_X);
+    gl.set("uPhotoScale", PHOTO_SCALE);
+    gl.set("uPhotoShiftY", PHOTO_SHIFT_Y);
     var videoEl = document.createElement("video");
     videoEl.muted = true; videoEl.playsInline = true; videoEl.preload = "auto";
     videoEl.loop = true; videoEl.crossOrigin = "anonymous";
 
     var textured = false, durationKnown = false, targetTime = 0;
 
-    if (coarse) {
+    if (coarse && !mobileClip) {
       var stillSrc = (poster && (poster.currentSrc || poster.src)) || "";
       if (!stillSrc) return showStatic();
       WangoGL.loadImage(stillSrc).then(function (img) {
@@ -320,7 +344,19 @@
         applyZoom(st ? st.progress : 0);
       }).catch(showStatic);
     } else {
-      videoEl.addEventListener("loadedmetadata", function () { durationKnown = true; });
+      videoEl.addEventListener("loadedmetadata", function () {
+        durationKnown = true;
+        /* A detached <video> never fetches frames on iOS (and on Android with
+           preload="auto" treated as "metadata"): loadeddata simply does not
+           fire, so the mask stayed black until the first swipe. A muted,
+           inline play()+pause() is allowed without a gesture and pulls the
+           first frames; the seek is the fallback if play() is refused. */
+        var kick = videoEl.play && videoEl.play();
+        if (kick && kick.then) {
+          kick.then(function () { videoEl.pause(); videoEl.currentTime = 0; })
+              .catch(function () { videoEl.currentTime = 0.001; });
+        } else { videoEl.currentTime = 0.001; }
+      });
       videoEl.addEventListener("loadeddata", function () {
         videoEl.currentTime = 0;
         gl.set("uTexture", { texture: videoEl, dynamic: true });
@@ -329,7 +365,7 @@
         applyZoom(st ? st.progress : 0);
       }, { once: true });
       /* Scrubbed hard, so it is served from memory (see Wango.blobUrl). */
-      W.blobUrl(videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
+      W.blobUrl(mobileClip ? videoMobile : videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
     }
 
     function applyZoom(p) {
@@ -358,7 +394,7 @@
          next seek, and only when none is still in flight: re-seeking every
          frame cancelled each seek before it landed. */
       if (textured) gl.render();
-      if (!coarse && durationKnown && !videoEl.seeking && videoEl.readyState >= 2) {
+      if ((mobileClip || !coarse) && durationKnown && !videoEl.seeking && videoEl.readyState >= 2) {
         var cur = videoEl.currentTime, d = targetTime - cur;
         if (Math.abs(d) > 0.0015) videoEl.currentTime = cur + d * 0.22;
       }
@@ -366,7 +402,11 @@
     })();
 
     var prevX = null;
-    sticky.addEventListener("mousemove", function (e) {
+    /* pointermove covers mouse, touch and pen with the same clientX/clientY.
+       touch-action: pan-y keeps vertical scrolling native while horizontal
+       movement still arrives here instead of being swallowed by the browser. */
+    sticky.style.touchAction = "pan-y";
+    sticky.addEventListener("pointermove", function (e) {
       var rect = sticky.getBoundingClientRect();
       gl.set("uMouse", [(e.clientX - rect.left) / rect.width, 1 - (e.clientY - rect.top) / rect.height]);
       mouseStrength = 1;
@@ -378,6 +418,10 @@
       targetTime = Math.min(Math.max(targetTime + offset, 0), videoEl.duration);
     });
 
+    /* GSAP reads the CSS translate(-50%,-50%) as pixels and then adds its own
+       xPercent on top, so the panel was shifted twice (-359px on a phone). Clear
+       the CSS transform first so GSAP is the only thing positioning it. */
+    sideCopy.style.transform = "none";
     gsap.set(sideCopy, { opacity: 0, yPercent: -50, xPercent: -50, y: 24, scale: 0.985 });
     var st = ScrollTrigger.create({
       /* scrub:true = 1:1 with the scroll. `scrub: 1` trailed it by a full
@@ -391,8 +435,13 @@
         // (MAX_ZOOM/START_ZOOM)^t, not pixel-measured). The panel arrives right
         // after and is fully in by 0.96, so only the last 4% of the pin is a
         // hold — the section does not sit finished while the scroll goes on.
+        /* swipe hint: only on touch, once the head is fully revealed */
+        if (hint) hint.style.opacity = mobileClip
+          ? gsap.utils.clamp(0, 1, (self.progress - 0.80) / 0.06) * (1 - gsap.utils.clamp(0, 1, (self.progress - 0.97) / 0.03))
+          : 0;
         var sideIn = gsap.utils.clamp(0, 1, (self.progress - 0.82) / 0.14);
         var e = gsap.parseEase("power2.out")(sideIn);
+        if (scrim) scrim.style.opacity = e;
         gsap.set(sideCopy, { opacity: e, y: 24 * (1 - e), scale: 0.985 + 0.015 * e });
       }
     });

@@ -195,6 +195,12 @@
         if (r.top <= y && r.bottom >= y) under = true;
       });
       header.classList.toggle("is-light", under);
+      var lav = false;
+      document.querySelectorAll('[data-header-tone="lavender"]').forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top <= y && r.bottom >= y) lav = true;
+      });
+      header.classList.toggle("is-lavender", lav);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
