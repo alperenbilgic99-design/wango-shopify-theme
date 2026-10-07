@@ -177,8 +177,12 @@
     // Time-driven, not scroll-linked: this must read as an intentional reveal
     // the visitor does not have to scroll to trigger.
     var state = { progress: 0 };
+    var header = document.querySelector("[data-header]");
     var tl = gsap.timeline({ delay: 0.35 });
-    tl.to(caption, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0)
+    // The painting is pale: the bar switches to dark type while it is showing.
+    tl.call(function () { if (header) header.classList.add("is-art"); }, null, 0)
+      .call(function () { if (header) { header.classList.remove("is-art"); header.classList.add("is-lav"); } }, null, 6)
+      .to(caption, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0)
       .to(caption, { opacity: 0, y: -14, duration: 0.55, ease: "power2.in" }, 3.2)
       .to(state, { progress: 1, duration: 5.5, ease: "power2.inOut", onUpdate: function () { applyProgress(state.progress); } }, 3.25)
       .fromTo(copy, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 6.5);

@@ -18,7 +18,7 @@
   opacity: 1; border-color: rgba(44, 35, 64, .4);
   background: rgba(11, 11, 13, .3); backdrop-filter: blur(1.25rem); -webkit-backdrop-filter: blur(1.25rem);
 }
-.w-header__logo { position: relative; z-index: 1; font-family: var(--font-brand); font-size: 1.55rem; font-weight: 700; letter-spacing: -0.04em; color: var(--w-white); }
+.w-header__logo { position: relative; z-index: 1; font-family: "Bricolage Grotesque", var(--font-brand); font-size: 1.65rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1; color: var(--w-white); }
 .w-header__nav { position: relative; z-index: 1; display: none; align-items: center; gap: 1.5rem; }
 @media (min-width: 900px) { .w-header__nav { display: flex; } }
 @media (min-width: 1024px) { .w-header__nav { gap: 2rem; } }
@@ -75,15 +75,16 @@
 .w-origin__caption { pointer-events: none; position: absolute; inset-inline: 0; top: 16%; z-index: 10;
   display: flex; flex-direction: column; align-items: center; gap: 1rem; padding-inline: 1.5rem; text-align: center;
   opacity: 0; transform: translateY(10px); }
-.w-origin__caption p { max-width: 30ch; font-family: var(--font-brand); font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 500; line-height: 1.3; color: var(--w-white); }
+.w-origin__caption p { max-width: 26ch; font-family: "Bricolage Grotesque", var(--font-brand); font-size: clamp(1.45rem, 3vw, 2.15rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; color: #2b2118; text-shadow: 0 0 22px rgba(244,236,214,.75); text-wrap: balance; }
+.w-origin__caption .w-eyebrow { color: #3a2a6b; font-weight: 700; text-shadow: 0 0 14px rgba(244,236,214,.8); }
 .w-origin__copy { position: absolute; inset-inline: 0; top: 23%; z-index: 10;
   display: flex; flex-direction: column; align-items: center; gap: 0; padding-inline: 1.5rem; text-align: center;
   opacity: 0; transform: translateY(24px); }
 @media (min-width: 640px) { .w-origin__copy { padding-inline: 2.5rem; } }
 .w-origin__copy h1 {
-  font-family: var(--font-display); font-size: clamp(2.6rem, 8vw, 5.4rem);
-  font-weight: 700; text-transform: uppercase; line-height: .95; letter-spacing: .01em; color: var(--w-white);
-  text-shadow: 0 6px 40px rgba(0,0,0,.65), 0 2px 10px rgba(0,0,0,.55);
+  font-family: "Bricolage Grotesque", var(--font-display); font-size: clamp(3.2rem, 9.5vw, 6.8rem);
+  font-weight: 600; text-transform: lowercase; line-height: .9; letter-spacing: -0.045em; color: var(--w-white);
+  text-shadow: 0 4px 36px rgba(48,30,110,.28);
 }
 .w-origin__copy p { margin-top: 1rem; max-width: 42ch; color: var(--w-white); text-shadow: 0 2px 14px rgba(0,0,0,.6); }
 .w-origin__cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
@@ -560,16 +561,15 @@
 .w-footer__code { border-radius: .25rem; background: var(--w-purple); padding: .125rem .375rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; color: inherit; }
 
 /* ── header over a light section ([data-header-tone="light"]) ─────────────── */
-.w-header.is-light .w-header__logo { color: var(--w-ink); }
-.w-header.is-light .w-header__logo span { color: var(--w-purple) !important; }
-.w-header.is-light .w-header__link { color: var(--w-ink-soft); }
-.w-header.is-light .w-header__link:hover, .w-header.is-light .w-header__link[aria-current="page"] { color: var(--w-ink); }
-.w-header.is-light .w-cart-pill { color: var(--w-ink); border-color: rgba(20,18,26,.2); }
+.w-header.is-art .w-header__logo, .w-header.is-light .w-header__logo { color: var(--w-ink); }
+.w-header.is-art .w-header__link, .w-header.is-light .w-header__link { color: var(--w-ink-soft); }
+.w-header.is-art .w-header__link:hover, .w-header.is-art .w-header__link[aria-current="page"], .w-header.is-light .w-header__link:hover, .w-header.is-light .w-header__link[aria-current="page"] { color: var(--w-ink); }
+.w-header.is-art .w-cart-pill, .w-header.is-light .w-cart-pill { color: var(--w-ink); border-color: rgba(20,18,26,.2); }
 .w-header.is-light .w-cart-pill:hover { border-color: var(--w-purple); }
-.w-header.is-light .w-btn--solid { background: var(--w-ink); color: var(--w-white); }
+.w-header.is-art .w-btn--solid, .w-header.is-light .w-btn--solid { background: var(--w-ink); color: var(--w-white); }
 .w-header.is-light .w-btn--solid:hover { background: var(--w-purple); }
-.w-header.is-light .w-burger { border-color: rgba(20,18,26,.2); }
-.w-header.is-light .w-burger span { background: var(--w-ink) !important; }
+.w-header.is-art .w-burger, .w-header.is-light .w-burger { border-color: rgba(20,18,26,.2); }
+.w-header.is-art .w-burger span, .w-header.is-light .w-burger span { background: var(--w-ink) !important; }
 .w-header.is-light.is-scrolled .w-header__glass { border-color: rgba(20,18,26,.1); background: rgba(255,255,255,.55); }
 
 /* ── testimonials wall — testimonials-columns-1.tsx metrics ──────────────── */
@@ -762,5 +762,7 @@
   .w-sound__notes > div { gap: 1.25rem; }
 }
 
-/* header over the lavender hero: the periwinkle "o" would vanish into it */
-.w-header.is-lavender .w-header__logo span { color: var(--w-white) !important; }
+
+/* nav links over the lavender hero, before the bar turns to glass on scroll */
+.w-header.is-lav:not(.is-scrolled) .w-header__link { color: rgba(255,255,255,.92); }
+.w-header.is-lav:not(.is-scrolled) .w-header__link[aria-current="page"] { color: #fff; }
