@@ -561,15 +561,15 @@
 .w-footer__code { border-radius: .25rem; background: var(--w-purple); padding: .125rem .375rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; color: inherit; }
 
 /* ── header over a light section ([data-header-tone="light"]) ─────────────── */
-.w-header.is-art .w-header__logo, .w-header.is-light .w-header__logo { color: var(--w-ink); }
-.w-header.is-art .w-header__link, .w-header.is-light .w-header__link { color: var(--w-ink-soft); }
-.w-header.is-art .w-header__link:hover, .w-header.is-art .w-header__link[aria-current="page"], .w-header.is-light .w-header__link:hover, .w-header.is-light .w-header__link[aria-current="page"] { color: var(--w-ink); }
-.w-header.is-art .w-cart-pill, .w-header.is-light .w-cart-pill { color: var(--w-ink); border-color: rgba(20,18,26,.2); }
+.w-header.is-light .w-header__logo { color: var(--w-ink); }
+.w-header.is-light .w-header__link { color: var(--w-ink-soft); }
+.w-header.is-light .w-header__link:hover, .w-header.is-light .w-header__link[aria-current="page"] { color: var(--w-ink); }
+.w-header.is-light .w-cart-pill { color: var(--w-ink); border-color: rgba(20,18,26,.2); }
 .w-header.is-light .w-cart-pill:hover { border-color: var(--w-purple); }
-.w-header.is-art .w-btn--solid, .w-header.is-light .w-btn--solid { background: var(--w-ink); color: var(--w-white); }
+.w-header.is-light .w-btn--solid { background: var(--w-ink); color: var(--w-white); }
 .w-header.is-light .w-btn--solid:hover { background: var(--w-purple); }
-.w-header.is-art .w-burger, .w-header.is-light .w-burger { border-color: rgba(20,18,26,.2); }
-.w-header.is-art .w-burger span, .w-header.is-light .w-burger span { background: var(--w-ink) !important; }
+.w-header.is-light .w-burger { border-color: rgba(20,18,26,.2); }
+.w-header.is-light .w-burger span { background: var(--w-ink) !important; }
 .w-header.is-light.is-scrolled .w-header__glass { border-color: rgba(20,18,26,.1); background: rgba(255,255,255,.55); }
 
 /* ── testimonials wall — testimonials-columns-1.tsx metrics ──────────────── */
@@ -761,8 +761,3 @@
   .w-sound__notes { position: relative; inset: auto; bottom: auto; padding: 0 1.5rem 2.5rem; }
   .w-sound__notes > div { gap: 1.25rem; }
 }
-
-
-/* nav links over the lavender hero, before the bar turns to glass on scroll */
-.w-header.is-lav:not(.is-scrolled) .w-header__link { color: rgba(255,255,255,.92); }
-.w-header.is-lav:not(.is-scrolled) .w-header__link[aria-current="page"] { color: #fff; }
