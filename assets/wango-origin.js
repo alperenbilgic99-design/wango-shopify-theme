@@ -122,7 +122,20 @@
       caption.style.opacity = 0;
       copy.style.opacity = 1;
       copy.style.transform = "none";
+      if (W.introDone) W.introDone();
       return;
+    }
+
+    /* Phones: the dissolve is scrubbed by the scroll instead of a timer, so the
+       hero becomes a tall wrapper with everything it held pinned inside it
+       (sticky, not pin:true — pinning fights Lenis). */
+    var scrub = !!(W.mobile && W.mobile() && window.ScrollTrigger);
+    if (scrub) {
+      var pin = document.createElement("div");
+      pin.className = "w-origin__pin";
+      while (section.firstChild) pin.appendChild(section.firstChild);
+      section.appendChild(pin);
+      section.classList.add("is-scrub");
     }
 
     var cPhoto = document.createElement("canvas");
@@ -134,7 +147,7 @@
 
     var glArt = WangoGL.quad(cArt, { frag: FRAG_TOP, maxDpr: 1 });
     var glPhoto = WangoGL.quad(cPhoto, { frag: FRAG_BOTTOM, maxDpr: 1 });
-    if (!glArt || !glPhoto) { fallback.style.opacity = 1; copy.style.opacity = 1; copy.style.transform = "none"; return; }
+    if (!glArt || !glPhoto) { fallback.style.opacity = 1; copy.style.opacity = 1; copy.style.transform = "none"; if (W.introDone) W.introDone(); return; }
 
     glArt.set("uCenter", [0.5, 0.5]);
     glArt.set("uDissolve", 0); glArt.set("uGrayscale", 0);
@@ -174,14 +187,38 @@
     }
     applyProgress(0);
 
-    // Time-driven, not scroll-linked: this must read as an intentional reveal
-    // the visitor does not have to scroll to trigger.
-    var state = { progress: 0 };
-    var tl = gsap.timeline({ delay: 0.35 });
-    tl.to(caption, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0)
-      .to(caption, { opacity: 0, y: -14, duration: 0.55, ease: "power2.in" }, 3.2)
-      .to(state, { progress: 1, duration: 5.5, ease: "power2.inOut", onUpdate: function () { applyProgress(state.progress); } }, 3.25)
-      .fromTo(copy, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 6.5);
+    if (scrub) {
+      /* The same beats as the timed version, laid out along the pin: the
+         caption is there from the first frame and leaves early, the dissolve
+         takes the middle, the copy arrives as it completes. */
+      var c01 = gsap.utils.clamp(0, 1), inOut = gsap.parseEase("power2.inOut");
+      var paint = function (p) {
+        var cap = 1 - c01((p - 0.04) / 0.14);
+        caption.style.opacity = cap;
+        caption.style.transform = "translateY(" + (-14 * (1 - cap)).toFixed(1) + "px)";
+        applyProgress(inOut(c01((p - 0.08) / 0.7)));
+        var co = c01((p - 0.6) / 0.2);
+        copy.style.opacity = co;
+        copy.style.transform = "translateY(" + (26 * (1 - co)).toFixed(1) + "px)";
+        copy.style.pointerEvents = co > 0.5 ? "" : "none";
+        if (p >= 0.88 && W.introDone) W.introDone();
+      };
+      paint(0);
+      ScrollTrigger.create({
+        trigger: section, start: "top top", end: "bottom bottom", scrub: true,
+        onUpdate: function (self) { paint(self.progress); },
+        onRefresh: function (self) { paint(self.progress); }
+      });
+    } else {
+      // Time-driven, not scroll-linked: this must read as an intentional reveal
+      // the visitor does not have to scroll to trigger.
+      var state = { progress: 0 };
+      var tl = gsap.timeline({ delay: 0.35, onComplete: function () { if (W.introDone) W.introDone(); } });
+      tl.to(caption, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0)
+        .to(caption, { opacity: 0, y: -14, duration: 0.55, ease: "power2.in" }, 3.2)
+        .to(state, { progress: 1, duration: 5.5, ease: "power2.inOut", onUpdate: function () { applyProgress(state.progress); } }, 3.25)
+        .fromTo(copy, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 6.5);
+    }
 
     (function tick() {
       if (ready.photo) glPhoto.render();

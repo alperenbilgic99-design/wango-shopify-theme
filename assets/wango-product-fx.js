@@ -5,6 +5,9 @@
   "use strict";
   var W = window.Wango || {};
   var reduced = W.reduced ? W.reduced() : false;
+  /* Phones: every animation follows the scroll (see Wango.mobile in wango-core). */
+  var mobile = !!(W.mobile && W.mobile());
+  function introDone() { if (W.introDone) W.introDone(); }
 
   /* ── box-reveal hero: centred stack easing into two columns ───────────────
      A hand-rolled FLIP, NOT Flip.from({ absolute: true }).
@@ -25,9 +28,64 @@
      layout, so there is nothing to animate. */
   function centreOf(r) { return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; }
 
+  /* Phones: the reveal clip does not play on its own. The hero is a tall
+     wrapper with the stack pinned inside it, and the clip's currentTime is the
+     scroll progress through that wrapper (served from memory, one seek in
+     flight at a time, exactly like the exploded view below). */
+  function scrubBoxHero(section, wrap) {
+    var video = wrap.querySelector("video");
+    if (!video || !window.ScrollTrigger) { introDone(); return; }
+    var pin = document.createElement("div");
+    pin.className = "w-boxhero__pin";
+    section.insertBefore(pin, wrap);
+    pin.appendChild(wrap);
+    section.classList.add("is-scrub");
+
+    video.removeAttribute("autoplay"); video.removeAttribute("loop");
+    video.autoplay = false; video.loop = false; video.pause();
+    var ready = video.readyState >= 1, target = 0;
+    video.addEventListener("loadedmetadata", function () { ready = true; });
+    video.addEventListener("play", function () { video.pause(); });   /* a late autoplay must not take over the scrub */
+    if (W.videoFromBlob) W.videoFromBlob(video);
+    gsap.ticker.add(function () {
+      if (!ready || !video.duration || video.seeking) return;
+      if (Math.abs(video.currentTime - target) > 0.01) video.currentTime = target;
+    });
+    ScrollTrigger.create({
+      trigger: section, start: "top top", end: "bottom bottom", scrub: true,
+      onUpdate: function (self) {
+        if (ready && video.duration) target = gsap.utils.clamp(0, 1, self.progress / 0.94) * (video.duration - 0.05);
+        if (self.progress >= 0.94) introDone();
+      }
+    });
+  }
+
   function initBoxHero(section) {
     var wrap = section.querySelector("[data-boxhero-wrap]");
-    if (!wrap || reduced || !window.gsap) return;
+    if (!wrap || reduced || !window.gsap) { introDone(); return; }
+    if (mobile) { scrubBoxHero(section, wrap); return; }
+    /* The opening here is the reveal clip itself: it has finished once the clip
+       has played through for the first time (with a ceiling, in case it never
+       loads). */
+    var clip = wrap.querySelector("video");
+    if (clip) {
+      /* timeupdate only fires about four times a second, so the last moments
+         of a looping clip can be skipped over entirely: the jump back to the
+         start counts as "finished" as well. */
+      var lastTime = 0;
+      var onTime = function () {
+        var t = clip.currentTime;
+        if ((clip.duration && t >= clip.duration - 0.5) || t < lastTime - 1) {
+          clip.removeEventListener("timeupdate", onTime);
+          introDone();
+        }
+        lastTime = t;
+      };
+      clip.addEventListener("timeupdate", onTime);
+      setTimeout(introDone, 22000);
+    } else {
+      setTimeout(introDone, 4200);
+    }
     if (!window.matchMedia("(min-width: 768px)").matches) return;
     var text = wrap.querySelector(".w-boxhero__text");
     var media = wrap.querySelector(".w-boxhero__media");
@@ -207,13 +265,29 @@
     }
 
     var reach = { v: 0 };
+    /* Phones: the clean strand grows with the scroll through the section and
+       the heading rises with it; the button only starts the sound (audio needs
+       a tap, a scroll is not a gesture a browser accepts for it). */
+    var scrubSound = mobile && !!window.ScrollTrigger;
     if (button) button.addEventListener("click", function () {
       startAudio(); rampFilter(true);
+      if (scrubSound) { finishFilter(); return; }
       if (window.gsap) {
         gsap.to(reach, { v: 1, duration: 1.8, ease: "power2.out" });
         gsap.to(button, { opacity: 0, duration: 0.5, ease: "power1.out", onComplete: finishFilter });
       } else { reach.v = 1; finishFilter(); }
     });
+    if (scrubSound) {
+      ScrollTrigger.create({
+        trigger: root, start: "top 65%", end: "bottom bottom", scrub: true,
+        onUpdate: function (self) {
+          var p = self.progress, hp = gsap.utils.clamp(0, 1, p / 0.22);
+          heading.style.opacity = hp;
+          heading.style.transform = "translateY(" + (18 * (1 - hp)).toFixed(1) + "px)";
+          reach.v = gsap.utils.clamp(0, 1, (p - 0.3) / 0.5);
+        }
+      });
+    }
     function finishFilter() {
       filtered = true;
       if (button) { button.disabled = true; button.textContent = button.dataset.labelOn || button.textContent; }
@@ -312,7 +386,8 @@
       if (!e) return;
       if (e.intersectionRatio >= 0.5) {
         startAudio();
-        if (!reduced && window.gsap) gsap.to(heading, { opacity: 1, y: 0, duration: 1, ease: "power2.out" });
+        if (scrubSound) { /* the heading follows the scroll */ }
+        else if (!reduced && window.gsap) gsap.to(heading, { opacity: 1, y: 0, duration: 1, ease: "power2.out" });
         else { heading.style.opacity = 1; heading.style.transform = "none"; }
       } else if (!e.isIntersecting) {
         stopAudio();
@@ -415,11 +490,26 @@
         split.chars.forEach(function (c) { c.innerHTML = "<span>" + c.innerHTML + "</span>"; });
         charSpans = h1.querySelectorAll(".char > span");
         gsap.set(charSpans, { yPercent: 110 });
-        ScrollTrigger.create({
-          trigger: root, start: "75% bottom",
-          onEnter: function () { gsap.to(charSpans, { yPercent: 0, duration: 1, ease: "power3.out", stagger: 0.03 }); },
-          onLeaveBack: function () { gsap.to(charSpans, { yPercent: 110, duration: 1, ease: "power3.out", stagger: 0.03 }); }
-        });
+        if (mobile) {
+          /* phones: the letters rise with the scroll, one after another, as the
+             stage comes up into view */
+          var nChars = charSpans.length || 1;
+          ScrollTrigger.create({
+            trigger: root, start: "40% bottom", end: "95% bottom", scrub: true,
+            onUpdate: function (self) {
+              [].forEach.call(charSpans, function (c, i) {
+                var t = gsap.utils.clamp(0, 1, self.progress * 1.6 - (i / nChars) * 0.6);
+                c.style.transform = "translateY(" + (110 * (1 - t * (2 - t))).toFixed(1) + "%)";
+              });
+            }
+          });
+        } else {
+          ScrollTrigger.create({
+            trigger: root, start: "75% bottom",
+            onEnter: function () { gsap.to(charSpans, { yPercent: 0, duration: 1, ease: "power3.out", stagger: 0.03 }); },
+            onLeaveBack: function () { gsap.to(charSpans, { yPercent: 110, duration: 1, ease: "power3.out", stagger: 0.03 }); }
+          });
+        }
       } catch (e) { charSpans = []; }
     }
 
@@ -514,6 +604,18 @@
       item.wrapper.style.transform = "translate(" + (ox * tCos - oy * tSin) + "px, " + (ox * tSin + oy * tCos) + "px)";
     }
     items.forEach(function (it) { place(it, 0); });
+
+    /* Phones: no idle drift and no hover. The ring's angle is the section's
+       progress through the viewport, so it turns only while the page moves. */
+    if (mobile && window.ScrollTrigger) {
+      var turn = function (p) { var rad = p * Math.PI * 1.5; items.forEach(function (it) { place(it, rad); }); };
+      ScrollTrigger.create({
+        trigger: gallery, start: "top bottom", end: "bottom top", scrub: true,
+        onUpdate: function (self) { turn(self.progress); },
+        onRefresh: function (self) { measure(); turn(self.progress); }
+      });
+      return;
+    }
 
     var ringRotation = 0, direction = 1, speed = cfg.idleRotationSpeed, px = -1, py = -1, hovered = null;
     gallery.addEventListener("wheel", function (e) {

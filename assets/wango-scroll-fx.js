@@ -13,6 +13,8 @@
   "use strict";
   var W = window.Wango || {};
   var reduced = W.reduced ? W.reduced() : false;
+  /* Phones: every animation follows the scroll (see Wango.mobile in wango-core). */
+  var mobile = !!(W.mobile && W.mobile());
 
   /* ── drag marquee ─────────────────────────────────────────────────────────
      Six looped copies sit in a flex track; wheel/drag nudges a target-X and
@@ -66,6 +68,17 @@
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
       s.targetX -= Math.max(Math.min(e.deltaY * 1.75, 150), -150);
     }, { passive: true });
+
+    /* Phones have no wheel: the strip drifts with the page scroll instead, the
+       same nudge the wheel gives on a desktop. A drag still works on top. */
+    if (mobile) {
+      var lastScrollY = window.scrollY;
+      window.addEventListener("scroll", function () {
+        var y = window.scrollY;
+        s.targetX -= (y - lastScrollY) * 0.9;
+        lastScrollY = y;
+      }, { passive: true });
+    }
 
     function down(x) { s.dragging = true; s.startX = x; s.lastX = s.targetX; }
     function move(x) { if (s.dragging) s.targetX = s.lastX + (x - s.startX) * 1.5; }
@@ -242,6 +255,41 @@
       if (h3) splitChars(h3, h3.dataset.text || "");
       if (p) splitChars(p, p.dataset.text || "");
     });
+
+    /* Phones: the deck is scrubbed. The stack sticks in the middle of the
+       screen while its wrapper scrolls by, and one scroll value f (0 … n-1)
+       places every card: a card's slot is its index + f, the one that passes
+       the front slot drops out of the frame, and each title is in place only
+       while its card is the front one. Nothing is timed and nothing needs a
+       tap, so it also runs backwards. */
+    if (mobile && window.ScrollTrigger) {
+      var list = cards(), n = list.length;
+      if (n < 2) { position(); return; }
+      var holder = root.parentNode;
+      root.classList.add("is-scrub");
+      root.removeAttribute("role"); root.removeAttribute("tabindex"); root.removeAttribute("aria-label");
+      holder.style.height = "calc(max(70vh, 420px) + " + ((n - 1) * 60) + "svh + 2.5rem)";
+      var parts = list.map(function (card) {
+        return { card: card, h: card.querySelectorAll(".sl-copy h3 span"), p: card.querySelectorAll(".sl-copy p span") };
+      });
+      var front = n - 1;
+      var paintDeck = function (f) {
+        parts.forEach(function (it, i) {
+          var slot = i + f, over = Math.max(0, slot - front), rest = Math.min(slot, front);
+          gsap.set(it.card, { y: (-18 + 18 * rest + 160 * over) + "%", z: 18 * rest, autoAlpha: over >= 1 ? 0 : 1 });
+          var near = 1 - Math.min(1, Math.abs(slot - front));     /* 1 while this card is the front one */
+          gsap.set(it.h, { yPercent: 400 * (1 - near) * (slot > front ? 1 : -1) });
+          gsap.set(it.p, { y: 50 * (1 - near), opacity: near });
+        });
+      };
+      paintDeck(0);
+      ScrollTrigger.create({
+        trigger: holder, start: "top 12%", end: "bottom 88%", scrub: true,
+        onUpdate: function (self) { paintDeck(self.progress * front); },
+        onRefresh: function (self) { paintDeck(self.progress * front); }
+      });
+      return;
+    }
     position();
 
     // Source used a flat -220px tuned to its own fixed card height; yPercent of
@@ -466,7 +514,29 @@
     viewport.addEventListener("scroll", syncFromScroll, { passive: true });
   }
 
+  /* ── testimonial columns on a phone ───────────────────────────────────────
+     On a desktop the columns drift on a CSS keyframe. On a phone that loop is
+     switched off and each column's travel is the section's own progress
+     through the viewport: at most one copy's height, so no wrap is needed. */
+  function initTcols(root) {
+    if (!mobile || !window.ScrollTrigger) return;
+    var tracks = [].slice.call(root.querySelectorAll(".w-tcol__track"));
+    if (!tracks.length) return;
+    root.classList.add("is-scrub");
+    var rates = [1, 0.72, 0.86];
+    var paintCols = function (p) {
+      tracks.forEach(function (t, i) { t.style.transform = "translateY(" + (-50 * p * rates[i % 3]).toFixed(2) + "%)"; });
+    };
+    paintCols(0);
+    ScrollTrigger.create({
+      trigger: root, start: "top bottom", end: "bottom top", scrub: true,
+      onUpdate: function (self) { paintCols(self.progress); },
+      onRefresh: function (self) { paintCols(self.progress); }
+    });
+  }
+
   var MAP = [
+    ["[data-tcols]", initTcols],
     ["[data-marquee]", initMarquee],
     ["[data-xfade]", initXfade],
     ["[data-stack]", initStack],

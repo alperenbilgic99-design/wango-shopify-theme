@@ -213,6 +213,79 @@
         "cta_label": "Setleri gör",
         "cta_url": "shopify://collections/all"
       }
+    },
+    "rail": {
+      "type": "wango-card-rail",
+      "blocks": {
+        "c1": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-disc-macro.jpg",
+            "tag": "Filtre",
+            "title": "Gürültüyü inceltir",
+            "body": "Akustik filtre uğultuyu geriye çeker. Kalabalık, yerini daha sakin bir sese bırakır."
+          }
+        },
+        "c2": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-real-sofa-laugh.jpg",
+            "tag": "Duymaya devam",
+            "title": "Sesi tamamen kesmez",
+            "body": "Konuşmayı, anonsu ve müziği duyarsın. Sadece fazlası gider."
+          }
+        },
+        "c3": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-worn-1.jpg",
+            "tag": "Konfor",
+            "title": "Hafif, rahat",
+            "body": "Yumuşak uçlarıyla kulağına oturur. Bir süre sonra taktığını unutursun."
+          }
+        },
+        "c4": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-real-three-on-mint.jpg",
+            "tag": "Odak",
+            "title": "İşine dön",
+            "body": "Kafede, açık ofiste, yolda. Dikkatini dağıtan gürültü uzaklaşır."
+          }
+        },
+        "c5": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-real-portrait-yellow.jpg",
+            "tag": "Aksesuar",
+            "title": "Kombinin parçası",
+            "body": "Obsidian Black ve Tropical Indigo. Saklanmak için değil, görünmek için."
+          }
+        },
+        "c6": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-case-open-seated.jpg",
+            "tag": "Analog",
+            "title": "Şarj yok, ekran yok",
+            "body": "İçinde elektronik yok. Kutusundan çıkar, tak, hazırsın."
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6"
+      ],
+      "settings": {
+        "ground": "w-black",
+        "eyebrow": "Kısaca",
+        "heading": "Altı cümlede Origin.",
+        "cta_url": "shopify://collections/all"
+      }
     }
   },
   "order": [
@@ -222,6 +295,7 @@
     "explode",
     "sound",
     "story",
+    "rail",
     "reveal",
     "orbit",
     "cta"

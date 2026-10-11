@@ -1,0 +1,128 @@
+{%- comment -%}
+  Card rail — one row of tall cards that is swiped (or dragged, or stepped with
+  the arrows) sideways. The track is a native scroll-snap container, so a
+  finger moves it 1:1 with no script; wango-extras.js only adds the progress
+  line, the counter, the arrows, the mouse drag and the picture parallax, all
+  of which read the track's own scrollLeft.
+
+  Nothing in here runs on a timer: the cards move only when the visitor moves
+  them, and the heading uses the shared .w-reveal (scrubbed on phones).
+{%- endcomment -%}
+
+{%- liquid
+  assign has_cta = false
+  if section.settings.cta_label != blank and section.settings.cta_url != blank
+    assign has_cta = true
+  endif
+  assign total = section.blocks.size
+  if has_cta
+    assign total = total | plus: 1
+  endif
+-%}
+
+<section class="w-rail {{ section.settings.ground }}" data-rail>
+  <div class="w-wrap w-rail__head w-reveal">
+    <div>
+      {%- if section.settings.eyebrow != blank -%}<span class="w-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+      <h2 class="w-h2">{{ section.settings.heading }}</h2>
+      {%- if section.settings.body != blank -%}<p class="w-lede">{{ section.settings.body }}</p>{%- endif -%}
+    </div>
+
+    <div class="w-rail__nav">
+      <span class="w-rail__count" aria-hidden="true"><b data-rail-current>01</b> / {{ total | prepend: '0' | slice: -2, 2 }}</span>
+      <button type="button" class="w-rail__arrow" data-rail-prev aria-label="{{ section.settings.prev_label | escape }}">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+      </button>
+      <button type="button" class="w-rail__arrow" data-rail-next aria-label="{{ section.settings.next_label | escape }}">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="w-rail__viewport" data-rail-viewport tabindex="0" aria-label="{{ section.settings.heading | escape }}">
+    <ul class="w-rail__track">
+      {%- for block in section.blocks -%}
+        <li class="w-rail__card" data-rail-card {{ block.shopify_attributes }}>
+          <div class="w-rail__img">
+            {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy', sizes: '(min-width: 768px) 380px, 78vw' %}
+          </div>
+          <div class="w-rail__scrim" aria-hidden="true"></div>
+          <div class="w-rail__top">
+            <span class="w-rail__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            {%- if block.settings.tag != blank -%}<span class="w-rail__tag">{{ block.settings.tag }}</span>{%- endif -%}
+          </div>
+          <div class="w-rail__copy">
+            <h3>{{ block.settings.title }}</h3>
+            {%- if block.settings.body != blank -%}<p>{{ block.settings.body }}</p>{%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+
+      {%- if has_cta -%}
+        <li class="w-rail__card w-rail__card--cta" data-rail-card>
+          <a href="{{ section.settings.cta_url }}">
+            <span class="w-rail__num">{{ total | prepend: '0' | slice: -2, 2 }}</span>
+            <div class="w-rail__copy">
+              <h3>{{ section.settings.cta_heading }}</h3>
+              <span class="w-rail__go">
+                {{ section.settings.cta_label }}
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+              </span>
+            </div>
+          </a>
+        </li>
+      {%- endif -%}
+    </ul>
+  </div>
+
+  <div class="w-wrap">
+    <div class="w-rail__bar" aria-hidden="true"><i data-rail-fill></i></div>
+    {%- if section.settings.hint != blank -%}<p class="w-rail__hint">{{ section.settings.hint }}</p>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Kaydırmalı kartlar",
+  "max_blocks": 10,
+  "settings": [
+    { "type": "select", "id": "ground", "label": "Zemin", "default": "w-black",
+      "options": [ { "value": "w-black", "label": "Siyah" }, { "value": "w-paper", "label": "Açık" } ] },
+    { "type": "text", "id": "eyebrow", "default": "Origin", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "Altı cümlede Origin.", "label": "Başlık" },
+    { "type": "textarea", "id": "body", "label": "Açıklama" },
+    { "type": "text", "id": "hint", "default": "sağa kaydır", "label": "İpucu (telefonda görünür)" },
+    { "type": "header", "content": "Son kart" },
+    { "type": "text", "id": "cta_heading", "default": "Seninki hangi renk?", "label": "Başlık" },
+    { "type": "text", "id": "cta_label", "default": "Origin'i incele", "label": "Bağlantı metni" },
+    { "type": "url", "id": "cta_url", "label": "Bağlantı" },
+    { "type": "header", "content": "Erişilebilirlik" },
+    { "type": "text", "id": "prev_label", "default": "Önceki kart", "label": "Geri düğmesi" },
+    { "type": "text", "id": "next_label", "default": "Sonraki kart", "label": "İleri düğmesi" }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Kart",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Görsel" },
+        { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
+        { "type": "text", "id": "tag", "label": "Etiket" },
+        { "type": "text", "id": "title", "label": "Başlık" },
+        { "type": "textarea", "id": "body", "label": "Metin" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Kaydırmalı kartlar",
+    "blocks": [
+      { "type": "card", "settings": { "image_asset": "wp-disc-macro.jpg", "tag": "Filtre", "title": "Gürültüyü inceltir", "body": "Akustik filtre uğultuyu geriye çeker. Kalabalık, yerini daha sakin bir sese bırakır." } },
+      { "type": "card", "settings": { "image_asset": "wp-real-sofa-laugh.jpg", "tag": "Duymaya devam", "title": "Sesi tamamen kesmez", "body": "Konuşmayı, anonsu ve müziği duyarsın. Sadece fazlası gider." } },
+      { "type": "card", "settings": { "image_asset": "wp-worn-1.jpg", "tag": "Konfor", "title": "Hafif, rahat", "body": "Yumuşak uçlarıyla kulağına oturur. Bir süre sonra taktığını unutursun." } },
+      { "type": "card", "settings": { "image_asset": "wp-real-three-on-mint.jpg", "tag": "Odak", "title": "İşine dön", "body": "Kafede, açık ofiste, yolda. Dikkatini dağıtan gürültü uzaklaşır." } },
+      { "type": "card", "settings": { "image_asset": "wp-real-portrait-yellow.jpg", "tag": "Aksesuar", "title": "Kombinin parçası", "body": "Obsidian Black ve Tropical Indigo. Saklanmak için değil, görünmek için." } },
+      { "type": "card", "settings": { "image_asset": "wp-case-open-seated.jpg", "tag": "Analog", "title": "Şarj yok, ekran yok", "body": "İçinde elektronik yok. Kutusundan çıkar, tak, hazırsın." } }
+    ]
+  }]
+}
+{% endschema %}

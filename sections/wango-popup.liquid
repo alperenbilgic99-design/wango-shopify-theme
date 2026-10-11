@@ -1,0 +1,147 @@
+{%- comment -%}
+  Launch / newsletter popup. Lives in the footer group so it is on every page,
+  but only renders on the templates switched on below (Origin, the story page,
+  the product page).
+
+  It appears a set delay after the page's opening animation has finished: each
+  hero calls Wango.introDone() (see wango-core.js), and on a page with no
+  opening it counts from page load. A dismissal is remembered for a number of
+  days; a sign-up is remembered for good.
+
+  The form is Shopify's own customer form (same endpoint as the newsletter
+  page), so the address lands in the store's customer list tagged
+  `newsletter`. Shopify answers with a full page reload: on the reloaded page
+  the popup opens straight away in its "thank you" state.
+
+  The discount code is NOT created here. Create it in Shopify admin
+  (Discounts) and type it into the "İndirim kodu" setting; while that setting
+  is empty the thank-you state promises an e-mail instead of showing a code.
+{%- endcomment -%}
+
+{%- liquid
+  assign show = false
+  if template.name == 'index' and section.settings.on_home
+    assign show = true
+  elsif template.name == 'product' and section.settings.on_product
+    assign show = true
+  elsif template.name == 'page' and template.suffix == 'setler' and section.settings.on_story
+    assign show = true
+  endif
+  if request.design_mode
+    assign show = true
+  endif
+-%}
+
+{%- if section.settings.enabled and show -%}
+  <div class="w-popup" data-popup hidden aria-hidden="true"
+       data-delay="{{ section.settings.delay }}" data-days="{{ section.settings.days }}">
+    <div class="w-popup__backdrop" data-popup-close></div>
+
+    <div class="w-popup__card" role="dialog" aria-modal="true" aria-labelledby="wango-popup-title">
+      <button type="button" class="w-popup__x" data-popup-close aria-label="{{ section.settings.close_label | escape }}">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+
+      <div class="w-popup__side" aria-hidden="true">
+        {%- if section.settings.image != blank -%}
+          <img src="{{ section.settings.image | image_url: width: 900 }}" alt="" loading="lazy"
+               width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}">
+        {%- endif -%}
+        <span class="w-popup__badge">{{ section.settings.badge }}</span>
+        <b class="w-popup__big">{{ section.settings.big }}</b>
+        <span class="w-popup__bigsub">{{ section.settings.big_sub }}</span>
+      </div>
+
+      <div class="w-popup__body">
+        {%- form 'customer', id: 'WangoPopupForm', class: 'w-popup__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+
+          {%- if form.posted_successfully? -%}
+            <span data-popup-posted hidden></span>
+            <div class="w-popup__ok">
+              <span class="w-eyebrow">{{ section.settings.success_eyebrow }}</span>
+              <h2 id="wango-popup-title">{{ section.settings.success_heading }}</h2>
+              {%- if section.settings.code != blank -%}
+                <p>{{ section.settings.success_body }}</p>
+                <button type="button" class="w-popup__code" data-popup-copy="{{ section.settings.code | escape }}"
+                        data-copied="{{ section.settings.copied_label | escape }}">
+                  <b>{{ section.settings.code }}</b>
+                  <em data-popup-copy-label>{{ section.settings.copy_label }}</em>
+                </button>
+              {%- else -%}
+                <p>{{ section.settings.success_body_nocode }}</p>
+              {%- endif -%}
+              <button type="button" class="w-btn w-btn--solid w-btn--block" data-popup-close style="margin-top:1.5rem">{{ section.settings.success_cta }}</button>
+            </div>
+          {%- else -%}
+            {%- if form.errors -%}<span data-popup-errored hidden></span>{%- endif -%}
+            <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
+            <h2 id="wango-popup-title">{{ section.settings.heading }} <em>{{ section.settings.heading_accent }}</em></h2>
+            <p class="w-popup__lede">{{ section.settings.body }}</p>
+
+            <label class="w-field">
+              <span class="visually-hidden">{{ 'newsletter.email' | t }}</span>
+              <input type="email" name="contact[email]" placeholder="{{ section.settings.placeholder | escape }}"
+                     autocomplete="email" inputmode="email" required>
+            </label>
+
+            <label class="w-consent">
+              <input type="checkbox" name="contact[accepts_marketing]" value="true" required>
+              <span>{{ section.settings.consent }}</span>
+            </label>
+
+            {%- if form.errors -%}
+              <p class="w-formerror" role="alert">{{ form.errors.messages['email'] | default: form.errors.messages['form'] | default: section.settings.err_generic }}</p>
+            {%- endif -%}
+
+            <button type="submit" class="w-btn w-btn--solid w-btn--block" style="margin-top:1.25rem">{{ section.settings.submit }}</button>
+            <button type="button" class="w-popup__later" data-popup-close>{{ section.settings.later }}</button>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Açılış popup'ı",
+  "settings": [
+    { "type": "checkbox", "id": "enabled", "default": true, "label": "Popup açık" },
+    { "type": "header", "content": "Nerede görünsün" },
+    { "type": "checkbox", "id": "on_home", "default": true, "label": "Origin (ana sayfa)" },
+    { "type": "checkbox", "id": "on_story", "default": true, "label": "Hikâye sayfası" },
+    { "type": "checkbox", "id": "on_product", "default": true, "label": "Ürün sayfası" },
+    { "type": "range", "id": "delay", "min": 0, "max": 10, "step": 0.5, "unit": "sn", "default": 2, "label": "Açılış animasyonu bittikten sonra bekleme" },
+    { "type": "range", "id": "days", "min": 1, "max": 30, "step": 1, "unit": "gün", "default": 7, "label": "Kapatılınca tekrar gösterme süresi" },
+
+    { "type": "header", "content": "Sol panel" },
+    { "type": "image_picker", "id": "image", "label": "Görsel (isteğe bağlı)" },
+    { "type": "text", "id": "badge", "default": "Açılışa özel", "label": "Rozet" },
+    { "type": "text", "id": "big", "default": "1.299 ₺", "label": "Büyük yazı" },
+    { "type": "text", "id": "big_sub", "default": "Origin · açılış fiyatı", "label": "Büyük yazının altı" },
+
+    { "type": "header", "content": "Metin" },
+    { "type": "text", "id": "eyebrow", "default": "wango bülteni", "label": "Üst etiket" },
+    { "type": "text", "id": "heading", "default": "İlk siparişine", "label": "Başlık" },
+    { "type": "text", "id": "heading_accent", "default": "%10 indirim.", "label": "Başlık · vurgu" },
+    { "type": "textarea", "id": "body", "default": "Origin açılışta 1.299 ₺. Bültene katıl, ilk siparişinde kullanacağın %10 indirim kodunu al.", "label": "Açıklama" },
+    { "type": "text", "id": "placeholder", "default": "e-posta adresin", "label": "E-posta alanı" },
+    { "type": "textarea", "id": "consent", "default": "wango'dan kampanya ve yenilik e-postaları almayı kabul ediyorum. İstediğim zaman çıkabilirim.", "label": "İzin metni" },
+    { "type": "text", "id": "submit", "default": "Kodu al", "label": "Düğme" },
+    { "type": "text", "id": "later", "default": "Şimdi değil", "label": "Vazgeç bağlantısı" },
+    { "type": "text", "id": "close_label", "default": "Kapat", "label": "Kapat düğmesi (ekran okuyucu)" },
+    { "type": "text", "id": "err_generic", "default": "Kayıt tamamlanamadı. E-posta adresini kontrol edip tekrar dener misin?", "label": "Hata mesajı" },
+
+    { "type": "header", "content": "Kayıttan sonra" },
+    { "type": "text", "id": "code", "label": "İndirim kodu", "info": "Kodu önce Shopify yönetiminde İndirimler bölümünden oluştur. Boş bırakılırsa kod gösterilmez." },
+    { "type": "text", "id": "success_eyebrow", "default": "Aramıza hoş geldin", "label": "Üst etiket" },
+    { "type": "text", "id": "success_heading", "default": "Kaydın alındı.", "label": "Başlık" },
+    { "type": "textarea", "id": "success_body", "default": "İlk siparişinde ödeme adımında bu kodu gir:", "label": "Açıklama (kod varken)" },
+    { "type": "textarea", "id": "success_body_nocode", "default": "%10 indirim kodunu e-posta adresine göndereceğiz.", "label": "Açıklama (kod yokken)" },
+    { "type": "text", "id": "copy_label", "default": "kopyala", "label": "Kopyala etiketi" },
+    { "type": "text", "id": "copied_label", "default": "kopyalandı", "label": "Kopyalandı etiketi" },
+    { "type": "text", "id": "success_cta", "default": "Alışverişe devam et", "label": "Düğme" }
+  ]
+}
+{% endschema %}

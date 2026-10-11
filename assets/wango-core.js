@@ -12,6 +12,29 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   };
 
+  /* ── phone layout ─────────────────────────────────────────────────────────
+     On a phone every animation is tied to the scroll position instead of a
+     timer or a tap (the one exception is the wordmark clip, which follows the
+     finger). Narrow windows and touch-first devices both count; the answer is
+     read once at boot, so a section never switches mode mid-page. */
+  var mobileMode = null;
+  W.mobile = function () {
+    if (mobileMode === null) {
+      mobileMode = !W.reduced() &&
+        window.matchMedia("(max-width: 767px), (hover: none) and (pointer: coarse)").matches;
+    }
+    return mobileMode;
+  };
+
+  /* ── opening animation finished ───────────────────────────────────────────
+     Each page's hero calls this once its opening has played (or, on a phone,
+     been scrolled through). The sign-up popup waits for it. */
+  W.introDone = function () {
+    if (W._intro) return;
+    W._intro = true;
+    document.dispatchEvent(new CustomEvent("wango:intro-done"));
+  };
+
   /* ── GSAP + ScrollTrigger ─────────────────────────────────────────────── */
   if (window.gsap) {
     if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
@@ -100,6 +123,46 @@
     else el.scrollIntoView({ behavior: "smooth" });
   };
 
+  /* ── .w-reveal on a phone: scrubbed ───────────────────────────────────────
+     Opacity and rise follow the element's own position in the viewport, in
+     both directions, instead of a one-shot timed transition. The element's
+     untransformed top is used (its current offset is subtracted), otherwise
+     the rise would feed back into its own progress. */
+  var scrubbed = [], scrubQueued = false;
+  function paintScrubbed() {
+    scrubQueued = false;
+    var vh = window.innerHeight, start = vh * 0.96, span = vh * 0.22;
+    for (var i = 0; i < scrubbed.length; i++) {
+      var el = scrubbed[i];
+      var top = el.getBoundingClientRect().top - (el._wy || 0);
+      var p = (start - top) / span - (el._wd || 0);
+      p = p < 0 ? 0 : p > 1 ? 1 : p;
+      if (p === el._wp) continue;
+      el._wp = p;
+      el._wy = 28 * (1 - p);
+      el.style.opacity = p;
+      el.style.transform = p === 1 ? "none" : "translateY(" + el._wy.toFixed(1) + "px)";
+    }
+  }
+  function queueScrubbed() {
+    if (scrubQueued) return;
+    scrubQueued = true;
+    requestAnimationFrame(paintScrubbed);
+  }
+  function scrubReveals(els) {
+    if (!scrubbed.length) {
+      window.addEventListener("scroll", queueScrubbed, { passive: true });
+      window.addEventListener("resize", queueScrubbed);
+    }
+    els.forEach(function (el) {
+      el.classList.add("is-in");                 /* so a later pass does not pick it up again */
+      el.style.transition = "none";
+      el._wd = parseFloat(el.dataset.revealDelay || "0") * 2;   /* the stagger, as a scroll offset */
+      scrubbed.push(el);
+    });
+    paintScrubbed();
+  }
+
   /* ── .w-reveal → .is-in ───────────────────────────────────────────────── */
   function initReveals(scope) {
     var els = (scope || document).querySelectorAll(".w-reveal:not(.is-in)");
@@ -108,6 +171,7 @@
       els.forEach(function (el) { el.classList.add("is-in"); });
       return;
     }
+    if (W.mobile()) { scrubReveals([].slice.call(els)); return; }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;

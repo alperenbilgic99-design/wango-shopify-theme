@@ -11,7 +11,14 @@
         "credit": "Görseller: Gemini 3 Pro Image · ürün kilidi",
         "credit_code": "product-spec/wango-visual-lock.md"
       }
+    },
+    "popup": {
+      "type": "wango-popup",
+      "settings": {}
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer",
+    "popup"
+  ]
 }

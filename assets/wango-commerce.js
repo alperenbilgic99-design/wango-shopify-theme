@@ -19,6 +19,15 @@
        it shrinks on narrow screens instead of being clipped. */
     var tilt = window.innerWidth < 768 ? 4 : 10;
     gsap.set(items, { y: 140, rotate: function (i) { return i % 2 === 0 ? -tilt : tilt; }, opacity: 0 });
+    /* Phones: the fan-in is scrubbed by the scroll instead of playing once on
+       a timer (see Wango.mobile in wango-core). */
+    if (W.mobile && W.mobile()) {
+      gsap.to(items, {
+        y: 0, rotate: 0, opacity: 1, ease: "power2.out", stagger: 0.15,
+        scrollTrigger: { trigger: root, start: "top 92%", end: "top 38%", scrub: true }
+      });
+      return;
+    }
     gsap.to(items, {
       y: 0, rotate: 0, opacity: 1, duration: 1, ease: "back.out(1.5)", stagger: 0.15,
       scrollTrigger: { trigger: root, start: "top 78%" }
