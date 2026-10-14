@@ -1133,9 +1133,9 @@ html.has-buybar body { padding-bottom: 5rem; }
 }
 @media (min-width: 900px) and (prefers-reduced-motion: reduce) { .w-drop, .w-drop.is-open { transition: none; } .w-drop.is-open .w-drop__links a { animation: none; } }
 
-/* ── moments as a bookshelf (wide screens; phones keep the scrubbed deck) ─ */
-.w-shelf { display: none; }
-@media (min-width: 768px) {
+/* ── moments as a bookshelf: spines side by side on wide screens, a stack of
+   books lying on the shelf on phones (overrides below) ────────────────── */
+@media all {
   .w-stack { display: none; }
   .w-shelf {
     --spine: 5.5rem; --gap: .75rem; --ease-book: cubic-bezier(.77, 0, .18, 1);
@@ -1172,11 +1172,37 @@ html.has-buybar body { padding-bottom: 5rem; }
   .w-shelf__copy { position: absolute; left: 0; bottom: 0; width: min(34rem, calc(var(--open-w, 900px) - 3rem)); display: grid; gap: .55rem; padding: 2rem 2.25rem;
     opacity: 0; transform: translateY(18px); transition: opacity .3s ease, transform .3s ease; pointer-events: none; }
   .w-shelf__book.is-open .w-shelf__copy { opacity: 1; transform: none; transition: opacity .6s ease .45s, transform .8s var(--w-ease) .45s; }
+  .w-shelf__copy { text-shadow: 0 1px 14px rgba(11,11,13,.45); }   /* small type stays readable over bright photos */
   .w-shelf__count { font-size: .7rem; font-weight: 600; letter-spacing: .2em; color: var(--w-accent); }
   .w-shelf__title { font-family: "Bricolage Grotesque", var(--font-display); font-size: clamp(2.4rem, 4.4vw, 3.8rem); font-weight: 800; line-height: .95; letter-spacing: -.01em; }
   .w-shelf__meta { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: rgba(255,255,255,.8); }
   .w-shelf__body { margin-top: .35rem; max-width: 40ch; font-size: 1rem; line-height: 1.55; color: rgba(255,255,255,.88); }
 }
-@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .w-shelf__book, .w-shelf__img img, .w-shelf__copy, .w-shelf__spine { transition: none !important; }
+}
+/* phones: the books lie flat, one on top of the other; spines read
+   left-to-right, the open book takes the height the others give up */
+@media (max-width: 767px) {
+  .w-shelf {
+    --spine: 3.6rem; --gap: .5rem; --open-h: min(60svh, 430px);
+    flex-direction: column; align-items: center;
+    height: calc(var(--open-h) + (var(--n, 5) - 1) * (var(--spine) + var(--gap)) + 14px);
+    margin-top: 2rem;
+  }
+  .w-shelf::after { left: -.5rem; right: -.5rem; }
+  .w-shelf__book { flex: 0 0 var(--spine); flex-grow: 0; width: var(--book-h, 100%); height: auto;
+    border-radius: .6rem .9rem .9rem .6rem;
+    box-shadow: inset 0 -5px 10px rgba(0,0,0,.35), 0 10px 22px rgba(20,18,26,.2);
+    transition: flex-grow .9s var(--ease-book), width .9s var(--ease-book), box-shadow .45s; }
+  .w-shelf__book.is-open { flex-grow: 1; width: 100%; height: auto; border-radius: 1rem; }
+  .w-shelf__book:not(.is-open):hover { transform: none; }
+  .w-shelf__img { top: 50%; bottom: auto; left: 0; right: 0; width: 100%; height: var(--open-h); transform: translateY(-50%); }
+  .w-shelf__spine { flex-direction: row; justify-content: flex-start; gap: .9rem; padding: 0 1.1rem; }
+  .w-shelf__spine-title { writing-mode: horizontal-tb; transform: none; font-size: 1.15rem; letter-spacing: .08em; }
+  .w-shelf__num { font-size: .65rem; }
+  .w-shelf__copy { width: 100%; padding: 1.4rem 1.25rem; gap: .4rem; }
+  .w-shelf__title { font-size: 2.1rem; }
+  .w-shelf__meta { font-size: .68rem; }
+  .w-shelf__body { font-size: .9rem; line-height: 1.5; }
 }

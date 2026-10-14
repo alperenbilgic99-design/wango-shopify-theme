@@ -236,6 +236,7 @@
     function measure() {
       if (!root.offsetWidth) return;
       var cs = getComputedStyle(root);
+      if (cs.flexDirection === "column") { root.style.setProperty("--open-w", root.clientWidth + "px"); return; }   /* phones: books lie flat, full width */
       var spine = parseFloat(getComputedStyle(books[0]).flexBasis) || 88;
       var gap = parseFloat(cs.columnGap || cs.gap) || 12;
       root.style.setProperty("--open-w", Math.round(root.clientWidth - (books.length - 1) * (spine + gap)) + "px");

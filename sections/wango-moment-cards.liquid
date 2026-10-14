@@ -1,12 +1,15 @@
 {%- comment -%}
   "Moments", two layouts from the same blocks:
-  • wide screens (768px+): a bookshelf. Every moment is a spine standing on a
+  A bookshelf on every screen (the stacked deck it replaced is gone).
+  • wide screens (768px+): every moment is a spine standing on a
     shelf with its title written up the side; one book is open at a time and a
     tap on another spine slides it open (flex-grow on a single ease, so all
     widths stay in step) while the photo inside eases from a slight zoom and
     the copy rises in after it. The photo is laid out at the OPEN width from
     the start, so opening only reveals more of it and never re-scales it.
-  • phones: the original stacked deck, scrubbed by scroll (wango-scroll-fx.js).
+  • phones: the same books lying flat, one on top of the other, with the spine
+    titles read left to right; a tap opens one and it takes the height the
+    others give up (same ease, same script).
 {%- endcomment -%}
 
 <section class="w-paper w-section">
@@ -16,7 +19,7 @@
   </div>
 
   <div class="w-wrap">
-    <div class="w-shelf" data-shelf>
+    <div class="w-shelf" data-shelf style="--n: {{ section.blocks.size }}">
       {%- assign tilts = '100,93,97,90,95,92,98,94' | split: ',' -%}
       {%- for block in section.blocks -%}
         {%- assign h = tilts[forloop.index0] -%}
@@ -40,19 +43,6 @@
       {%- endfor -%}
     </div>
 
-    <div class="w-stack" data-stack role="button" tabindex="0" aria-label="{{ section.settings.hint }}">
-      <span class="w-stack__hint">{{ section.settings.hint }}</span>
-      {%- for block in section.blocks -%}
-        <article class="sl-card" {{ block.shopify_attributes }}>
-          {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy' %}
-          <div class="sl-card__scrim"></div>
-          <div class="sl-copy">
-            <h3 data-text="{{ block.settings.title | escape }}">{{ block.settings.title }}</h3>
-            <p data-text="{{ block.settings.meta | escape }}">{{ block.settings.meta }}</p>
-          </div>
-        </article>
-      {%- endfor -%}
-    </div>
   </div>
 </section>
 
