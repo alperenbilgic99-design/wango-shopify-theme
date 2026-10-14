@@ -97,17 +97,19 @@
     "uniform sampler2D u_texture0; uniform sampler2D u_texture1; uniform sampler2D u_displacement;" +
     "uniform float u_progress; uniform float u_strength; uniform float u_rgbShift; uniform float u_scale;" +
     "uniform vec2 u_resolution; uniform vec2 u_textureResolution0; uniform vec2 u_textureResolution1;" +
+    "uniform vec2 u_focus0; uniform vec2 u_focus1;" +
     "varying vec2 vUv;" +
-    "vec2 coverUV(vec2 uv, vec2 planeRes, vec2 texRes) {" +
+    /* cover-fit, cropped around a focus point (0..1 in texture space) instead of the centre */
+    "vec2 coverUV(vec2 uv, vec2 planeRes, vec2 texRes, vec2 focus) {" +
     "  float scale = max(planeRes.x / texRes.x, planeRes.y / texRes.y);" +
     "  vec2 newSize = texRes * scale;" +
-    "  return uv * (planeRes / newSize) + (newSize - planeRes) / 2.0 / newSize;" +
+    "  return uv * (planeRes / newSize) + (newSize - planeRes) * focus / newSize;" +
     "}" +
     "void main() {" +
     "  float disp = texture2D(u_displacement, vUv).r;" +
     "  disp = mix(disp, disp * (sin(vUv.y * 10.0 + u_progress * 6.28) * 0.5 + 0.5), 0.3);" +
-    "  vec2 uv0 = coverUV(vUv, u_resolution, u_textureResolution0);" +
-    "  vec2 uv1 = coverUV(vUv, u_resolution, u_textureResolution1);" +
+    "  vec2 uv0 = coverUV(vUv, u_resolution, u_textureResolution0, u_focus0);" +
+    "  vec2 uv1 = coverUV(vUv, u_resolution, u_textureResolution1, u_focus1);" +
     "  float scaleEffect = 1.0 + u_progress * (1.0 - u_progress) * u_scale;" +
     "  vec2 center = vec2(0.5);" +
     "  vec2 d0 = (uv0 - center) / scaleEffect + center + u_progress * disp * u_strength * vec2(1.0, 0.5);" +
@@ -118,9 +120,9 @@
     "  gl_FragColor = mix(tex0, tex1, smoothstep(0.0, 1.0, u_progress));" +
     "}";
 
-  /* Sticky frame geometry — must match .w-xfade__sticky in the CSS, so the
-     pin and the progress can never disagree. */
-  var XFADE_TOP = 72, XFADE_BOTTOM = 24;
+  /* Sticky frame geometry — must match .w-xfade__sticky in the CSS (full
+     screen, pinned at the very top), so the pin and the progress agree. */
+  var XFADE_TOP = 0, XFADE_BOTTOM = 0;
 
   /* Each gap between two pictures is split hold 30% · blend 40% · hold 30%: a
      picture is always seen at rest for a beat before it dissolves, and the
@@ -141,7 +143,15 @@
     var srcs = (outer.dataset.images || "").split("|").filter(Boolean);
     var n = srcs.length;
     var caps = [].slice.call(outer.querySelectorAll("[data-xfade-caption]"));
-    var dots = [].slice.call(outer.querySelectorAll("[data-xfade-dots] i"));
+    var steps = [].slice.call(outer.querySelectorAll("[data-xfade-steps] li"));
+    var fills = steps.map(function (li) { return li.querySelector("b"); });
+    /* focus points as written by the section (image space, top-left origin) */
+    var focus = (outer.dataset.focus || "").split("|").map(function (f) {
+      var p = f.split(",").map(parseFloat);
+      return [isNaN(p[0]) ? 0.5 : p[0], isNaN(p[1]) ? 0.5 : p[1]];
+    });
+    while (focus.length < n) focus.push([0.5, 0.5]);
+    if (fallbackImg) fallbackImg.style.objectPosition = (focus[0][0] * 100) + "% " + (focus[0][1] * 100) + "%";
 
     /* n + ½ screens: each gap gets ~1¼ screens of scroll, of which the dissolve
        itself is the middle 40%. */
@@ -157,10 +167,16 @@
         var y = (1 - o) * 14 * (seg > k ? -1 : 1);   /* leaving drift up, arriving rise from below */
         el.style.opacity = o;
         el.style.visibility = o < 0.01 ? "hidden" : "visible";
-        /* the wide layout centres with translateY(-50%); the narrow with translateX(-50%) */
         el.style.translate = "0 " + y.toFixed(1) + "px";
+        el.toggleAttribute("inert", o < 0.5);
       });
-      dots.forEach(function (d, k) { d.classList.toggle("is-on", k === nearest); });
+      /* rail: step k fills while the scroll travels from frame k-1 to frame k */
+      steps.forEach(function (li, k) {
+        var f = k === 0 ? 1 : Math.min(Math.max(seg - (k - 1), 0), 1);
+        if (fills[k]) fills[k].style.transform = "scaleX(" + f.toFixed(3) + ")";
+        li.classList.toggle("is-on", k === nearest);
+        li.classList.toggle("is-done", k < nearest);
+      });
     }
     paint(0);
 
@@ -189,13 +205,19 @@
     gl.set("u_progress", 0); gl.set("u_strength", 0.8);
     gl.set("u_rgbShift", 0.05); gl.set("u_scale", 0.15);
 
+    /* draw only when something changed (scroll, size, a texture arriving),
+       plus a few frames after, instead of every frame while it is on screen */
+    var dirty = 6;
     function resize() {
       var w = sticky.clientWidth, h = sticky.clientHeight;
       gl.resize(w, h);
       gl.set("u_resolution", [w, h]);
+      dirty = 6;
     }
     resize();
     new ResizeObserver(resize).observe(sticky);
+    /* coming back on screen: redraw (the GL helper skips draws while hidden) */
+    new IntersectionObserver(function (es) { if (es[0].isIntersecting) dirty = 12; }).observe(sticky);
 
     var images = [], loaded = 0, seg = 0, pair = -1;
     function apply() {
@@ -207,8 +229,12 @@
         gl.set("u_texture1", { texture: images[st.i + 1] });
         gl.set("u_textureResolution0", [images[st.i].naturalWidth, images[st.i].naturalHeight]);
         gl.set("u_textureResolution1", [images[st.i + 1].naturalWidth, images[st.i + 1].naturalHeight]);
+        /* texture v runs bottom-up (UNPACK_FLIP_Y), so the top-left focus flips on y */
+        gl.set("u_focus0", [focus[st.i][0], 1 - focus[st.i][1]]);
+        gl.set("u_focus1", [focus[st.i + 1][0], 1 - focus[st.i + 1][1]]);
       }
       gl.set("u_progress", st.b);
+      dirty = 6;
     }
     srcs.forEach(function (src, k) {
       WangoGL.loadImage(src).then(function (img) { images[k] = img; loaded++; apply(); }).catch(function () {});
@@ -222,7 +248,7 @@
       onUpdate: function (self) { seg = self.progress * (n - 1); apply(); paint(seg); }
     });
 
-    (function tick() { gl.render(); requestAnimationFrame(tick); })();
+    (function tick() { if (dirty > 0) { dirty--; gl.render(); } requestAnimationFrame(tick); })();
   }
 
   /* ── moments bookshelf (wide screens) ────────────────────────────────────

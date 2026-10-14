@@ -1356,3 +1356,53 @@ html.has-drawer body { overflow: hidden; }
 #MainContent { transition: transform .55s cubic-bezier(.32, .72, 0, 1), border-radius .55s, filter .55s; }
 html.has-drawer #MainContent { transform: scale(.965); border-radius: 22px; overflow: clip; filter: brightness(.82); }
 @media (prefers-reduced-motion: reduce) { #MainContent, html.has-drawer #MainContent { transition: none; transform: none; } .w-drawer__line.is-enter { animation: none; } }
+
+/* ── transition story, upgraded: edge-to-edge picture, one caption card,
+   named progress rail. Same type as the story section and the drawer. ── */
+.w-tx { padding-top: clamp(4.5rem, 9vw, 7.5rem); }
+.w-tx__intro { padding-bottom: clamp(2.5rem, 5vw, 4rem); }
+.w-tx__title { margin-top: 1rem; max-width: 18ch; font-family: "Bricolage Grotesque", var(--font-display); font-size: clamp(2.3rem, 5.6vw, 4.6rem); font-weight: 700; line-height: .98; letter-spacing: -.035em; text-wrap: balance; color: var(--w-white); }
+.w-tx .w-lede { margin-top: 1.1rem; font-size: 1.05rem; }
+.w-tx__stage.w-xfade { width: 100%; }
+.w-tx .w-xfade__sticky { top: 0; height: 100vh; height: 100svh; min-height: 520px; border-radius: 0; background: #1a0f30; }
+.w-tx .w-xfade__sticky > img { object-fit: cover; }
+/* only what the text needs: a soft floor of shade, and a light veil under the header */
+.w-tx .w-xfade__scrim { background:
+  linear-gradient(180deg, rgba(11,11,13,.38) 0%, rgba(11,11,13,0) 16%),
+  linear-gradient(0deg, rgba(11,11,13,.78) 0%, rgba(11,11,13,.42) 26%, rgba(11,11,13,0) 52%); }
+
+.w-tx__cards { position: absolute; z-index: 20; left: clamp(1rem, 5vw, 4.5rem); right: clamp(1rem, 5vw, 4.5rem); top: clamp(5.5rem, 12vh, 7rem); bottom: clamp(5.25rem, 11vh, 7.5rem); display: grid; pointer-events: none; }
+.w-tx__card--top { align-self: start !important; }
+.w-tx__card { grid-area: 1 / 1; align-self: end; display: flex; align-items: flex-start; gap: 1.25rem; width: min(34rem, 100%); padding: 1.5rem 1.6rem 1.6rem;
+  border: 1px solid rgba(255,255,255,.14); border-radius: 1.5rem; background: rgba(26,15,48,.42);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25); backdrop-filter: blur(18px) saturate(1.25);
+  box-shadow: 0 30px 70px rgba(11,11,13,.35); opacity: 0; visibility: hidden; pointer-events: auto; }
+.w-tx__num { flex: none; font-family: "Bricolage Grotesque", var(--font-display); font-size: clamp(3rem, 5vw, 4.25rem); font-weight: 800; line-height: .8; letter-spacing: -.04em;
+  color: transparent; -webkit-text-stroke: 1.2px rgba(255,255,255,.45); }
+.w-tx__copy { min-width: 0; }
+.w-tx__card .w-eyebrow { display: block; color: var(--w-accent); }
+.w-tx__card h3 { margin-top: .5rem; font-family: "Bricolage Grotesque", var(--font-display); font-size: clamp(1.55rem, 2.5vw, 2.15rem); font-weight: 700; line-height: 1.04; letter-spacing: -.02em; text-wrap: balance; color: var(--w-white); }
+.w-tx__card p { margin-top: .7rem; font-size: .98rem; line-height: 1.6; color: rgba(246,245,243,.8); }
+.w-tx__chips { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .45rem; }
+.w-tx__chips li { padding: .38rem .75rem; border: 1px solid rgba(176,166,230,.38); border-radius: 999px; background: rgba(255,255,255,.07); font-size: .78rem; font-weight: 500; color: var(--w-white); }
+
+.w-tx__rail { position: absolute; z-index: 20; left: clamp(1rem, 5vw, 4.5rem); right: clamp(1rem, 5vw, 4.5rem); bottom: clamp(1.5rem, 4vh, 2.5rem);
+  list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: .75rem; pointer-events: none; }
+.w-tx__rail span { display: block; margin-bottom: .6rem; font-size: .78rem; font-weight: 600; letter-spacing: .02em; color: rgba(246,245,243,.5); transition: color .4s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w-tx__rail em { font-style: normal; margin-right: .35rem; color: rgba(246,245,243,.4); font-variant-numeric: tabular-nums; }
+.w-tx__rail li.is-on span, .w-tx__rail li.is-done span { color: var(--w-white); }
+.w-tx__rail li.is-on em { color: var(--w-accent); }
+.w-tx__rail i { display: block; height: 3px; border-radius: 3px; background: rgba(255,255,255,.2); overflow: hidden; }
+.w-tx__rail b { display: block; height: 100%; background: var(--w-accent); transform: scaleX(0); transform-origin: left; }
+.w-tx__rail li:first-child b { transform: none; }
+
+@media (max-width: 767px) {
+  .w-tx__card { gap: .9rem; padding: 1.15rem 1.2rem 1.25rem; border-radius: 1.25rem; }
+  .w-tx__num { font-size: 2.6rem; }
+  .w-tx__card h3 { font-size: 1.45rem; }
+  .w-tx__card p { font-size: .92rem; line-height: 1.55; }
+  .w-tx__cards { top: 5.25rem; bottom: 4.75rem; }
+  .w-tx__rail { gap: .5rem; }
+  .w-tx__rail span { font-size: .72rem; }
+  .w-tx__rail em { display: none; }
+}

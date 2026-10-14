@@ -77,33 +77,41 @@
           "type": "frame",
           "settings": {
             "image_asset": "wp-real-lilac-banner.jpg",
-            "kicker": "Bir",
-            "left_title": "Önce sessizlik",
-            "left_body": "Kutu kapalıyken hiçbir şey vaat etmiyor. Avuç içine oturan küçük, pürüzsüz bir taş.",
-            "right_title": "Askısıyla",
-            "right_body": "Kutusunun deri kayışıyla bileğe ya da çantaya takılır. Hep elinin altında kalsın diye."
+            "focus_x": 72,
+            "focus_y": 58,
+            "step": "Önce sessizlik",
+            "kicker": "Kapalıyken",
+            "title": "Avucuna sığan bir sessizlik.",
+            "body": "Kapalıyken küçük, pürüzsüz bir taş gibi. Deri kayışıyla bileğine ya da çantana takılır, hep elinin altında kalır.",
+            "chips": "Taşıma kutusu, Deri kayış",
+            "card_pos": "top"
           }
         },
         "f2": {
           "type": "frame",
           "settings": {
-            "image_asset": "wp-real-case-pattern.jpg",
-            "kicker": "İki",
-            "left_title": "Çoğaldığında",
-            "left_body": "Aynı form yan yana gelince desene dönüşüyor. Tek başına sessiz, sırayla ritim.",
-            "right_title": "Tek renk",
-            "right_body": "Obsidian Black ve Tropical Indigo. Biri gece kadar koyu, biri ışığa göre açılıp koyulaşan bir mor."
+            "image_asset": "wp-real-three-on-mint.jpg",
+            "focus_x": 50,
+            "focus_y": 100,
+            "step": "Çoğaldığında",
+            "kicker": "Yan yana",
+            "title": "İki renk, aynı sade form.",
+            "body": "Obsidian Black gece kadar koyu; Tropical Indigo ışığa göre açılıp koyulaşan bir mor. Hangisini seçersen seç, içi aynı.",
+            "chips": "Obsidian Black, Tropical Indigo",
+            "card_pos": "top"
           }
         },
         "f3": {
           "type": "frame",
           "settings": {
             "image_asset": "wp-real-claw-machine.jpg",
-            "kicker": "Üç",
-            "left_title": "Ve seçilir",
-            "left_body": "Yığının içinden biri kalkıyor. Hangi set olduğu değil, hangi anı taşıdığı önemli.",
-            "right_title": "Sana kalan",
-            "right_body": "Kutudan çıkar, kulağında kaybolur. Geriye sadece dinlediğin şey kalır."
+            "focus_x": 52,
+            "focus_y": 30,
+            "step": "Ve seçilir",
+            "kicker": "Seçildiğinde",
+            "title": "Ve biri senin olur.",
+            "body": "Yığının içinden biri kalkıyor ve seninle geliyor. Uçlarını kulağına göre seçersin; hipoalerjenik silikon, yıkanabilir.",
+            "chips": "4 boy uç: S · M · L · Double, Yıkanabilir"
           }
         }
       },
@@ -111,7 +119,10 @@
         "f1",
         "f2",
         "f3"
-      ]
+      ],
+      "settings": {
+        "body": "Üç kare, tek bir kutunun hikâyesi."
+      }
     },
     "moments": {
       "type": "wango-moment-cards",

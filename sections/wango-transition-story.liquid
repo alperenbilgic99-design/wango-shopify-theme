@@ -3,67 +3,75 @@
   photos, carrying the story. Ported from transition-story.tsx +
   DisplacementCrossfade in lib/webgl-fx-2.tsx.
 
-  Each frame has its own pair of captions pinned to the left and right
-  margins; the crossfade reports which frame it has moved to and the text
-  swaps to match, so reading down the page follows the pictures.
+  The picture runs edge to edge and stays pinned while the page scrolls.
+  Each frame has ONE caption card (number, title, a short line, fact chips)
+  in the lower-left corner; the crossfade reports which frame it is on and
+  the cards swap to match. A three-part rail along the bottom names every
+  step and fills as the visitor scrolls. Each frame also carries a focus
+  point, so the shader crops around the product instead of the centre.
 {%- endcomment -%}
 
 {%- liquid
   assign srcs = ''
+  assign focus = ''
   for block in section.blocks
     if block.settings.image != blank
-      assign one = block.settings.image | image_url: width: 2000
+      assign one = block.settings.image | image_url: width: 2400
     else
       assign one = block.settings.image_asset | asset_url
     endif
+    assign fx = block.settings.focus_x | divided_by: 100.0
+    assign fy = block.settings.focus_y | divided_by: 100.0
     if forloop.first
       assign srcs = one
+      assign focus = fx | append: ',' | append: fy
     else
       assign srcs = srcs | append: '|' | append: one
+      assign focus = focus | append: '|' | append: fx | append: ',' | append: fy
     endif
   endfor
+  assign first = section.blocks.first
 -%}
 
-<section class="w-black w-section">
-  <div class="w-wrap">
+<section class="w-black w-tx">
+  <div class="w-wrap w-tx__intro">
     <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
-    <h2 class="w-h2">{{ section.settings.heading }}</h2>
-    <p class="w-lede">{{ section.settings.body }}</p>
+    <h2 class="w-tx__title">{{ section.settings.heading }}</h2>
+    {%- if section.settings.body != blank -%}<p class="w-lede">{{ section.settings.body }}</p>{%- endif -%}
   </div>
 
-  <div class="w-transition">
-    <div class="w-xfade" data-xfade data-images="{{ srcs | escape }}">
-      {%- comment -%}
-        The captions live INSIDE the sticky frame. They used to sit in a sibling
-        block positioned at top:50% of the whole scroll wrapper — (frames + ½)
-        screens tall — so their vertical middle was hundreds of pixels below the
-        visible picture: frame 1 showed no text and the rest were off-screen.
-      {%- endcomment -%}
-      <div class="w-xfade__sticky" data-xfade-sticky>
-        {%- assign first = section.blocks.first -%}
-        {% render 'wango-image', image: first.settings.image, asset: first.settings.image_asset, alt: '', loading: 'lazy' %}
+  <div class="w-xfade w-tx__stage" data-xfade data-images="{{ srcs | escape }}" data-focus="{{ focus }}">
+    <div class="w-xfade__sticky" data-xfade-sticky>
+      {% render 'wango-image', image: first.settings.image, asset: first.settings.image_asset, alt: '', loading: 'lazy' %}
+      <div class="w-xfade__scrim" aria-hidden="true"></div>
 
-        <div class="w-xfade__scrim" aria-hidden="true"></div>
-
-        <div class="w-xfade__captions">
-          {%- for block in section.blocks -%}
-            <div class="w-caption w-caption--left" data-xfade-caption data-frame="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
-              <span class="w-eyebrow">{{ block.settings.kicker }}</span>
-              <h3>{{ block.settings.left_title }}</h3>
-              <p>{{ block.settings.left_body }}</p>
+      <div class="w-tx__cards">
+        {%- for block in section.blocks -%}
+          {%- assign chips = block.settings.chips | split: ',' -%}
+          <article class="w-tx__card w-tx__card--{{ block.settings.card_pos | default: 'bottom' }}" data-xfade-caption data-frame="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <span class="w-tx__num" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <div class="w-tx__copy">
+              {%- if block.settings.kicker != blank -%}<span class="w-eyebrow">{{ block.settings.kicker }}</span>{%- endif -%}
+              <h3>{{ block.settings.title }}</h3>
+              {%- if block.settings.body != blank -%}<p>{{ block.settings.body }}</p>{%- endif -%}
+              {%- if block.settings.chips != blank -%}
+                <ul class="w-tx__chips">
+                  {%- for c in chips -%}{%- assign t = c | strip -%}{%- if t != blank -%}<li>{{ t }}</li>{%- endif -%}{%- endfor -%}
+                </ul>
+              {%- endif -%}
             </div>
-            <div class="w-caption w-caption--right" data-xfade-caption data-frame="{{ forloop.index0 }}">
-              <span class="w-eyebrow">0{{ forloop.index }} / 0{{ section.blocks.size }}</span>
-              <h3>{{ block.settings.right_title }}</h3>
-              <p>{{ block.settings.right_body }}</p>
-            </div>
-          {%- endfor -%}
-        </div>
-
-        <div class="w-xfade__dots" data-xfade-dots aria-hidden="true">
-          {%- for block in section.blocks -%}<i{% if forloop.first %} class="is-on"{% endif %}></i>{%- endfor -%}
-        </div>
+          </article>
+        {%- endfor -%}
       </div>
+
+      <ol class="w-tx__rail" data-xfade-steps aria-hidden="true">
+        {%- for block in section.blocks -%}
+          <li{% if forloop.first %} class="is-on"{% endif %}>
+            <span><em>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</em> {{ block.settings.step }}</span>
+            <i><b></b></i>
+          </li>
+        {%- endfor -%}
+      </ol>
     </div>
   </div>
 </section>
@@ -75,7 +83,7 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "default": "Geçiş", "label": "Üst etiket" },
     { "type": "text", "id": "heading", "default": "Her an bir öncekinden doğar.", "label": "Başlık" },
-    { "type": "textarea", "id": "body", "default": "Aşağı kaydır: üç kare, üç ayrı hâl. Kutunun kapalı sessizliğinden çoğaldığı ana, oradan da senin seçtiğin tek tanesine.", "label": "Metin" }
+    { "type": "textarea", "id": "body", "default": "Üç kare, tek bir kutunun hikâyesi.", "label": "Metin" }
   ],
   "blocks": [
     {
@@ -84,11 +92,15 @@
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Görsel" },
         { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
-        { "type": "text", "id": "kicker", "label": "Sayaç etiketi" },
-        { "type": "text", "id": "left_title", "label": "Sol başlık" },
-        { "type": "textarea", "id": "left_body", "label": "Sol metin" },
-        { "type": "text", "id": "right_title", "label": "Sağ başlık" },
-        { "type": "textarea", "id": "right_body", "label": "Sağ metin" }
+        { "type": "range", "id": "focus_x", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50, "label": "Odak noktası · yatay", "info": "Ürünün görseldeki yeri; kırpılınca bu nokta kadrajda kalır." },
+        { "type": "range", "id": "focus_y", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50, "label": "Odak noktası · dikey" },
+        { "type": "select", "id": "card_pos", "label": "Metin kartının yeri", "default": "bottom", "info": "Ürün görselin altındaysa kartı üste al.",
+          "options": [ { "value": "bottom", "label": "Altta" }, { "value": "top", "label": "Üstte" } ] },
+        { "type": "text", "id": "step", "label": "İlerleme çubuğu etiketi" },
+        { "type": "text", "id": "kicker", "label": "Üst etiket" },
+        { "type": "text", "id": "title", "label": "Başlık" },
+        { "type": "textarea", "id": "body", "label": "Metin" },
+        { "type": "text", "id": "chips", "label": "Bilgi etiketleri", "info": "Virgülle ayır. Yalnızca doğru bilgiler." }
       ]
     }
   ],
@@ -96,23 +108,23 @@
     "name": "Origin · geçiş",
     "blocks": [
       { "type": "frame", "settings": {
-        "image_asset": "wp-real-lilac-banner.jpg", "kicker": "Bir",
-        "left_title": "Önce sessizlik",
-        "left_body": "Kutu kapalıyken hiçbir şey vaat etmiyor. Avuç içine oturan küçük, pürüzsüz bir taş.",
-        "right_title": "Askısıyla",
-        "right_body": "Kutusunun deri kayışıyla bileğe ya da çantaya takılır. Hep elinin altında kalsın diye." } },
+        "image_asset": "wp-real-lilac-banner.jpg", "focus_x": 72, "focus_y": 58, "card_pos": "top",
+        "step": "Önce sessizlik", "kicker": "Kapalıyken",
+        "title": "Avucuna sığan bir sessizlik.",
+        "body": "Kapalıyken küçük, pürüzsüz bir taş gibi. Deri kayışıyla bileğine ya da çantana takılır, hep elinin altında kalır.",
+        "chips": "Taşıma kutusu, Deri kayış" } },
       { "type": "frame", "settings": {
-        "image_asset": "wp-real-case-pattern.jpg", "kicker": "İki",
-        "left_title": "Çoğaldığında",
-        "left_body": "Aynı form yan yana gelince desene dönüşüyor. Tek başına sessiz, sırayla ritim.",
-        "right_title": "Tek renk",
-        "right_body": "Obsidian Black ve Tropical Indigo. Biri gece kadar koyu, biri ışığa göre açılıp koyulaşan bir mor." } },
+        "image_asset": "wp-real-three-on-mint.jpg", "focus_x": 50, "focus_y": 100, "card_pos": "top",
+        "step": "Çoğaldığında", "kicker": "Yan yana",
+        "title": "İki renk, aynı sade form.",
+        "body": "Obsidian Black gece kadar koyu; Tropical Indigo ışığa göre açılıp koyulaşan bir mor. Hangisini seçersen seç, içi aynı.",
+        "chips": "Obsidian Black, Tropical Indigo" } },
       { "type": "frame", "settings": {
-        "image_asset": "wp-real-claw-machine.jpg", "kicker": "Üç",
-        "left_title": "Ve seçilir",
-        "left_body": "Yığının içinden biri kalkıyor. Hangi set olduğu değil, hangi anı taşıdığı önemli.",
-        "right_title": "Sana kalan",
-        "right_body": "Kutudan çıkar, kulağında kaybolur. Geriye sadece dinlediğin şey kalır." } }
+        "image_asset": "wp-real-claw-machine.jpg", "focus_x": 52, "focus_y": 30,
+        "step": "Ve seçilir", "kicker": "Seçildiğinde",
+        "title": "Ve biri senin olur.",
+        "body": "Yığının içinden biri kalkıyor ve seninle geliyor. Uçlarını kulağına göre seçersin; hipoalerjenik silikon, yıkanabilir.",
+        "chips": "4 boy uç: S · M · L · Double, Yıkanabilir" } }
     ]
   }]
 }
