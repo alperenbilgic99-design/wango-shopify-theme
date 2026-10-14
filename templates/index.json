@@ -79,9 +79,9 @@
             "image_asset": "wp-real-lilac-banner.jpg",
             "kicker": "Bir",
             "left_title": "Önce sessizlik",
-            "left_body": "Kutu kapalıyken hiçbir şey vaat etmiyor. Avuç içine oturan 44 mm'lik bir sedef taş.",
+            "left_body": "Kutu kapalıyken hiçbir şey vaat etmiyor. Avuç içine oturan küçük, pürüzsüz bir taş.",
             "right_title": "Askısıyla",
-            "right_body": "Bileğe ya da çantaya takılır. Boyna asmak için değil — hep elinin altında kalsın diye."
+            "right_body": "Kutusunun deri kayışıyla bileğe ya da çantaya takılır. Hep elinin altında kalsın diye."
           }
         },
         "f2": {
@@ -92,7 +92,7 @@
             "left_title": "Çoğaldığında",
             "left_body": "Aynı form yan yana gelince desene dönüşüyor. Tek başına sessiz, sırayla ritim.",
             "right_title": "Tek renk",
-            "right_body": "Sedef periwinkle. Işığa göre açılıp koyulaşıyor ama asla başka bir renge kaçmıyor."
+            "right_body": "Obsidian Black ve Tropical Indigo. Biri gece kadar koyu, biri ışığa göre açılıp koyulaşan bir mor."
           }
         },
         "f3": {
@@ -121,7 +121,8 @@
           "settings": {
             "image_asset": "wp-real-canvas-gymbag.jpg",
             "title": "SABAH",
-            "meta": "Kahve, sessizlik, ilk şarkı"
+            "meta": "Kahve, sessizlik, ilk sayfa",
+            "body": "Ev uyanmadan önceki yarım saat. Sokaktan gelen uğultu geri çekilir; kahvenin sesi ve sayfanın hışırtısı kalır. Günün ilk odağı senin."
           }
         },
         "m2": {
@@ -129,7 +130,8 @@
           "settings": {
             "image_asset": "wp-real-tray-flatlay.jpg",
             "title": "YOLDA",
-            "meta": "Şehrin gürültüsü kapanır"
+            "meta": "Şehrin gürültüsü kısılır",
+            "body": "Metro, otobüs, kalabalık bir cadde. wango uğultunun sertliğini alır; anonsu da yanındakinin sesini de duymaya devam edersin."
           }
         },
         "m3": {
@@ -137,7 +139,8 @@
           "settings": {
             "image_asset": "wp-real-three-on-mint.jpg",
             "title": "ODAK",
-            "meta": "Dünya beklesin, sen dinle"
+            "meta": "Dünya beklesin, sen dinle",
+            "body": "Açık ofis, kafe, kütüphane. Yan masadaki sohbet uzaklaşır, telefonun çaldığında yine duyarsın. Müzik açmadan odaklanmanın bir yolu."
           }
         },
         "m4": {
@@ -145,7 +148,8 @@
           "settings": {
             "image_asset": "wp-real-leather-bag.jpg",
             "title": "AKŞAM",
-            "meta": "Kalabalıkta kendi ritmin"
+            "meta": "Kalabalıkta kendi ritmin",
+            "body": "Konser, bar, kalabalık bir masa. Müzik yerinde kalır, yalnızca şiddeti azalır; arkadaşının söylediğini kaçırmazsın."
           }
         },
         "m5": {
@@ -153,7 +157,8 @@
           "settings": {
             "image_asset": "wp-real-claw-machine.jpg",
             "title": "GECE",
-            "meta": "Gün biter, sessizlik kalır"
+            "meta": "Gün biter, sessizlik kalır",
+            "body": "Geç biten bir etkinlik, eve dönüş yolu. Kutusunu deri kayışından çantana tak; gün bittiğinde de yanında."
           }
         }
       },
@@ -163,7 +168,8 @@
         "m3",
         "m4",
         "m5"
-      ]
+      ],
+      "settings": {}
     },
     "gallery": {
       "type": "wango-gallery-grid",
@@ -427,7 +433,8 @@
         "t8",
         "t9"
       ],
-      "settings": {}
+      "settings": {},
+      "disabled": true
     },
     "cta": {
       "type": "wango-cta",
@@ -514,9 +521,9 @@
     "origin_hero",
     "wordmark",
     "marquee",
-    "transition",
-    "wallpaper",
     "moments",
+    "wallpaper",
+    "transition",
     "rail",
     "gallery",
     "split",

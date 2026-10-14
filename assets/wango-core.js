@@ -226,10 +226,15 @@
   W.refreshCount = refreshCount;
 
   W.addToCart = function (id, quantity) {
+    return W.addItems([{ id: id, quantity: quantity || 1 }]);
+  };
+
+  /** Adds several cart lines in one request (the two-colour set). */
+  W.addItems = function (items) {
     return fetch((routes.cartAdd || "/cart/add") + ".js", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ items: [{ id: id, quantity: quantity || 1 }] })
+      body: JSON.stringify({ items: items })
     }).then(function (r) {
       if (!r.ok) return r.json().then(function (e) { throw new Error(e.description || e.message || "cart"); });
       return r.json();
@@ -253,7 +258,9 @@
        otherwise it is white-on-white. */
     var onScroll = function () {
       header.classList.toggle("is-scrolled", window.scrollY > 40);
-      var under = false, y = 30;
+      /* the bar's own middle: it moves down when the announcement bar sits above it */
+      var hb = header.getBoundingClientRect();
+      var under = false, y = hb.top + hb.height / 2;
       document.querySelectorAll('[data-header-tone="light"]').forEach(function (el) {
         var r = el.getBoundingClientRect();
         if (r.top <= y && r.bottom >= y) under = true;
@@ -322,7 +329,45 @@
     }
     setOpen(false);
 
-    burger.addEventListener("click", function () { setOpen(!open); });
+    /* Wide screens: the compact drop-down instead of the full-screen overlay. */
+    var drop = header.querySelector("[data-nav-drop]");
+    var scrim = document.querySelector("[data-nav-drop-scrim]");
+    var wide = window.matchMedia("(min-width: 900px)");
+    var dropOpen = false;
+    function morphBurger(on) {
+      burger.querySelectorAll("span").forEach(function (s, i) {
+        s.style.top = (on ? 21 : 15 + i * 6) + "px";
+        s.style.opacity = on && i === 1 ? 0 : 1;
+        s.style.transform = "translateX(-50%) " + (on ? (i === 0 ? "rotate(45deg)" : i === 2 ? "rotate(-45deg)" : "scale(0)") : "");
+      });
+    }
+    function setDrop(next) {
+      if (!drop) return;
+      dropOpen = next;
+      drop.classList.toggle("is-open", next);
+      scrim && scrim.classList.toggle("is-open", next);
+      drop.setAttribute("aria-hidden", String(!next));
+      burger.setAttribute("aria-expanded", String(next));
+      burger.setAttribute("aria-controls", "wango-drop");
+      drop.querySelectorAll("a").forEach(function (a) { a.tabIndex = next ? 0 : -1; });
+      morphBurger(next);
+      if (next) setTimeout(function () { var f = drop.querySelector("a"); f && f.focus({ preventScroll: true }); }, 60);
+    }
+    if (drop) {
+      document.addEventListener("click", function (e) {
+        if (dropOpen && !drop.contains(e.target) && !burger.contains(e.target)) setDrop(false);
+      });
+      drop.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { setDrop(false); }); });
+      window.addEventListener("keydown", function (e) { if (e.key === "Escape" && dropOpen) { setDrop(false); burger.focus(); } });
+      var closeOnChange = function () { if (dropOpen) setDrop(false); if (open) setOpen(false); };
+      if (wide.addEventListener) wide.addEventListener("change", closeOnChange);
+    }
+
+    burger.addEventListener("click", function () {
+      if (drop && wide.matches) { setDrop(!dropOpen); return; }
+      burger.setAttribute("aria-controls", "wango-nav");
+      setOpen(!open);
+    });
     closeBtn && closeBtn.addEventListener("click", function () { setOpen(false); });
     nav.querySelectorAll(".w-nav__item a").forEach(function (a) {
       a.addEventListener("click", function () { setOpen(false); });

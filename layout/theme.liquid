@@ -18,8 +18,10 @@
       {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
 
-    {%- if page_description -%}
-      <meta name="description" content="{{ page_description | escape }}">
+    {%- comment -%} pages without their own SEO text fall back to one shop-wide line {%- endcomment -%}
+    {%- assign meta_desc = page_description | default: shop.description | default: 'wango Origin: akustik filtreli kulak tıkacı. Gürültüyü kısar, sesi kesmez. Ücretsiz kargo, 2 iş günü içinde kargoda.' -%}
+    {%- if meta_desc -%}
+      <meta name="description" content="{{ meta_desc | escape }}">
     {%- endif -%}
 
     {% render 'meta-tags' %}

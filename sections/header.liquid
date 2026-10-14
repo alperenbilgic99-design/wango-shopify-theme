@@ -1,5 +1,10 @@
 {%- comment -%}
-  Sticky header + the full-screen "sliding stairs" overlay menu.
+  Sticky header + two menus behind the same button:
+  • phones and tablets (< 900px): the full-screen "sliding stairs" overlay;
+  • wide screens: a compact drop-down panel under the button, next to the
+    nav that is already visible there. It does not cover the page or lock
+    the scroll: links on the left, the two products (with price) and the
+    shop promises on the right, so a visitor can jump straight to a product.
   Ported from sticky-header.tsx and nav-overlay.tsx. The frosted pill layer
   fades in behind the nav once you scroll past 40px; the hamburger bars morph
   from origin-center. Menu links come from the store's own navigation so they
@@ -36,8 +41,34 @@
     <button class="w-burger" data-burger type="button" aria-label="{{ 'accessibility.menu' | t }}" aria-expanded="false" aria-controls="wango-nav">
       <span></span><span></span><span></span>
     </button>
+
+    {%- assign overlay_menu = section.settings.overlay_menu | default: section.settings.menu -%}
+    <div class="w-drop" id="wango-drop" data-nav-drop role="dialog" aria-label="{{ 'accessibility.menu' | t }}" aria-hidden="true">
+      <nav class="w-drop__links" aria-label="{{ 'accessibility.menu' | t }}">
+        {%- for link in overlay_menu.links -%}
+          <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %} tabindex="-1">
+            <em>0{{ forloop.index }}</em><span>{{ link.title }}</span><i aria-hidden="true">&rarr;</i>
+          </a>
+        {%- endfor -%}
+      </nav>
+
+      <div class="w-drop__shop">
+        <b class="w-drop__head">{{ section.settings.drop_heading }}</b>
+        {%- for p in collections.all.products limit: 3 -%}
+          <a class="w-drop__prod" href="{{ p.url }}" tabindex="-1">
+            {%- if p.featured_media -%}<img src="{{ p.featured_media | image_url: width: 120 }}" alt="" width="52" height="52" loading="lazy">{%- endif -%}
+            <span><b>{{ p.title }}</b><em>{{ p.price | money }}</em></span>
+          </a>
+        {%- endfor -%}
+        {%- if section.settings.cta_url != blank -%}
+          <a class="w-btn w-btn--solid w-btn--block w-drop__cta" href="{{ section.settings.cta_url }}" tabindex="-1">{{ section.settings.drop_cta }}</a>
+        {%- endif -%}
+        {%- if section.settings.drop_note != blank -%}<p class="w-drop__note">{{ section.settings.drop_note }}</p>{%- endif -%}
+      </div>
+    </div>
   </div>
 </header>
+<div class="w-drop-scrim" data-nav-drop-scrim aria-hidden="true"></div>
 
 <div class="w-nav" id="wango-nav" data-nav-overlay aria-hidden="true">
   {%- comment -%}Five vertical bars grow 0%→100%; the rightmost leads.{%- endcomment -%}
@@ -51,7 +82,6 @@
     </div>
 
     <nav class="w-nav__list">
-      {%- assign overlay_menu = section.settings.overlay_menu | default: section.settings.menu -%}
       {%- for link in overlay_menu.links -%}
         <div class="w-nav__item">
           <a href="{{ link.url }}"><em>0{{ forloop.index }}</em>{{ link.title }}</a>
@@ -78,6 +108,10 @@
     { "type": "link_list", "id": "overlay_menu", "label": "Açılır menü", "info": "Boş bırakılırsa üst menü kullanılır." },
     { "type": "text", "id": "cta_label", "default": "Satın al", "label": "Buton yazısı" },
     { "type": "url", "id": "cta_url", "label": "Buton bağlantısı" },
+    { "type": "header", "content": "Masaüstü açılır panel" },
+    { "type": "text", "id": "drop_heading", "default": "Origin · iki renk", "label": "Ürünler başlığı" },
+    { "type": "text", "id": "drop_cta", "default": "Setleri gör", "label": "Buton", "info": "Bağlantısı üstteki 'Buton bağlantısı' ile aynıdır." },
+    { "type": "text", "id": "drop_note", "default": "Ücretsiz kargo · 2 iş günü içinde kargoda", "label": "Alt not" },
     { "type": "text", "id": "tagline", "default": "Modern çağın analog filtresi. Seçici kulaklar için.", "label": "Menü alt yazısı" },
     { "type": "text", "id": "social_1", "default": "Instagram", "label": "Sosyal 1" },
     { "type": "text", "id": "social_2", "default": "TikTok", "label": "Sosyal 2" },

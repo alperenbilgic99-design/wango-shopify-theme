@@ -60,7 +60,22 @@
     });
   }
 
+  /* In-page buttons glide through Lenis instead of jumping. */
+  function initBoxHeroLinks(section) {
+    section.querySelectorAll("[data-boxhero-go]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        var hash = a.getAttribute("href") || "";
+        if (hash.charAt(0) !== "#") return;
+        var target = document.getElementById(hash.slice(1));
+        if (!target) return;
+        e.preventDefault();
+        W.scrollTo(target);
+      });
+    });
+  }
+
   function initBoxHero(section) {
+    initBoxHeroLinks(section);
     var wrap = section.querySelector("[data-boxhero-wrap]");
     if (!wrap || reduced || !window.gsap) { introDone(); return; }
     if (mobile) { scrubBoxHero(section, wrap); return; }
@@ -89,8 +104,10 @@
     if (!window.matchMedia("(min-width: 768px)").matches) return;
     var text = wrap.querySelector(".w-boxhero__text");
     var media = wrap.querySelector(".w-boxhero__media");
+    var actions = wrap.querySelector(".w-boxhero__actions");
     var visual = media && media.firstElementChild;   /* the max-width box the eye actually sees */
     if (!text || !media || !visual) return;
+    wrap.classList.add("is-intro");   /* buttons stay hidden until the split */
 
     setTimeout(function () {
       if (wrap.classList.contains("is-split")) return;
@@ -98,10 +115,13 @@
 
       var tFirst = centreOf(text.getBoundingClientRect());
       var vFirst = centreOf(visual.getBoundingClientRect());
+      var aFirst = actions && centreOf(actions.getBoundingClientRect());
 
       wrap.classList.add("is-split");                   /* final layout, instantly */
+      wrap.classList.remove("is-intro");
 
       var tLast = centreOf(text.getBoundingClientRect());
+      var aLast = actions && centreOf(actions.getBoundingClientRect());
       var vLast = centreOf(visual.getBoundingClientRect());
       var mRect = media.getBoundingClientRect();
       var scale = vFirst.w / vLast.w;
@@ -110,6 +130,9 @@
       /* copy: translate only — scaling text would distort it */
       gsap.fromTo(text,
         { x: tFirst.x - tLast.x, y: tFirst.y - tLast.y },
+        { x: 0, y: 0, duration: DUR, ease: EASE, clearProps: "transform" });
+      if (actions) gsap.fromTo(actions,
+        { x: aFirst.x - aLast.x, y: aFirst.y - aLast.y },
         { x: 0, y: 0, duration: DUR, ease: EASE, clearProps: "transform" });
 
       /* video: scale about the visual's own centre, so it neither drifts nor

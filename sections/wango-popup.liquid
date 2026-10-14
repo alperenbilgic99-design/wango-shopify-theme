@@ -34,7 +34,8 @@
 
 {%- if section.settings.enabled and show -%}
   <div class="w-popup" data-popup hidden aria-hidden="true"
-       data-delay="{{ section.settings.delay }}" data-days="{{ section.settings.days }}">
+       data-delay="{{ section.settings.delay }}" data-days="{{ section.settings.days }}"
+       {% if template.name == 'product' and section.settings.product_scroll %}data-trigger="scroll"{% endif %}>
     <div class="w-popup__backdrop" data-popup-close></div>
 
     <div class="w-popup__card" role="dialog" aria-modal="true" aria-labelledby="wango-popup-title">
@@ -112,20 +113,21 @@
     { "type": "checkbox", "id": "on_home", "default": true, "label": "Origin (ana sayfa)" },
     { "type": "checkbox", "id": "on_story", "default": true, "label": "Hikâye sayfası" },
     { "type": "checkbox", "id": "on_product", "default": true, "label": "Ürün sayfası" },
+    { "type": "checkbox", "id": "product_scroll", "default": true, "label": "Ürün sayfasında kaydırınca aç", "info": "Ürün sayfasında popup, ziyaretçi sayfanın yarısını kaydırınca açılır; satın alma butonunun önüne geçmez." },
     { "type": "range", "id": "delay", "min": 0, "max": 10, "step": 0.5, "unit": "sn", "default": 2, "label": "Açılış animasyonu bittikten sonra bekleme" },
     { "type": "range", "id": "days", "min": 1, "max": 30, "step": 1, "unit": "gün", "default": 7, "label": "Kapatılınca tekrar gösterme süresi" },
 
     { "type": "header", "content": "Sol panel" },
     { "type": "image_picker", "id": "image", "label": "Görsel (isteğe bağlı)" },
-    { "type": "text", "id": "badge", "default": "Açılışa özel", "label": "Rozet" },
-    { "type": "text", "id": "big", "default": "1.299 ₺", "label": "Büyük yazı" },
-    { "type": "text", "id": "big_sub", "default": "Origin · açılış fiyatı", "label": "Büyük yazının altı" },
+    { "type": "text", "id": "badge", "default": "Bültene özel", "label": "Rozet" },
+    { "type": "text", "id": "big", "default": "%10", "label": "Büyük yazı" },
+    { "type": "text", "id": "big_sub", "default": "ilk siparişine indirim", "label": "Büyük yazının altı" },
 
     { "type": "header", "content": "Metin" },
     { "type": "text", "id": "eyebrow", "default": "wango bülteni", "label": "Üst etiket" },
     { "type": "text", "id": "heading", "default": "İlk siparişine", "label": "Başlık" },
     { "type": "text", "id": "heading_accent", "default": "%10 indirim.", "label": "Başlık · vurgu" },
-    { "type": "textarea", "id": "body", "default": "Origin açılışta 1.299 ₺. Bültene katıl, ilk siparişinde kullanacağın %10 indirim kodunu al.", "label": "Açıklama" },
+    { "type": "textarea", "id": "body", "default": "Bültene katıl, ilk siparişinde kullanacağın %10 indirim kodu e-postana gelsin. Yeni renkleri de ilk sen duy.", "label": "Açıklama" },
     { "type": "text", "id": "placeholder", "default": "e-posta adresin", "label": "E-posta alanı" },
     { "type": "textarea", "id": "consent", "default": "wango'dan kampanya ve yenilik e-postaları almayı kabul ediyorum. İstediğim zaman çıkabilirim.", "label": "İzin metni" },
     { "type": "text", "id": "submit", "default": "Kodu al", "label": "Düğme" },

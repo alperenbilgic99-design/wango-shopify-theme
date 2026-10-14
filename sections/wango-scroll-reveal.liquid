@@ -15,7 +15,7 @@
   <div class="psr-root">
     {%- comment -%}The mask is a centred circular scene-wipe in front of the model.{%- endcomment -%}
     <div class="psr-mask">
-      <div class="psr-header-2"><h1>{{ section.settings.title }}</h1></div>
+      <div class="psr-header-2"><h2>{{ section.settings.title }}</h2></div>
 
       <div class="psr-tooltips">
         {%- for block in section.blocks limit: 2 -%}
@@ -55,8 +55,8 @@
   "presets": [{
     "name": "Ürün · dönen kutu",
     "blocks": [
-      { "type": "tooltip", "settings": { "icon": "◐", "title": "Tüm hafta", "description": "Tek şarjla bir hafta boyunca yanında — durmadan, kesintisiz." } },
-      { "type": "tooltip", "settings": { "icon": "◉", "title": "Senkron kal", "description": "Uygulama bağlantısıyla kullanımını takip et, hedef koy." } }
+      { "type": "tooltip", "settings": { "icon": "◐", "title": "Şarj yok", "description": "Şarj etmen gereken bir şey yok. Kutusundan çıkar, tak, hazırsın." } },
+      { "type": "tooltip", "settings": { "icon": "◉", "title": "Yıkanabilir", "description": "Yıkanabilir silikon; tek kullanımlık değil, defalarca kullanılır." } }
     ]
   }]
 }

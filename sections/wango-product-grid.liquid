@@ -5,23 +5,56 @@
   availability come from the store rather than a hardcoded array.
 {%- endcomment -%}
 
-{%- assign coll = collections[section.settings.collection] -%}
+{%- comment -%}
+  Cards buy straight from here: "Sepete ekle" posts the product's first
+  available variant to Shopify's AJAX cart (wango-commerce.js, [data-quick-add])
+  and the page stays put; "İncele" still opens the product page.
 
-<section class="w-paper w-section" data-tilt-grid>
+  The last card is the two-colour set: one tap adds the first variant of the
+  first two products together. Its price is simply the two prices added up;
+  a set discount is NOT created here. Make an automatic discount in Shopify
+  (Discounts, e.g. "buy both, x off") and type what it gives into the
+  "Set rozeti" setting, so the card never promises a saving that checkout
+  does not apply.
+{%- endcomment -%}
+
+{%- assign coll = collections[section.settings.collection] -%}
+{%- liquid
+  assign set_ids = ''
+  assign set_total = 0
+  assign set_count = 0
+  assign set_ok = true
+  for product in coll.products limit: 2
+    assign v = product.selected_or_first_available_variant
+    unless v.available
+      assign set_ok = false
+    endunless
+    assign set_ids = set_ids | append: v.id | append: ','
+    assign set_total = set_total | plus: v.price
+    assign set_count = set_count | plus: 1
+  endfor
+  assign show_set = false
+  if section.settings.set_enabled and set_count == 2
+    assign show_set = true
+  endif
+-%}
+
+<section class="w-paper w-section" id="setler" data-tilt-grid>
   <div class="w-wrap">
     <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
     <h2 class="w-h2" style="max-width:20ch">{{ section.settings.heading }}</h2>
 
-    <div class="ptg">
+    <div class="ptg{% if show_set %} ptg--with-set{% endif %}">
       {%- for product in coll.products limit: section.settings.limit -%}
-        <a class="ptg-card" href="{{ product.url }}">
-          <div class="ptg-card__img">
+        {%- assign v = product.selected_or_first_available_variant -%}
+        <div class="ptg-card">
+          <a class="ptg-card__img" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
             {%- if product.featured_media -%}
               <img src="{{ product.featured_media | image_url: width: 1200 }}"
                    srcset="{{ product.featured_media | image_url: width: 600 }} 600w,
                            {{ product.featured_media | image_url: width: 1200 }} 1200w,
                            {{ product.featured_media | image_url: width: 1800 }} 1800w"
-                   sizes="(min-width: 768px) 600px, 100vw"
+                   sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw"
                    width="{{ product.featured_media.width }}" height="{{ product.featured_media.height }}"
                    alt="{{ product.featured_media.alt | default: product.title | escape }}" loading="lazy">
             {%- endif -%}
@@ -29,24 +62,65 @@
               {%- assign saving = product.compare_at_price | minus: product.price -%}
               <span class="w-badge">{{ saving | money }} {{ 'products.product.saving' | t }}</span>
             {%- endif -%}
-          </div>
+          </a>
           <div class="ptg-card__body">
             <div class="ptg-card__row">
-              <h3>{{ product.title }}</h3>
-              <span>{{ product.price | money }}</span>
+              <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+              <span>{{ v.price | money }}</span>
             </div>
             {%- if product.metafields.wango.subtitle != blank -%}
               <p class="ptg-card__sub">{{ product.metafields.wango.subtitle }}</p>
             {%- else -%}
               <p class="ptg-card__sub">{{ product.description | strip_html | truncate: 60 }}</p>
             {%- endif -%}
-            <span class="ptg-card__more">{{ section.settings.cta_label }} <i aria-hidden="true">&rarr;</i></span>
+            <div class="ptg-card__actions">
+              <button type="button" class="w-btn w-btn--solid" data-quick-add="{{ v.id }}"
+                      {% unless v.available %}disabled{% endunless %}>
+                {%- if v.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+              </button>
+              <a class="ptg-card__more" href="{{ product.url }}">{{ section.settings.cta_label }} <i aria-hidden="true">&rarr;</i></a>
+            </div>
+            <a class="ptg-card__go" href="{{ routes.cart_url }}" data-quick-go hidden>{{ section.settings.go_label }} <i aria-hidden="true">&rarr;</i></a>
           </div>
-        </a>
+        </div>
       {%- else -%}
         <p class="w-lede">{{ 'sections.collection.empty' | t }}</p>
       {%- endfor -%}
+
+      {%- if show_set -%}
+        <div class="ptg-card ptg-card--set">
+          <div class="ptg-card__img ptg-card__img--duo">
+            {%- for product in coll.products limit: 2 -%}
+              {%- if product.featured_media -%}
+                <img src="{{ product.featured_media | image_url: width: 900 }}"
+                     srcset="{{ product.featured_media | image_url: width: 450 }} 450w, {{ product.featured_media | image_url: width: 900 }} 900w"
+                     sizes="(min-width: 1024px) 200px, 50vw"
+                     width="{{ product.featured_media.width }}" height="{{ product.featured_media.height }}"
+                     alt="{{ product.title | escape }}" loading="lazy">
+              {%- endif -%}
+            {%- endfor -%}
+            <span class="ptg-card__plus" aria-hidden="true">+</span>
+            {%- if section.settings.set_badge != blank -%}<span class="w-badge">{{ section.settings.set_badge }}</span>{%- endif -%}
+          </div>
+          <div class="ptg-card__body">
+            <span class="ptg-card__tag">{{ section.settings.set_tag }}</span>
+            <div class="ptg-card__row">
+              <h3>{{ section.settings.set_title }}</h3>
+              <span>{{ set_total | money }}</span>
+            </div>
+            <p class="ptg-card__sub">{{ section.settings.set_body }}</p>
+            <div class="ptg-card__actions">
+              <button type="button" class="w-btn w-btn--solid" data-quick-add="{{ set_ids | remove_last: ',' }}"
+                      {% unless set_ok %}disabled{% endunless %}>
+                {%- if set_ok -%}{{ section.settings.set_button }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+              </button>
+            </div>
+            <a class="ptg-card__go" href="{{ routes.cart_url }}" data-quick-go hidden>{{ section.settings.go_label }} <i aria-hidden="true">&rarr;</i></a>
+          </div>
+        </div>
+      {%- endif -%}
     </div>
+    <p class="visually-hidden" role="status" data-quick-status></p>
   </div>
 </section>
 
@@ -58,7 +132,15 @@
     { "type": "range", "id": "limit", "min": 2, "max": 8, "step": 1, "default": 2, "label": "Ürün sayısı" },
     { "type": "text", "id": "eyebrow", "default": "Setini seç", "label": "Üst etiket" },
     { "type": "text", "id": "heading", "default": "İki seçenek. Fazlası gereksiz.", "label": "Başlık" },
-    { "type": "text", "id": "cta_label", "default": "İncele", "label": "Kart bağlantı yazısı" }
+    { "type": "text", "id": "cta_label", "default": "İncele", "label": "Kart bağlantı yazısı" },
+    { "type": "text", "id": "go_label", "default": "Sepete git", "label": "Eklenince çıkan bağlantı" },
+    { "type": "header", "content": "İkisi birden kartı" },
+    { "type": "checkbox", "id": "set_enabled", "default": true, "label": "Set kartını göster", "info": "Koleksiyonun ilk iki ürününü tek tıkla birlikte sepete ekler." },
+    { "type": "text", "id": "set_tag", "default": "İki renk", "label": "Etiket" },
+    { "type": "text", "id": "set_title", "default": "İkisi birden", "label": "Başlık" },
+    { "type": "textarea", "id": "set_body", "default": "Obsidian Black ve Tropical Indigo birlikte. Biri senin, biri yanındakinin.", "label": "Metin" },
+    { "type": "text", "id": "set_button", "default": "İkisini sepete ekle", "label": "Buton" },
+    { "type": "text", "id": "set_badge", "label": "Set rozeti", "info": "Yalnızca Shopify'da set indirimi tanımlıysa yaz, ör. \"%10 set avantajı\". Boşsa rozet çıkmaz." }
   ],
   "presets": [{ "name": "Ürün · set ızgarası" }]
 }

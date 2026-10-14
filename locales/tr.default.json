@@ -32,7 +32,8 @@
       "subtotal": "Ara toplam",
       "total": "Toplam",
       "checkout": "Ödemeye geç",
-      "tax_note": "Kargo ve vergi ödeme adımında hesaplanır."
+      "shipping": "Kargo",
+      "tax_note": "Kesin tutar ödeme adımında gösterilir."
     },
     "collection": { "empty": "Burada henüz ürün yok." },
     "sound": { "mute": "Sesi aç / kapat" }

@@ -34,6 +34,68 @@
     });
   }
 
+  /* ── set grid: buy straight from the card ─────────────────────────────── */
+  function initQuickAdd(root) {
+    var status = root.querySelector("[data-quick-status]");
+    root.querySelectorAll("[data-quick-add]").forEach(function (btn) {
+      var label = btn.textContent.trim();
+      var card = btn.closest(".ptg-card, .w-coll__card, [data-quick-scope]");
+      var go = card && card.querySelector("[data-quick-go]");
+      btn.addEventListener("click", function () {
+        if (btn.disabled || !W.addItems) return;
+        var items = btn.dataset.quickAdd.split(",").filter(Boolean).map(function (id) { return { id: Number(id), quantity: 1 }; });
+        btn.disabled = true;
+        btn.textContent = "…";
+        W.addItems(items).then(function () {
+          if (btn.closest("[data-quick-reload]")) { window.location.reload(); return; }
+          btn.textContent = "✓ " + (btn.dataset.added || "Sepete eklendi");
+          btn.classList.add("is-added");
+          if (go) go.hidden = false;
+          if (status) status.textContent = btn.dataset.added || "Sepete eklendi";
+          setTimeout(function () { btn.textContent = label; btn.classList.remove("is-added"); btn.disabled = false; }, 2600);
+        }).catch(function (err) {
+          btn.textContent = label;
+          btn.disabled = false;
+          if (status) status.textContent = err.message;
+          btn.classList.add("is-error");
+          setTimeout(function () { btn.classList.remove("is-error"); }, 1600);
+        });
+      });
+    });
+  }
+
+  /* ── sticky buy bar on the product page ───────────────────────────────── */
+  function initBuybar(root) {
+    var bar = root.querySelector("[data-buybar]");
+    var real = root.querySelector("[data-add-to-cart]");
+    if (!bar || !real || !("IntersectionObserver" in window)) return;
+    var go = bar.querySelector("[data-buybar-go]");
+    var price = bar.querySelector("[data-buybar-price]");
+    var realPrice = root.querySelector("[data-price]");
+    var footer = document.querySelector("footer, .shopify-section-group-footer-group");
+    var realGone = false, footerIn = false;
+    function paint() {
+      var on = realGone && !footerIn;
+      bar.classList.toggle("is-on", on);
+      bar.setAttribute("aria-hidden", String(!on));
+      go.tabIndex = on ? 0 : -1;
+      document.documentElement.classList.toggle("has-buybar", on);
+    }
+    new IntersectionObserver(function (e) {
+      /* off screen either way: scrolled past, or (on a short phone) not reached yet */
+      realGone = !e[0].isIntersecting;
+      paint();
+    }).observe(real);
+    if (footer) new IntersectionObserver(function (e) { footerIn = e[0].isIntersecting; paint(); }).observe(footer);
+    go.addEventListener("click", function () {
+      if (real.disabled) return;
+      if (price && realPrice) price.textContent = realPrice.firstChild ? realPrice.firstChild.textContent.trim() : price.textContent;
+      real.click();
+      go.textContent = "✓ " + (real.dataset.labelAdded || "Sepete eklendi");
+      setTimeout(function () { go.textContent = real.dataset.labelAdd || "Sepete ekle"; }, 2400);
+    });
+  }
+
   /* ── product detail ───────────────────────────────────────────────────── */
   function initProductForm(root) {
     var dataEl = root.querySelector("[data-product-json]");
@@ -190,8 +252,9 @@
   }
 
   var MAP = [
-    ["[data-tilt-grid]", initTiltGrid],
-    ["[data-product-root]", initProductForm],
+    ["[data-tilt-grid]", function (el) { initTiltGrid(el); initQuickAdd(el); }],
+    ["[data-product-root]", function (el) { initProductForm(el); initBuybar(el); }],
+    ["[data-quick-scope]", initQuickAdd],
     ["[data-cart-root]", initCart],
     ["[data-newsletter]", initNewsletter]
   ];

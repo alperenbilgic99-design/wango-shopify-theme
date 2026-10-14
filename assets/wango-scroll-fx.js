@@ -225,9 +225,48 @@
     (function tick() { gl.render(); requestAnimationFrame(tick); })();
   }
 
+  /* ── moments bookshelf (wide screens) ────────────────────────────────────
+     One book open at a time. CSS does the motion (flex-grow on one ease, so
+     every book's width moves in step); the script only picks the open book
+     and keeps --open-w (the open book's width) current, so each photo is laid
+     out once at that width and opening a book never re-scales its picture. */
+  function initShelf(root) {
+    var books = Array.prototype.slice.call(root.querySelectorAll("[data-shelf-book]"));
+    if (!books.length) return;
+    function measure() {
+      if (!root.offsetWidth) return;
+      var cs = getComputedStyle(root);
+      var spine = parseFloat(getComputedStyle(books[0]).flexBasis) || 88;
+      var gap = parseFloat(cs.columnGap || cs.gap) || 12;
+      root.style.setProperty("--open-w", Math.round(root.clientWidth - (books.length - 1) * (spine + gap)) + "px");
+    }
+    function open(book) {
+      books.forEach(function (b) {
+        var on = b === book;
+        b.classList.toggle("is-open", on);
+        b.setAttribute("aria-expanded", String(on));
+      });
+    }
+    books.forEach(function (b, i) {
+      b.addEventListener("click", function () { if (!b.classList.contains("is-open")) open(b); });
+      b.addEventListener("keydown", function (e) {
+        var k = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!k) return;
+        e.preventDefault();
+        var next = books[(i + k + books.length) % books.length];
+        next.focus(); open(next);
+      });
+    });
+    measure();
+    if (window.ResizeObserver) new ResizeObserver(measure).observe(root);
+    else window.addEventListener("resize", measure);
+  }
+
   /* ── stacked cards ────────────────────────────────────────────────────── */
   function initStack(root) {
     if (!window.gsap) return;
+    /* hidden on wide screens, where the bookshelf takes its place */
+    if (root.offsetParent === null && getComputedStyle(root).display === "none") return;
     if (window.CustomEase && !CustomEase.get("stackEase")) CustomEase.create("stackEase", "0.83, 0, 0.17, 1");
     var ease = window.CustomEase ? "stackEase" : "power3.inOut";
     var busy = false;
@@ -540,6 +579,7 @@
     ["[data-marquee]", initMarquee],
     ["[data-xfade]", initXfade],
     ["[data-stack]", initStack],
+    ["[data-shelf]", initShelf],
     ["[data-grid3d]", initGrid3d],
     ["[data-morph]", initMorph],
     ["[data-wallpaper]", initWallpaper],

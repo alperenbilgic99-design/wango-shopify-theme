@@ -4,7 +4,17 @@
   perfectly symmetric); on wide viewports it then eases into two columns via
   GSAP Flip, which tweens each element from its old rect to its new one so
   nothing ever snaps.
+
+  The two buttons sit under the product: on a phone that is the bottom of the
+  pinned screen, where the thumb is; on wide screens they move into the copy
+  column under the text. With no link set, "Satın al" glides down to the set
+  grid (#setler) and "keşfet" to the box story right after it (#kesfet).
 {%- endcomment -%}
+
+{%- liquid
+  assign buy_url = section.settings.buy_url | default: '#setler'
+  assign explore_url = section.settings.explore_url | default: '#kesfet'
+-%}
 
 <section class="w-boxhero" data-boxhero data-header-tone="light">
   <div class="w-boxhero__wrap" data-boxhero-wrap>
@@ -26,6 +36,17 @@
            attrs: 'autoplay muted loop playsinline preload="auto"' %}
       </div>
     </div>
+
+    {%- if section.settings.buy_label != blank or section.settings.explore_label != blank -%}
+      <div class="w-boxhero__actions">
+        {%- if section.settings.buy_label != blank -%}
+          <a class="w-btn w-btn--ink" href="{{ buy_url }}" data-boxhero-go>{{ section.settings.buy_label }}</a>
+        {%- endif -%}
+        {%- if section.settings.explore_label != blank -%}
+          <a class="w-btn w-btn--outline-ink" href="{{ explore_url }}" data-boxhero-go>{{ section.settings.explore_label }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
   </div>
 </section>
 
@@ -39,7 +60,12 @@
     { "type": "text", "id": "heading_accent", "default": "origin", "label": "Başlık (vurgulu)" },
     { "type": "text", "id": "line_1", "default": "Kutudan çıkar,", "label": "1. satır" },
     { "type": "text", "id": "line_2", "default": "kulağında kaybolur.", "label": "2. satır" },
-    { "type": "textarea", "id": "body", "default": "Aynı kutu, iki set. Kaydır, seni bekleyeni gör.", "label": "Metin" }
+    { "type": "textarea", "id": "body", "default": "Aynı kutu, iki set. Kaydır, seni bekleyeni gör.", "label": "Metin" },
+    { "type": "header", "content": "Butonlar" },
+    { "type": "text", "id": "buy_label", "default": "Satın al", "label": "Satın al butonu", "info": "Boş bırakılırsa buton gizlenir." },
+    { "type": "url", "id": "buy_url", "label": "Satın al bağlantısı", "info": "Boşsa aynı sayfadaki set ızgarasına kayar." },
+    { "type": "text", "id": "explore_label", "default": "wango'yu keşfet", "label": "Keşfet butonu", "info": "Boş bırakılırsa buton gizlenir." },
+    { "type": "url", "id": "explore_url", "label": "Keşfet bağlantısı", "info": "Boşsa set ızgarasından sonraki kutu bölümüne kayar." }
   ],
   "presets": [{ "name": "Ürün · kutu açılışı" }]
 }

@@ -78,8 +78,6 @@
         </div>
       {%- endif -%}
 
-      <div class="w-pdp__desc">{{ product.description }}</div>
-
       <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" data-product-form>
         <input type="hidden" name="id" value="{{ current.id }}" data-variant-id>
 
@@ -123,12 +121,7 @@
           {%- endfor -%}
         {%- endunless -%}
 
-        {%- if section.settings.includes != blank -%}
-          <ul class="w-dotlist" style="margin-top:1.5rem">
-            {%- assign items = section.settings.includes | split: ',' -%}
-            {%- for item in items -%}<li>{{ item | strip }}</li>{%- endfor -%}
-          </ul>
-        {%- endif -%}
+
 
         <div class="w-pdp__price-row">
           <div class="w-qty" data-qty>
@@ -162,6 +155,59 @@
         </div>
       {%- endif -%}
 
+      {%- comment -%}
+        Two-colour offer: the other colour from the "all" collection, added
+        together with this one in one tap (wango-commerce.js, [data-quick-add]).
+        The total is the two prices added up; no discount is invented here.
+      {%- endcomment -%}
+      {%- liquid
+        assign partner = nil
+        for p in collections.all.products limit: 6
+          if p.handle != product.handle and p.available
+            assign partner = p
+            break
+          endif
+        endfor
+      -%}
+      {%- if section.settings.show_duo and partner and current.available -%}
+        {%- assign pv = partner.selected_or_first_available_variant -%}
+        {%- assign duo_total = current.price | plus: pv.price -%}
+        <div class="w-pdp__duo" data-quick-scope>
+          <div class="w-pdp__duo-img">
+            {%- if product.featured_media -%}<img src="{{ product.featured_media | image_url: width: 160 }}" alt="" width="80" height="80" loading="lazy">{%- endif -%}
+            {%- if partner.featured_media -%}<img src="{{ partner.featured_media | image_url: width: 160 }}" alt="" width="80" height="80" loading="lazy">{%- endif -%}
+          </div>
+          <div class="w-pdp__duo-copy">
+            <b>{{ section.settings.duo_title }}</b>
+            <span>{{ partner.title }} ile birlikte · {{ duo_total | money }}</span>
+          </div>
+          <button type="button" class="w-btn w-btn--ghost" data-quick-add="{{ current.id }},{{ pv.id }}">{{ section.settings.duo_button }}</button>
+          <a class="w-pdp__duo-go" href="{{ routes.cart_url }}" data-quick-go hidden>{{ 'sections.cart.title' | t }} <span aria-hidden="true">&rarr;</span></a>
+          <p class="visually-hidden" role="status" data-quick-status></p>
+        </div>
+      {%- endif -%}
+
+      {%- if product.description != blank -%}
+        <div class="w-pdp__about">
+          <b class="w-pdp__about-head">{{ section.settings.about_label }}</b>
+          {%- comment -%}
+            The description scrolls inside its own box: data-lenis-prevent hands
+            wheel and touch to the box, overscroll-behavior keeps the page still
+            when the box reaches its end.
+          {%- endcomment -%}
+          <div class="w-pdp__desc" data-lenis-prevent tabindex="0" aria-label="{{ section.settings.about_label | escape }}">
+            {{ product.description }}
+          </div>
+        </div>
+      {%- endif -%}
+
+        {%- if section.settings.includes != blank -%}
+          <ul class="w-dotlist" style="margin-top:1.25rem">
+            {%- assign items = section.settings.includes | split: ',' -%}
+            {%- for item in items -%}<li>{{ item | strip }}</li>{%- endfor -%}
+          </ul>
+        {%- endif -%}
+
       {%- if section.settings.cross_sell != blank -%}
         {%- assign other = all_products[section.settings.cross_sell] -%}
         {%- if other != empty and other.handle != product.handle -%}
@@ -170,6 +216,26 @@
       {%- endif -%}
     </div>
   </div>
+
+  {%- comment -%}
+    Sticky buy bar: slides up once the real button has scrolled out of view
+    and presses that same button, so price, variant and quantity stay in one
+    place (wango-commerce.js, [data-buybar]).
+  {%- endcomment -%}
+  {%- if section.settings.show_buybar -%}
+    <div class="w-buybar" data-buybar aria-hidden="true">
+      <div class="w-buybar__in">
+        {%- if product.featured_media -%}<img src="{{ product.featured_media | image_url: width: 120 }}" alt="" width="44" height="44">{%- endif -%}
+        <div class="w-buybar__txt">
+          <b>{{ product.title }}</b>
+          <span data-buybar-price>{{ current.price | money }}</span>
+        </div>
+        <button type="button" class="w-btn w-btn--solid" data-buybar-go tabindex="-1" {% unless current.available %}disabled{% endunless %}>
+          {%- if current.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
 
   {%- comment -%}
     Variant data for the option picker. `| json` escapes it safely; the script
@@ -197,12 +263,18 @@
   "settings": [
     { "type": "text", "id": "eyebrow", "default": "Origin WOB", "label": "Üst etiket (marka boşsa)" },
     { "type": "text", "id": "swatch_option", "default": "Renk", "label": "Renk seçeneğinin adı", "info": "Bu isimdeki seçenek yuvarlak renk noktası olarak gösterilir." },
-    { "type": "textarea", "id": "includes", "default": "Kutu + 2 tıkaç, 3 boy silikon uç, USB-C kablo, Bileklik askısı", "label": "Kutuda ne var", "info": "Virgülle ayır." },
-    { "type": "textarea", "id": "promises", "default": "Ücretsiz kargo, 30 gün iade, 2 yıl garanti, Aynı gün kargo", "label": "Güvence satırı", "info": "Virgülle ayır." },
-    { "type": "checkbox", "id": "show_rating", "default": true, "label": "Puanı göster" },
-    { "type": "text", "id": "rating_value", "default": "4.8", "label": "Puan" },
-    { "type": "text", "id": "rating_count", "default": "312", "label": "Değerlendirme sayısı" },
-    { "type": "product", "id": "cross_sell", "label": "Diğer set" }
+    { "type": "textarea", "id": "includes", "default": "Taşıma kutusu ve deri kayış, 2 tıkaç, 4 boy silikon uç: S · M · L · Double", "label": "Kutuda ne var", "info": "Virgülle ayır." },
+    { "type": "textarea", "id": "promises", "default": "Ücretsiz kargo, 2 iş günü içinde kargoda, Bültenle ilk siparişe %10 indirim", "label": "Güvence satırı", "info": "Virgülle ayır." },
+    { "type": "checkbox", "id": "show_rating", "default": false, "label": "Puanı göster", "info": "Yalnızca gerçek yorumlar varsa aç; puan ve sayıyı yorum uygulamasındaki değerlerle aynı yaz." },
+    { "type": "text", "id": "rating_value", "label": "Puan" },
+    { "type": "text", "id": "rating_count", "label": "Değerlendirme sayısı" },
+    { "type": "product", "id": "cross_sell", "label": "Diğer set" },
+    { "type": "header", "content": "Satışa yardımcı" },
+    { "type": "checkbox", "id": "show_duo", "default": true, "label": "Diğer renkle birlikte al kutusu", "info": "Tüm ürünler koleksiyonundaki diğer rengi bu ürünle tek tıkla sepete ekler; fiyat iki fiyatın toplamıdır." },
+    { "type": "text", "id": "duo_title", "default": "Diğer rengiyle birlikte al", "label": "Kutu başlığı" },
+    { "type": "text", "id": "duo_button", "default": "İkisini ekle", "label": "Kutu butonu" },
+    { "type": "checkbox", "id": "show_buybar", "default": true, "label": "Alta sabit satın al çubuğu", "info": "Asıl buton ekrandan çıkınca altta görünür." },
+    { "type": "text", "id": "about_label", "default": "Ürün hakkında", "label": "Açıklama kutusu başlığı" }
   ]
 }
 {% endschema %}

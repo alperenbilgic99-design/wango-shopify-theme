@@ -41,6 +41,7 @@
       "subtotal": "Subtotal",
       "total": "Total",
       "checkout": "Checkout",
+      "shipping": "Shipping",
       "tax_note": "Shipping and taxes are calculated at checkout."
     },
     "collection": {

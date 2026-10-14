@@ -2,7 +2,55 @@
   "type": "header",
   "name": "Başlık",
   "sections": {
-    "header": { "type": "header", "settings": { "menu": "wango-origin-ust", "overlay_menu": "wango-origin-acilir", "cta_label": "Satın al", "cta_url": "shopify://collections/all" } }
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "wango-origin-ust",
+        "overlay_menu": "wango-origin-acilir",
+        "cta_label": "Satın al",
+        "cta_url": "/pages/wango-setler#setler"
+      }
+    },
+    "announcement": {
+      "type": "wango-announcement",
+      "settings": {
+        "tone": "white",
+        "interval": 4,
+        "label": "Duyurular"
+      },
+      "blocks": {
+        "kargo": {
+          "type": "item",
+          "settings": {
+            "text": "Tüm siparişlerde ücretsiz kargo",
+            "mobile": true
+          }
+        },
+        "sure": {
+          "type": "item",
+          "settings": {
+            "text": "2 iş günü içinde kargoda",
+            "mobile": true
+          }
+        },
+        "bulten": {
+          "type": "item",
+          "settings": {
+            "text": "Bültene katıl, ilk siparişine %10 indirim",
+            "link": "shopify://pages/wango-bulten",
+            "mobile": true
+          }
+        }
+      },
+      "block_order": [
+        "kargo",
+        "sure",
+        "bulten"
+      ]
+    }
   },
-  "order": ["header"]
+  "order": [
+    "announcement",
+    "header"
+  ]
 }

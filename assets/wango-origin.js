@@ -40,13 +40,15 @@
   var FRAG_TOP =
     "uniform sampler2D uTexture; uniform vec2 uResolution; uniform vec2 uImageResolution;" +
     "uniform float uDissolve; uniform vec2 uCenter; uniform float uGrayscale;" +
-    "uniform float uEdgeIntensity; uniform float uEdgeBrightness;" +
+    "uniform float uEdgeIntensity; uniform float uEdgeBrightness; uniform float uFocusX;" +
     "varying vec2 vUv;" + SOBEL + NOISE +
     "void main(){" +
     "  vec2 ratio = vec2(" +
     "    min((uResolution.x/uResolution.y)/(uImageResolution.x/uImageResolution.y), 1.0)," +
     "    min((uResolution.y/uResolution.x)/(uImageResolution.y/uImageResolution.x), 1.0));" +
-    "  vec2 uv = vec2(vUv.x*ratio.x + (1.-ratio.x)*0.5, vUv.y*ratio.y + (1.-ratio.y)*0.5);" +
+    "  float slack = (1.-ratio.x)*0.5;" +
+    "  float shiftX = clamp(uFocusX - 0.5, -slack, slack);" +
+    "  vec2 uv = vec2(vUv.x*ratio.x + slack + shiftX, vUv.y*ratio.y + (1.-ratio.y)*0.5);" +
     "  vec4 texColor = texture2D(uTexture, uv);" +
     "  float gray = lum(texColor.rgb);" +
     "  texColor.rgb = mix(texColor.rgb, vec3(gray), uGrayscale);" +
@@ -150,6 +152,11 @@
     if (!glArt || !glPhoto) { fallback.style.opacity = 1; copy.style.opacity = 1; copy.style.transform = "none"; if (W.introDone) W.introDone(); return; }
 
     glArt.set("uCenter", [0.5, 0.5]);
+    /* Where the cover crop is centred across the painting. A tall screen keeps
+       only a quarter of its width, and the wango case (painted at 45.6% of the
+       width, between the two hands) sat in the left third there; portrait
+       screens centre on the case, wide ones keep the painting's own centre. */
+    glArt.set("uFocusX", window.innerHeight > window.innerWidth ? 0.456 : 0.5);
     glArt.set("uDissolve", 0); glArt.set("uGrayscale", 0);
     glArt.set("uEdgeIntensity", 0); glArt.set("uEdgeBrightness", 1);
     glPhoto.set("uEdgeIntensity", 0.6); glPhoto.set("uDarkness", 1); glPhoto.set("uGrayscale", 1);

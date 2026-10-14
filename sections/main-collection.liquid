@@ -9,8 +9,9 @@
     {%- paginate collection.products by 12 -%}
     <div class="w-coll">
       {%- for product in collection.products -%}
-        <a class="w-coll__card" href="{{ product.url }}">
-          <div class="ptg-card__img">
+        {%- assign v = product.selected_or_first_available_variant -%}
+        <div class="w-coll__card" data-quick-scope>
+          <a class="ptg-card__img" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
             {%- if product.featured_media -%}
               <img src="{{ product.featured_media | image_url: width: 900 }}"
                    srcset="{{ product.featured_media | image_url: width: 450 }} 450w, {{ product.featured_media | image_url: width: 900 }} 900w"
@@ -18,17 +19,22 @@
                    width="{{ product.featured_media.width }}" height="{{ product.featured_media.height }}"
                    alt="{{ product.featured_media.alt | default: product.title | escape }}" loading="lazy">
             {%- endif -%}
-          </div>
+          </a>
           <div class="ptg-card__body">
             <div class="ptg-card__row">
-              <h3>{{ product.title }}</h3>
-              <span>{{ product.price | money }}</span>
+              <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+              <span>{{ v.price | money }}</span>
             </div>
-            {%- unless product.available -%}
-              <p class="ptg-card__sub">{{ 'products.product.sold_out' | t }}</p>
-            {%- endunless -%}
+            <div class="ptg-card__actions">
+              <button type="button" class="w-btn w-btn--solid" data-quick-add="{{ v.id }}" {% unless v.available %}disabled{% endunless %}>
+                {%- if v.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+              </button>
+              <a class="ptg-card__more" href="{{ product.url }}">İncele <i aria-hidden="true">&rarr;</i></a>
+            </div>
+            <a class="ptg-card__go" href="{{ routes.cart_url }}" data-quick-go hidden>Sepete git <i aria-hidden="true">&rarr;</i></a>
+            <p class="visually-hidden" role="status" data-quick-status></p>
           </div>
-        </a>
+        </div>
       {%- else -%}
         <p class="w-lede">{{ 'sections.collection.empty' | t }}</p>
       {%- endfor -%}

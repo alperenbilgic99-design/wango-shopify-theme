@@ -1,7 +1,12 @@
 {%- comment -%}
-  Stacked "moment" cards — ported from StackedCardSlider in lib/sliders.tsx.
-  Click anywhere: the top card drops away and re-enters at the back of the
-  deck while the next card's title characters drop into place.
+  "Moments", two layouts from the same blocks:
+  • wide screens (768px+): a bookshelf. Every moment is a spine standing on a
+    shelf with its title written up the side; one book is open at a time and a
+    tap on another spine slides it open (flex-grow on a single ease, so all
+    widths stay in step) while the photo inside eases from a slight zoom and
+    the copy rises in after it. The photo is laid out at the OPEN width from
+    the start, so opening only reveals more of it and never re-scales it.
+  • phones: the original stacked deck, scrubbed by scroll (wango-scroll-fx.js).
 {%- endcomment -%}
 
 <section class="w-paper w-section">
@@ -11,6 +16,30 @@
   </div>
 
   <div class="w-wrap">
+    <div class="w-shelf" data-shelf>
+      {%- assign tilts = '100,93,97,90,95,92,98,94' | split: ',' -%}
+      {%- for block in section.blocks -%}
+        {%- assign h = tilts[forloop.index0] -%}
+        <button type="button" class="w-shelf__book{% if forloop.first %} is-open{% endif %}" data-shelf-book
+                aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" style="--book-h: {{ h }}%" {{ block.shopify_attributes }}>
+          <span class="w-shelf__img">
+            {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: '', loading: 'lazy', sizes: '(min-width: 1200px) 900px, 70vw' %}
+          </span>
+          <span class="w-shelf__shade" aria-hidden="true"></span>
+          <span class="w-shelf__spine" aria-hidden="true">
+            <span class="w-shelf__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="w-shelf__spine-title">{{ block.settings.title }}</span>
+          </span>
+          <span class="w-shelf__copy">
+            <span class="w-shelf__count">{{ forloop.index | prepend: '0' | slice: -2, 2 }} / {{ section.blocks.size | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="w-shelf__title">{{ block.settings.title }}</span>
+            {%- if block.settings.meta != blank -%}<span class="w-shelf__meta">{{ block.settings.meta }}</span>{%- endif -%}
+            {%- if block.settings.body != blank -%}<span class="w-shelf__body">{{ block.settings.body }}</span>{%- endif -%}
+          </span>
+        </button>
+      {%- endfor -%}
+    </div>
+
     <div class="w-stack" data-stack role="button" tabindex="0" aria-label="{{ section.settings.hint }}">
       <span class="w-stack__hint">{{ section.settings.hint }}</span>
       {%- for block in section.blocks -%}
@@ -44,18 +73,19 @@
         { "type": "image_picker", "id": "image", "label": "Görsel" },
         { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
         { "type": "text", "id": "title", "label": "Başlık" },
-        { "type": "text", "id": "meta", "label": "Alt yazı" }
+        { "type": "text", "id": "meta", "label": "Alt yazı" },
+        { "type": "textarea", "id": "body", "label": "Metin (masaüstü raf görünümünde açılınca)" }
       ]
     }
   ],
   "presets": [{
     "name": "Origin · anlar",
     "blocks": [
-      { "type": "moment", "settings": { "image_asset": "wp-real-canvas-gymbag.jpg", "title": "SABAH", "meta": "Kahve, sessizlik, ilk şarkı" } },
-      { "type": "moment", "settings": { "image_asset": "wp-real-tray-flatlay.jpg",  "title": "YOLDA", "meta": "Şehrin gürültüsü kapanır" } },
-      { "type": "moment", "settings": { "image_asset": "wp-real-three-on-mint.jpg", "title": "ODAK",  "meta": "Dünya beklesin, sen dinle" } },
-      { "type": "moment", "settings": { "image_asset": "wp-real-leather-bag.jpg",   "title": "AKŞAM", "meta": "Kalabalıkta kendi ritmin" } },
-      { "type": "moment", "settings": { "image_asset": "wp-real-claw-machine.jpg",  "title": "GECE",  "meta": "Gün biter, sessizlik kalır" } }
+      { "type": "moment", "settings": { "image_asset": "wp-real-canvas-gymbag.jpg", "title": "SABAH", "meta": "Kahve, sessizlik, ilk sayfa", "body": "Ev uyanmadan önceki yarım saat. Sokaktan gelen uğultu geri çekilir; kahvenin sesi ve sayfanın hışırtısı kalır. Günün ilk odağı senin." } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-tray-flatlay.jpg",  "title": "YOLDA", "meta": "Şehrin gürültüsü kısılır", "body": "Metro, otobüs, kalabalık bir cadde. wango uğultunun sertliğini alır; anonsu da yanındakinin sesini de duymaya devam edersin." } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-three-on-mint.jpg", "title": "ODAK",  "meta": "Dünya beklesin, sen dinle", "body": "Açık ofis, kafe, kütüphane. Yan masadaki sohbet uzaklaşır, telefonun çaldığında yine duyarsın. Müzik açmadan odaklanmanın bir yolu." } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-leather-bag.jpg",   "title": "AKŞAM", "meta": "Kalabalıkta kendi ritmin", "body": "Konser, bar, kalabalık bir masa. Müzik yerinde kalır, yalnızca şiddeti azalır; arkadaşının söylediğini kaçırmazsın." } },
+      { "type": "moment", "settings": { "image_asset": "wp-real-claw-machine.jpg",  "title": "GECE",  "meta": "Gün biter, sessizlik kalır", "body": "Geç biten bir etkinlik, eve dönüş yolu. Kutusunu deri kayışından çantana tak; gün bittiğinde de yanında." } }
     ]
   }]
 }

@@ -26,15 +26,15 @@
         "e1": {
           "type": "callout",
           "settings": {
-            "title": "Dış kabuk",
-            "body": "Mat periwinkle yüzey, günlük kullanıma dayanıklı kaplama."
+            "title": "Gövde",
+            "body": "Hipoalerjenik silikon gövde ve metal detay; uzun süre takmak için."
           }
         },
         "e2": {
           "type": "callout",
           "settings": {
-            "title": "Sürücü",
-            "body": "Dengeli, sıcak ton — LDAC destekli sürücü ünitesi."
+            "title": "Akustik kanal",
+            "body": "Sesi tamamen kesmez; gürültünün sertliğini alır, basınç hissi yaratmaz."
           }
         }
       },
@@ -60,7 +60,7 @@
           "type": "note",
           "settings": {
             "title": "Anlık ayrışma",
-            "body": "Filtre devreye girdiği anda o karmaşa tek bir düz çizgiye iner."
+            "body": "Filtreden geçen karmaşa sakin bir çizgiye iner; konuşma ve müzik kalır."
           }
         },
         "n3": {
@@ -84,9 +84,9 @@
           "type": "row",
           "settings": {
             "image_asset": "wb-brief-01.jpg",
-            "eyebrow": "Neden mat",
-            "title": "Parlamayan bir yüzey, dikkat çekmeyen bir nesne.",
-            "body": "Sedef periwinkle, ışığı yansıtmak yerine içine alır. Kulağında olduğunu sen bilirsin; karşındaki fark etmez. Mat bitiş bir tercih, bir eksik değil."
+            "eyebrow": "Neden böyle",
+            "title": "Kulakta bir takı, elde küçük bir taş.",
+            "body": "Obsidian Black ve Tropical Indigo; metal detaylı, hipoalerjenik silikon bir gövde. Gürültüyü filtrelerken kulağında bir aksesuar gibi durur."
           }
         },
         "b2": {
@@ -95,7 +95,7 @@
             "image_asset": "wb-brief-08.jpg",
             "eyebrow": "Nasıl durur",
             "title": "Konkaya oturur, kanala yerleşir, orada kalır.",
-            "body": "İki loblu gövde kulağın kendi çukuruna gömülür. Dışarı fırlamaz, koşarken düşmez, saatlerce takılı kalınca acıtmaz. Üç boy silikon uçla kendi kulağına ayarlarsın."
+            "body": "Gövde kulağın kendi çukuruna oturur, uç kanala yerleşir. Kutudaki 4 boy uçtan (S, M, L, Double) kulağına uyanı seçtiğinde yerinde kalır ve uzun süre rahatsız etmez."
           }
         },
         "b3": {
@@ -104,7 +104,7 @@
             "image_asset": "wb-brief-19.jpg",
             "eyebrow": "Yanında",
             "title": "Çantanda kaybolmayacak kadar kendine ait.",
-            "body": "Kırk dört milimetrelik kutu, anahtarının ve kartlığının yanında bir aksesuar gibi durur. Bileklik askısı çanta sapına da geçer — kolye değil, taşınacak bir nesne."
+            "body": "Küçük kutusu, entegre deri kayışıyla anahtarının ve kartlığının yanında bir aksesuar gibi durur. Çantana, bileğine ya da kemer halkana tak."
           }
         }
       },
@@ -121,16 +121,16 @@
           "type": "tooltip",
           "settings": {
             "icon": "◐",
-            "title": "Tüm hafta",
-            "description": "Tek şarjla bir hafta boyunca yanında — durmadan, kesintisiz."
+            "title": "Şarj yok",
+            "description": "Şarj etmen gereken bir şey yok. Kutusundan çıkar, tak, hazırsın."
           }
         },
         "t2": {
           "type": "tooltip",
           "settings": {
             "icon": "◉",
-            "title": "Senkron kal",
-            "description": "Uygulama bağlantısıyla kullanımını takip et, hedef koy."
+            "title": "Yıkanabilir",
+            "description": "Yıkanabilir silikon; tek kullanımlık değil, defalarca kullanılır."
           }
         }
       },
@@ -209,9 +209,9 @@
       "settings": {
         "ground": "w-grad",
         "heading": "Setini seçtin mi?",
-        "body": "Yukarıdaki kartlardan birine dokun, ürün sayfasında devam et.",
-        "cta_label": "Setleri gör",
-        "cta_url": "shopify://collections/all"
+        "body": "Yukarıdaki kartlardan rengini seç, doğrudan sepete ekle. Kargo ücretsiz, 2 iş günü içinde kargoda.",
+        "cta_label": "Setlere dön",
+        "cta_url": "/pages/wango-setler#setler"
       }
     },
     "rail": {
@@ -286,10 +286,48 @@
         "heading": "Altı cümlede Origin.",
         "cta_url": "shopify://collections/all"
       }
+    },
+    "ticker": {
+      "type": "wango-ticker",
+      "blocks": {
+        "kargo": {
+          "type": "item",
+          "settings": {
+            "text": "Ücretsiz kargo",
+            "icon": "truck"
+          }
+        },
+        "sure": {
+          "type": "item",
+          "settings": {
+            "text": "2 iş günü içinde kargoda",
+            "icon": "clock"
+          }
+        },
+        "bulten": {
+          "type": "item",
+          "settings": {
+            "text": "Bültene katıl, ilk siparişine %10 indirim",
+            "icon": "mail",
+            "link": "shopify://pages/wango-bulten"
+          }
+        }
+      },
+      "block_order": [
+        "kargo",
+        "sure",
+        "bulten"
+      ],
+      "settings": {
+        "tone": "purple",
+        "speed": 40,
+        "ground": "paper"
+      }
     }
   },
   "order": [
     "boxhero",
+    "ticker",
     "grid",
     "boxscroll",
     "explode",

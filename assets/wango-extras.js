@@ -93,7 +93,16 @@
       setTimeout(show, delay);
     }
     var hasIntro = !!document.querySelector("[data-origin-hero], [data-boxhero]");
-    if (hasIntro && !W._intro) {
+    if (root.dataset.trigger === "scroll") {
+      /* product page: only once the visitor has read half the page */
+      var onScroll = function () {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        if (max > 0 && window.scrollY / max < 0.5) return;
+        window.removeEventListener("scroll", onScroll);
+        arm();
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+    } else if (hasIntro && !W._intro) {
       document.addEventListener("wango:intro-done", arm, { once: true });
     } else if (document.readyState === "complete") {
       arm();
@@ -251,7 +260,58 @@
     paint();
   }
 
-  var MAP = [["[data-popup]", initPopup], ["[data-rail]", initRail]];
+  /* ── promise ticker ──────────────────────────────────────────────────────
+     Wide screens: a CSS loop (paused under the pointer). Phones: the band
+     moves with the page scroll while it crosses the screen, like the other
+     scrubbed animations; the CSS loop is switched off there. */
+  function initTicker(root) {
+    var track = root.querySelector("[data-ticker-track]");
+    if (!track || W.reduced && W.reduced()) return;
+    if (!(W.mobile && W.mobile()) || !window.gsap || !window.ScrollTrigger) return;
+    root.classList.add("is-scrub");
+    gsap.fromTo(track, { xPercent: 0 }, {
+      xPercent: -22, ease: "none",
+      scrollTrigger: { trigger: root, start: "top bottom", end: "bottom top", scrub: true }
+    });
+  }
+
+  /* ── announcement bar: one line at a time, fading in and out ─────────────
+     Lines hidden on this screen size (display:none) are skipped; it pauses
+     while the pointer or keyboard focus is on the bar and while the tab is
+     in the background, and stays on the first line with reduced motion. */
+  function initAnnounce(root) {
+    var all = [].slice.call(root.querySelectorAll(".w-announce__item"));
+    var every = Math.max(3, parseFloat(root.dataset.interval) || 4) * 1000;
+    if (all.length < 2 || (W.reduced && W.reduced())) return;
+    var visible = function () { return all.filter(function (el) { return el.offsetParent !== null || getComputedStyle(el).display !== "none"; }); };
+    var paused = false, timer = 0;
+    function step() {
+      var list = visible();
+      if (list.length < 2) return;
+      var cur = list.findIndex(function (el) { return el.classList.contains("is-on"); });
+      var next = list[(cur + 1) % list.length];
+      all.forEach(function (el) { el.classList.remove("is-out"); });
+      if (cur > -1) { list[cur].classList.remove("is-on"); list[cur].classList.add("is-out"); }
+      next.classList.add("is-on");
+    }
+    function schedule() {
+      clearTimeout(timer);
+      timer = setTimeout(function () { if (!paused && !document.hidden) step(); schedule(); }, every);
+    }
+    /* make sure a line that exists on this screen is the one shown first */
+    var list = visible();
+    if (list.length && !list.some(function (el) { return el.classList.contains("is-on"); })) {
+      all.forEach(function (el) { el.classList.remove("is-on"); });
+      list[0].classList.add("is-on");
+    }
+    root.addEventListener("mouseenter", function () { paused = true; });
+    root.addEventListener("mouseleave", function () { paused = false; });
+    root.addEventListener("focusin", function () { paused = true; });
+    root.addEventListener("focusout", function () { paused = false; });
+    schedule();
+  }
+
+  var MAP = [["[data-popup]", initPopup], ["[data-rail]", initRail], ["[data-ticker]", initTicker], ["[data-announce]", initAnnounce]];
   function boot(scope) {
     MAP.forEach(function (pair) {
       (scope || document).querySelectorAll(pair[0]).forEach(function (el) {

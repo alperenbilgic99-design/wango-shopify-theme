@@ -1,0 +1,58 @@
+{%- comment -%}
+  Thin announcement bar above the header, on every page. It is NOT sticky:
+  it sits at the very top and scrolls away with the page, so it never adds a
+  third fixed layer on a phone (header + buy bar are already fixed there).
+  The lines take turns: one at a time, fading in and out (wango-extras.js,
+  [data-announce]); it pauses under the pointer or keyboard focus, and with
+  reduced motion only the first line is shown. All lines share one grid cell,
+  so the bar keeps the height of the tallest line and never jumps.
+{%- endcomment -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div class="w-announce w-announce--{{ section.settings.tone }}" role="region" aria-label="{{ section.settings.label | escape }}"
+       data-announce data-interval="{{ section.settings.interval }}">
+    <ul class="w-announce__list">
+      {%- for block in section.blocks -%}
+        <li class="w-announce__item{% unless block.settings.mobile %} w-announce__item--wide{% endunless %}{% if forloop.first %} is-on{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+          {%- else -%}
+            <span>{{ block.settings.text }}</span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Duyuru çubuğu",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "select", "id": "tone", "label": "Renk", "default": "white",
+      "options": [ { "value": "white", "label": "Beyaz" }, { "value": "lilac", "label": "Lila" }, { "value": "paper", "label": "Açık" }, { "value": "ink", "label": "Siyah" } ] },
+    { "type": "range", "id": "interval", "min": 3, "max": 8, "step": 0.5, "unit": "sn", "default": 4, "label": "Her duyurunun ekranda kalma süresi" },
+    { "type": "text", "id": "label", "default": "Duyurular", "label": "Ekran okuyucu etiketi" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Duyuru",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Metin" },
+        { "type": "url", "id": "link", "label": "Bağlantı (isteğe bağlı)" },
+        { "type": "checkbox", "id": "mobile", "default": true, "label": "Telefonda göster", "info": "Telefonda uzun bir satır sığmazsa işareti kaldır." }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Duyuru çubuğu",
+    "blocks": [
+      { "type": "item", "settings": { "text": "Tüm siparişlerde ücretsiz kargo" } },
+      { "type": "item", "settings": { "text": "2 iş günü içinde kargoda" } },
+      { "type": "item", "settings": { "text": "Bültene katıl, ilk siparişine %10 indirim" } }
+    ]
+  }]
+}
+{% endschema %}

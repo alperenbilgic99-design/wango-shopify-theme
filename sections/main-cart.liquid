@@ -16,7 +16,7 @@
   {%- if cart.item_count == 0 -%}
     <div class="w-cart__empty">
       <p class="w-lede" style="margin-inline:auto">{{ 'sections.cart.empty' | t }}</p>
-      <a class="w-btn w-btn--solid" style="margin-top:2rem" href="{{ section.settings.continue_url | default: routes.all_products_collection_url }}">
+      <a class="w-btn w-btn--solid" style="margin-top:2rem" href="{{ section.settings.continue_url | default: '/pages/wango-setler#setler' }}">
         {{ 'sections.cart.continue' | t }}
       </a>
     </div>
@@ -54,6 +54,38 @@
               </div>
             </div>
           {%- endfor -%}
+
+          {%- comment -%}
+            Other-colour nudge: if a colour from the "all" collection is not in
+            the cart yet, offer it with one tap (wango-commerce.js; the page
+            reloads so the lines and totals come from Shopify again).
+          {%- endcomment -%}
+          {%- liquid
+            assign in_cart = cart.items | map: 'product_id' | join: ','
+            assign in_cart = ',' | append: in_cart | append: ','
+            assign extra = nil
+            for p in collections.all.products limit: 6
+              assign needle = ',' | append: p.id | append: ','
+              unless in_cart contains needle
+                if p.available
+                  assign extra = p
+                  break
+                endif
+              endunless
+            endfor
+          -%}
+          {%- if section.settings.show_upsell and extra -%}
+            {%- assign ev = extra.selected_or_first_available_variant -%}
+            <div class="w-cart__upsell" data-quick-scope data-quick-reload>
+              {%- if extra.featured_media -%}<img src="{{ extra.featured_media | image_url: width: 200 }}" alt="" width="72" height="72" loading="lazy">{%- endif -%}
+              <div>
+                <b>{{ section.settings.upsell_title }}</b>
+                <span>{{ extra.title }} · {{ ev.price | money }}</span>
+              </div>
+              <button type="button" class="w-btn w-btn--ghost" data-quick-add="{{ ev.id }}">{{ section.settings.upsell_button }}</button>
+              <p class="visually-hidden" role="status" data-quick-status></p>
+            </div>
+          {%- endif -%}
         </div>
 
         <aside class="w-cart__summary">
@@ -68,6 +100,12 @@
               <span>&minus;{{ discount.total_allocated_amount | money }}</span>
             </div>
           {%- endfor -%}
+          {%- if section.settings.shipping_label != blank -%}
+            <div class="w-cart__row">
+              <span>{{ 'sections.cart.shipping' | t }}</span>
+              <span style="color:var(--w-accent)">{{ section.settings.shipping_label }}</span>
+            </div>
+          {%- endif -%}
           <div class="w-cart__row w-cart__row--total">
             <span>{{ 'sections.cart.total' | t }}</span>
             <span>{{ cart.total_price | money }}</span>
@@ -82,6 +120,12 @@
             store's own shipping profiles — the theme must not state a figure
             it cannot know here.
           {%- endcomment -%}
+          {%- if section.settings.trust != blank -%}
+            <ul class="w-cart__trust">
+              {%- assign trust = section.settings.trust | split: ',' -%}
+              {%- for t in trust -%}<li>{{ t | strip }}</li>{%- endfor -%}
+            </ul>
+          {%- endif -%}
           <p class="w-cart__note">{{ 'sections.cart.tax_note' | t }}</p>
         </aside>
       </div>
@@ -93,6 +137,11 @@
 {
   "name": "Sepet",
   "settings": [
+    { "type": "text", "id": "shipping_label", "default": "Ücretsiz", "label": "Kargo satırı", "info": "Shopify kargo ayarlarıyla aynı olmalı. Boşsa satır gizlenir." },
+    { "type": "textarea", "id": "trust", "default": "2 iş günü içinde kargoda, Ödeme Shopify'ın güvenli ödeme sayfasında", "label": "Güvence satırları", "info": "Virgülle ayır." },
+    { "type": "checkbox", "id": "show_upsell", "default": true, "label": "Diğer rengi öner" },
+    { "type": "text", "id": "upsell_title", "default": "Diğer rengi de ekle", "label": "Öneri başlığı" },
+    { "type": "text", "id": "upsell_button", "default": "Ekle", "label": "Öneri butonu" },
     { "type": "text", "id": "eyebrow", "default": "Sepet", "label": "Üst etiket" },
     { "type": "url", "id": "continue_url", "label": "Alışverişe devam bağlantısı" }
   ]

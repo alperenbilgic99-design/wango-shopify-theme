@@ -1,33 +1,202 @@
 {
   "sections": {
-    "main":    { "type": "main-product", "settings": {} },
-    "stats":   { "type": "wango-stats",
+    "main": {
+      "type": "main-product",
+      "settings": {
+        "show_rating": false
+      }
+    },
+    "stats": {
+      "type": "wango-stats",
       "blocks": {
-        "a": { "type": "stat", "settings": { "value": "28sa",  "label": "toplam dinleme" } },
-        "b": { "type": "stat", "settings": { "value": "44mm",  "label": "kutu çapı" } },
-        "c": { "type": "stat", "settings": { "value": "3",     "label": "ANC kademesi" } },
-        "d": { "type": "stat", "settings": { "value": "2 yıl", "label": "garanti" } }
+        "a": {
+          "type": "stat",
+          "settings": {
+            "value": "0",
+            "label": "elektronik parça"
+          }
+        },
+        "b": {
+          "type": "stat",
+          "settings": {
+            "value": "4",
+            "label": "uç boyu · S, M, L, Double"
+          }
+        },
+        "c": {
+          "type": "stat",
+          "settings": {
+            "value": "2",
+            "label": "renk"
+          }
+        },
+        "d": {
+          "type": "stat",
+          "settings": {
+            "value": "2 gün",
+            "label": "içinde kargoda"
+          }
+        }
       },
-      "block_order": ["a", "b", "c", "d"] },
-    "specs":   { "type": "wango-specs",
+      "block_order": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
+    },
+    "specs": {
+      "type": "wango-specs",
       "blocks": {
-        "s1": { "type": "spec", "settings": { "key": "Sürücü",           "value": "10 mm dinamik, mat sedef diyafram" } },
-        "s2": { "type": "spec", "settings": { "key": "Gürültü filtresi", "value": "Hibrit ANC · 3 kademe" } },
-        "s3": { "type": "spec", "settings": { "key": "Pil",              "value": "7 sa tıkaç · 28 sa kutuyla" } },
-        "s4": { "type": "spec", "settings": { "key": "Şarj",             "value": "USB-C · 10 dk = 2 sa" } },
-        "s5": { "type": "spec", "settings": { "key": "Bağlantı",         "value": "Bluetooth 5.4 · çoklu cihaz" } },
-        "s6": { "type": "spec", "settings": { "key": "Dayanıklılık",     "value": "IPX5 tere ve yağmura karşı" } },
-        "s7": { "type": "spec", "settings": { "key": "Kutu",             "value": "44 mm çap · 20 mm kalınlık · 41 g" } },
-        "s8": { "type": "spec", "settings": { "key": "Kutuda",           "value": "3 boy silikon uç, USB-C kablo, bileklik" } }
+        "s1": {
+          "type": "spec",
+          "settings": {
+            "key": "Tür",
+            "value": "Akustik kanallı kulak tıkacı · analog"
+          }
+        },
+        "s2": {
+          "type": "spec",
+          "settings": {
+            "key": "Filtre",
+            "value": "Basınçsız akustik kanal · sesi kesmez, kısar"
+          }
+        },
+        "s3": {
+          "type": "spec",
+          "settings": {
+            "key": "Gövde",
+            "value": "Hipoalerjenik silikon, metal detay"
+          }
+        },
+        "s4": {
+          "type": "spec",
+          "settings": {
+            "key": "Uçlar",
+            "value": "4 boy silikon uç · S, M, L, Double"
+          }
+        },
+        "s5": {
+          "type": "spec",
+          "settings": {
+            "key": "Bakım",
+            "value": "Yıkanabilir, tekrar tekrar kullanılır"
+          }
+        },
+        "s6": {
+          "type": "spec",
+          "settings": {
+            "key": "Taşıma",
+            "value": "Kutu ve kutuya entegre deri kayış"
+          }
+        },
+        "s7": {
+          "type": "spec",
+          "settings": {
+            "key": "Renkler",
+            "value": "Obsidian Black · Tropical Indigo"
+          }
+        },
+        "s8": {
+          "type": "spec",
+          "settings": {
+            "key": "Şarj",
+            "value": "Yok · elektronik parça yok"
+          }
+        }
       },
-      "block_order": ["s1","s2","s3","s4","s5","s6","s7","s8"] },
-    "reviews": { "type": "wango-reviews",
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6",
+        "s7",
+        "s8"
+      ]
+    },
+    "reviews": {
+      "type": "wango-reviews",
       "blocks": {
-        "r1": { "type": "review", "settings": { "rating": 5, "title": "Kulakta durduğunu unutuyorum", "body": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.", "author": "Deniz K." } },
-        "r2": { "type": "review", "settings": { "rating": 5, "title": "Aksesuar gibi", "body": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.", "author": "Elif A." } },
-        "r3": { "type": "review", "settings": { "rating": 4, "title": "Filtre kademesi çok iyi", "body": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.", "author": "Mert Y." } }
+        "r1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Kulakta durduğunu unutuyorum",
+            "body": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.",
+            "author": "Deniz K."
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Aksesuar gibi",
+            "body": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.",
+            "author": "Elif A."
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "rating": 4,
+            "title": "Filtre kademesi çok iyi",
+            "body": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Tek eksik kablosuz şarj yok.",
+            "author": "Mert Y."
+          }
+        }
       },
-      "block_order": ["r1","r2","r3"] }
+      "block_order": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "disabled": true
+    },
+    "ticker": {
+      "type": "wango-ticker",
+      "blocks": {
+        "kargo": {
+          "type": "item",
+          "settings": {
+            "text": "Ücretsiz kargo",
+            "icon": "truck"
+          }
+        },
+        "sure": {
+          "type": "item",
+          "settings": {
+            "text": "2 iş günü içinde kargoda",
+            "icon": "clock"
+          }
+        },
+        "bulten": {
+          "type": "item",
+          "settings": {
+            "text": "Bültene katıl, ilk siparişine %10 indirim",
+            "icon": "mail",
+            "link": "shopify://pages/wango-bulten"
+          }
+        }
+      },
+      "block_order": [
+        "kargo",
+        "sure",
+        "bulten"
+      ],
+      "settings": {
+        "tone": "purple",
+        "speed": 40,
+        "ground": "black"
+      }
+    }
   },
-  "order": ["main", "stats", "specs", "reviews"]
+  "order": [
+    "main",
+    "ticker",
+    "stats",
+    "specs",
+    "reviews"
+  ]
 }
