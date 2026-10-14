@@ -1,26 +1,64 @@
 {%- comment -%}
-  Three alternating image/text rows — ported from short-story.tsx. A single
-  fade-and-rise on enter, deliberately calmer than the Origin page's scroll
-  choreography, because this page's job is to get out of the way of the buy
-  button.
+  Short story, three chapters.
+  • Wide screens (900px+): one large picture stays put on the left (sticky)
+    while the chapters scroll past on the right; the picture cross-fades to
+    the chapter in the middle of the screen and a thin rail shows which one
+    it is (wango-extras.js, [data-story]). All pictures are stacked in the
+    sticky frame and only opacity/scale change, so the swap is GPU-only.
+  • Phones: every chapter carries its own picture above its copy and comes
+    in with the shared scroll-scrubbed .w-reveal.
+  A picture comes from `image_url` (a CDN link, e.g. a product photo), the
+  image picker, or a packaged theme asset, in that order.
 {%- endcomment -%}
 
-<section id="hikaye" class="w-story">
+{%- capture pics -%}
+  {%- for block in section.blocks -%}
+    {%- if block.settings.image_url != blank -%}
+      {%- assign u = block.settings.image_url | split: '?' | first -%}
+      <img src="{{ u }}?width=1200" srcset="{{ u }}?width=700 700w, {{ u }}?width=1200 1200w, {{ u }}?width=1600 1600w"
+           sizes="(min-width: 900px) 46vw, 100vw" alt="{{ block.settings.title | escape }}" loading="lazy" data-story-src="{{ forloop.index0 }}">
+    {%- else -%}
+      {%- capture one -%}{% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy', sizes: '(min-width: 900px) 46vw, 100vw' %}{%- endcapture -%}
+      {{ one | replace: '<img', '<img data-story-src="__I__"' | replace: '__I__', forloop.index0 }}
+    {%- endif -%}
+    <!--split-->
+  {%- endfor -%}
+{%- endcapture -%}
+{%- assign pic_list = pics | split: '<!--split-->' -%}
+
+<section id="hikaye" class="w-story" data-story>
+  <div class="w-story__grain" aria-hidden="true"></div>
   <div class="w-story__inner">
-    {%- for block in section.blocks -%}
-      {%- assign mod = forloop.index0 | modulo: 2 -%}
-      <div class="w-story__row w-reveal{% if mod == 1 %} is-flip{% endif %}" {{ block.shopify_attributes }}>
-        <figure>
-          {% render 'wango-image', image: block.settings.image, asset: block.settings.image_asset, alt: block.settings.title, loading: 'lazy', sizes: '(min-width: 768px) 550px, 100vw' %}
-        </figure>
-        <div>
-          <span class="w-eyebrow">{{ block.settings.eyebrow }}</span>
-          <h3>{{ block.settings.title }}</h3>
-          <p>{{ block.settings.body }}</p>
-          <em>0{{ forloop.index }} / 0{{ section.blocks.size }}</em>
-        </div>
+    <div class="w-story__stage" aria-hidden="true">
+      <div class="w-story__frame">
+        {%- for block in section.blocks -%}
+          <figure class="w-story__pic{% if forloop.first %} is-on{% endif %}" data-story-pic>{{ pic_list[forloop.index0] }}</figure>
+        {%- endfor -%}
       </div>
-    {%- endfor -%}
+      <ol class="w-story__rail">
+        {%- for block in section.blocks -%}<li{% if forloop.first %} class="is-on"{% endif %} data-story-dot><i></i></li>{%- endfor -%}
+      </ol>
+    </div>
+
+    <div class="w-story__chapters">
+      {%- for block in section.blocks -%}
+        <article class="w-story__ch{% if forloop.first %} is-on{% endif %}" data-story-ch {{ block.shopify_attributes }}>
+          <figure class="w-story__mpic w-reveal">{{ pic_list[forloop.index0] }}</figure>
+          <div class="w-story__copy w-reveal">
+            <span class="w-story__num" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="w-eyebrow">{{ block.settings.eyebrow }}</span>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.body }}</p>
+            {%- if block.settings.chips != blank -%}
+              <ul class="w-story__chips">
+                {%- assign chips = block.settings.chips | split: ',' -%}
+                {%- for c in chips -%}<li>{{ c | strip }}</li>{%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
   </div>
 </section>
 
@@ -29,21 +67,86 @@
   "name": "Ürün · kısa hikâye",
   "max_blocks": 6,
   "blocks": [
-    { "type": "row", "name": "Blok", "settings": [
-      { "type": "image_picker", "id": "image", "label": "Görsel" },
-      { "type": "text", "id": "image_asset", "label": "Tema görseli (dosya adı)" },
-      { "type": "text", "id": "eyebrow", "label": "Üst etiket" },
-      { "type": "text", "id": "title", "label": "Başlık" },
-      { "type": "textarea", "id": "body", "label": "Metin" }
-    ]}
+    {
+      "type": "row",
+      "name": "Blok",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Görsel"
+        },
+        {
+          "type": "text",
+          "id": "image_asset",
+          "label": "Tema görseli (dosya adı)"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Görsel bağlantısı (isteğe bağlı)",
+          "info": "Shopify CDN adresi (ör. bir ürün görseli). Doluysa diğer görsel alanlarının yerine kullanılır."
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Üst etiket"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Başlık"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Metin"
+        },
+        {
+          "type": "text",
+          "id": "chips",
+          "label": "Bilgi etiketleri",
+          "info": "Virgülle ayır, ör. Hipoalerjenik silikon, Metal detay"
+        }
+      ]
+    }
   ],
-  "presets": [{
-    "name": "Ürün · kısa hikâye",
-    "blocks": [
-      { "type": "row", "settings": {"image_asset": "wb-brief-01.jpg", "eyebrow": "Neden böyle", "title": "Kulakta bir takı, elde küçük bir taş.", "body": "Obsidian Black ve Tropical Indigo; metal detaylı, hipoalerjenik silikon bir gövde. Gürültüyü filtrelerken kulağında bir aksesuar gibi durur."} },
-      { "type": "row", "settings": {"image_asset": "wb-brief-08.jpg", "eyebrow": "Nasıl durur", "title": "Konkaya oturur, kanala yerleşir, orada kalır.", "body": "Gövde kulağın kendi çukuruna oturur, uç kanala yerleşir. Kutudaki 4 boy uçtan (S, M, L, Double) kulağına uyanı seçtiğinde yerinde kalır ve uzun süre rahatsız etmez."} },
-      { "type": "row", "settings": {"image_asset": "wb-brief-19.jpg", "eyebrow": "Yanında", "title": "Çantanda kaybolmayacak kadar kendine ait.", "body": "Küçük kutusu, entegre deri kayışıyla anahtarının ve kartlığının yanında bir aksesuar gibi durur. Çantana, bileğine ya da kemer halkana tak."} }
-    ]
-  }]
+  "presets": [
+    {
+      "name": "Ürün · kısa hikâye",
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "image_asset": "wp-real-sky-mirror.jpg",
+            "eyebrow": "Neden böyle",
+            "title": "Kulakta bir takı, elde küçük bir taş.",
+            "body": "Obsidian Black ve Tropical Indigo; metal detaylı, hipoalerjenik silikon bir gövde. Gürültüyü filtrelerken kulağında bir aksesuar gibi durur.",
+            "chips": "Hipoalerjenik silikon, Metal detay, 2 renk"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "image_asset": "wp-worn-1.jpg",
+            "eyebrow": "Nasıl durur",
+            "title": "Konkaya oturur, kanala yerleşir, orada kalır.",
+            "body": "Gövde kulağın kendi çukuruna oturur, uç kanala yerleşir. Kutudaki 4 boy uçtan kulağına uyanı seçtiğinde yerinde kalır ve uzun süre rahatsız etmez.",
+            "chips": "4 boy uç, S · M · L · Double"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "image_asset": "wp-real-pocket-denim.jpg",
+            "eyebrow": "Yanında",
+            "title": "Çantanda kaybolmayacak kadar kendine ait.",
+            "body": "Küçük kutusu, entegre deri kayışıyla anahtarının ve kartlığının yanında bir aksesuar gibi durur. Çantana, bileğine ya da kemer halkana tak.",
+            "chips": "Deri kayış, Kutuya entegre, Cebe sığar"
+          }
+        }
+      ]
+    }
+  ]
 }
 {% endschema %}

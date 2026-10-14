@@ -238,7 +238,13 @@
     }).then(function (r) {
       if (!r.ok) return r.json().then(function (e) { throw new Error(e.description || e.message || "cart"); });
       return r.json();
-    }).then(function (res) { return refreshCount().then(function () { return res; }); });
+    }).then(function (res) {
+      return refreshCount().then(function (cart) {
+        /* the cart drawer opens on this */
+        document.dispatchEvent(new CustomEvent("wango:added", { detail: { added: res, cart: cart } }));
+        return res;
+      });
+    });
   };
 
   W.changeLine = function (line, quantity) {

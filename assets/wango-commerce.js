@@ -64,6 +64,135 @@
     });
   }
 
+  /* ── cart drawer ─────────────────────────────────────────────────────────
+     Opens after every successful add (the "wango:added" event from
+     Wango.addItems) and from the header's cart pill. Everything inside is
+     drawn from Shopify's /cart.js, so it is always the real cart. */
+  function initDrawer(root) {
+    var panel = root.querySelector(".w-drawer__panel");
+    var linesEl = root.querySelector("[data-drawer-lines]");
+    var emptyEl = root.querySelector("[data-drawer-empty]");
+    var upsellEl = root.querySelector("[data-drawer-upsell]");
+    var footEl = root.querySelector("[data-drawer-foot]");
+    var subEl = root.querySelector("[data-drawer-subtotal]");
+    var countEl = root.querySelector("[data-drawer-count]");
+    var addedEl = root.querySelector("[data-drawer-added]");
+    var products = [];
+    try { products = JSON.parse((document.querySelector("[data-drawer-products]") || {}).textContent || "[]"); } catch (e) {}
+    var money = W.money || function (c) { return (c / 100).toFixed(2); };
+    var isOpen = false, lastFocus = null, addedTimer = 0;
+
+    function esc(t) { var d = document.createElement("div"); d.textContent = t == null ? "" : String(t); return d.innerHTML; }
+    function sized(url, w) { if (!url) return ""; return url + (url.indexOf("?") > -1 ? "&" : "?") + "width=" + w; }
+
+    function render(cart) {
+      if (!cart) return;
+      var items = cart.items || [];
+      countEl.textContent = cart.item_count ? "(" + cart.item_count + ")" : "";
+      emptyEl.hidden = items.length > 0;
+      footEl.hidden = items.length === 0;
+      linesEl.innerHTML = items.map(function (it, i) {
+        var opts = it.product_has_only_default_variant ? "" : '<span class="w-drawer__opt">' + esc(it.variant_title) + "</span>";
+        return '<li class="w-drawer__line">' +
+          '<a class="w-drawer__img" href="' + esc(it.url) + '">' + (it.image ? '<img src="' + esc(sized(it.image, 160)) + '" alt="" width="72" height="72" loading="lazy">' : "") + "</a>" +
+          '<div class="w-drawer__info">' +
+            '<a class="w-drawer__title" href="' + esc(it.url) + '">' + esc(it.product_title) + "</a>" + opts +
+            '<div class="w-drawer__ctl">' +
+              '<div class="w-qty w-qty--sm"><button type="button" data-line-step="-1" data-line="' + (i + 1) + '" aria-label="Azalt">&minus;</button>' +
+              '<span aria-live="polite">' + it.quantity + "</span>" +
+              '<button type="button" data-line-step="1" data-line="' + (i + 1) + '" aria-label="Artır">+</button></div>' +
+              '<button type="button" class="w-drawer__rm" data-line-remove="' + (i + 1) + '">Kaldır</button>' +
+            "</div>" +
+          "</div>" +
+          '<b class="w-drawer__price">' + money(it.final_line_price) + "</b>" +
+        "</li>";
+      }).join("");
+      subEl.textContent = money(cart.total_price);
+
+      /* other colour: the first listed product not in the cart yet */
+      var inCart = {};
+      items.forEach(function (it) { inCart[it.product_id] = true; });
+      var extra = null;
+      for (var k = 0; k < products.length; k++) { if (!inCart[products[k].product_id] && products[k].available) { extra = products[k]; break; } }
+      if (extra && items.length) {
+        upsellEl.hidden = false;
+        upsellEl.innerHTML = '<b class="w-drawer__up-head">Diğer rengi de ekle</b>' +
+          '<div class="w-drawer__up">' + (extra.image ? '<img src="' + esc(extra.image) + '" alt="" width="56" height="56" loading="lazy">' : "") +
+          '<span><b>' + esc(extra.title) + "</b><em>" + money(extra.price) + "</em></span>" +
+          '<button type="button" class="w-btn w-btn--ghost" data-drawer-add="' + extra.variant_id + '">Ekle</button></div>';
+      } else { upsellEl.hidden = true; upsellEl.innerHTML = ""; }
+    }
+
+    function load() {
+      return fetch("/cart.js", { headers: { Accept: "application/json" } }).then(function (r) { return r.json(); }).then(function (c) { render(c); return c; });
+    }
+
+    function open(flash) {
+      if (!isOpen) {
+        isOpen = true; lastFocus = document.activeElement;
+        root.setAttribute("aria-hidden", "false");
+        root.classList.add("is-open");
+        document.documentElement.classList.add("has-drawer");
+        if (W.lenis) W.lenis.stop();
+        setTimeout(function () { panel.focus({ preventScroll: true }); }, 60);
+      }
+      clearTimeout(addedTimer);
+      addedEl.hidden = !flash;
+      if (flash) addedTimer = setTimeout(function () { addedEl.hidden = true; }, 3200);
+    }
+    function close() {
+      if (!isOpen) return;
+      isOpen = false;
+      root.classList.remove("is-open");
+      root.setAttribute("aria-hidden", "true");
+      document.documentElement.classList.remove("has-drawer");
+      if (W.lenis) W.lenis.start();
+      if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    }
+
+    document.addEventListener("wango:added", function (e) {
+      if (e.detail && e.detail.cart) render(e.detail.cart); else load();
+      open(true);
+    });
+    document.querySelectorAll('.w-cart-pill, a[href="' + ((W.routes && W.routes.cart) || "/cart") + '"].w-cart-pill').forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        load(); open(false);
+      });
+    });
+    root.addEventListener("click", function (e) {
+      if (e.target.closest("[data-drawer-close], [data-drawer-close-link]")) { if (!e.target.closest("[data-drawer-close-link]")) e.preventDefault(); close(); return; }
+      var step = e.target.closest("[data-line-step]");
+      var rm = e.target.closest("[data-line-remove]");
+      var add = e.target.closest("[data-drawer-add]");
+      if (step || rm) {
+        var line = parseInt((step || rm).dataset.line || rm.dataset.lineRemove, 10);
+        var cur = step ? parseInt(step.parentNode.querySelector("span").textContent, 10) : 0;
+        var qty = rm ? 0 : Math.max(0, cur + parseInt(step.dataset.lineStep, 10));
+        root.classList.add("is-busy");
+        W.changeLine(line, qty).then(function (cart) { render(cart); if (W.refreshCount) W.refreshCount(); })
+          .finally(function () { root.classList.remove("is-busy"); });
+      }
+      if (add) {
+        add.disabled = true;
+        /* addItems fires wango:added, which re-draws the drawer */
+        W.addItems([{ id: Number(add.dataset.drawerAdd), quantity: 1 }]).catch(function () { add.disabled = false; });
+      }
+    });
+    window.addEventListener("keydown", function (e) {
+      if (!isOpen) return;
+      if (e.key === "Escape") { close(); return; }
+      if (e.key === "Tab") {   /* keep focus inside the panel */
+        var f = panel.querySelectorAll("a[href], button:not([disabled])");
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && (document.activeElement === first || document.activeElement === panel)) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
   /* ── sticky buy bar on the product page ───────────────────────────────── */
   function initBuybar(root) {
     var bar = root.querySelector("[data-buybar]");
@@ -255,6 +384,7 @@
     ["[data-tilt-grid]", function (el) { initTiltGrid(el); initQuickAdd(el); }],
     ["[data-product-root]", function (el) { initProductForm(el); initBuybar(el); }],
     ["[data-quick-scope]", initQuickAdd],
+    ["[data-cart-drawer]", initDrawer],
     ["[data-cart-root]", initCart],
     ["[data-newsletter]", initNewsletter]
   ];

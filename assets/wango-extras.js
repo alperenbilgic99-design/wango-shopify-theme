@@ -311,7 +311,24 @@
     schedule();
   }
 
-  var MAP = [["[data-popup]", initPopup], ["[data-rail]", initRail], ["[data-ticker]", initTicker], ["[data-announce]", initAnnounce]];
+  /* ── short story: the chapter in the middle of the screen picks the picture */
+  function initStory(root) {
+    var chs = [].slice.call(root.querySelectorAll("[data-story-ch]"));
+    var pics = root.querySelectorAll("[data-story-pic]");
+    var dots = root.querySelectorAll("[data-story-dot]");
+    if (chs.length < 2 || !("IntersectionObserver" in window)) return;
+    function set(i) {
+      chs.forEach(function (c, k) { c.classList.toggle("is-on", k === i); });
+      pics.forEach(function (p, k) { p.classList.toggle("is-on", k === i); });
+      dots.forEach(function (d, k) { d.classList.toggle("is-on", k <= i); });
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) set(chs.indexOf(e.target)); });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    chs.forEach(function (c) { io.observe(c); });
+  }
+
+  var MAP = [["[data-story]", initStory], ["[data-popup]", initPopup], ["[data-rail]", initRail], ["[data-ticker]", initTicker], ["[data-announce]", initAnnounce]];
   function boot(scope) {
     MAP.forEach(function (pair) {
       (scope || document).querySelectorAll(pair[0]).forEach(function (el) {

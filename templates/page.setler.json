@@ -83,28 +83,32 @@
         "b1": {
           "type": "row",
           "settings": {
-            "image_asset": "wb-brief-01.jpg",
+            "image_asset": "wp-real-sky-mirror.jpg",
             "eyebrow": "Neden böyle",
             "title": "Kulakta bir takı, elde küçük bir taş.",
-            "body": "Obsidian Black ve Tropical Indigo; metal detaylı, hipoalerjenik silikon bir gövde. Gürültüyü filtrelerken kulağında bir aksesuar gibi durur."
+            "body": "Obsidian Black ve Tropical Indigo; metal detaylı, hipoalerjenik silikon bir gövde. Gürültüyü filtrelerken kulağında bir aksesuar gibi durur.",
+            "chips": "Hipoalerjenik silikon, Metal detay, 2 renk"
           }
         },
         "b2": {
           "type": "row",
           "settings": {
-            "image_asset": "wb-brief-08.jpg",
+            "image_asset": "wp-worn-1.jpg",
             "eyebrow": "Nasıl durur",
             "title": "Konkaya oturur, kanala yerleşir, orada kalır.",
-            "body": "Gövde kulağın kendi çukuruna oturur, uç kanala yerleşir. Kutudaki 4 boy uçtan (S, M, L, Double) kulağına uyanı seçtiğinde yerinde kalır ve uzun süre rahatsız etmez."
+            "body": "Gövde kulağın kendi çukuruna oturur, uç kanala yerleşir. Kutudaki 4 boy uçtan (S, M, L, Double) kulağına uyanı seçtiğinde yerinde kalır ve uzun süre rahatsız etmez.",
+            "image_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/katman.png",
+            "chips": "4 boy uç, S · M · L · Double"
           }
         },
         "b3": {
           "type": "row",
           "settings": {
-            "image_asset": "wb-brief-19.jpg",
+            "image_asset": "wp-real-pocket-denim.jpg",
             "eyebrow": "Yanında",
             "title": "Çantanda kaybolmayacak kadar kendine ait.",
-            "body": "Küçük kutusu, entegre deri kayışıyla anahtarının ve kartlığının yanında bir aksesuar gibi durur. Çantana, bileğine ya da kemer halkana tak."
+            "body": "Küçük kutusu, entegre deri kayışıyla anahtarının ve kartlığının yanında bir aksesuar gibi durur. Çantana, bileğine ya da kemer halkana tak.",
+            "chips": "Deri kayış, Kutuya entegre, Cebe sığar"
           }
         }
       },
