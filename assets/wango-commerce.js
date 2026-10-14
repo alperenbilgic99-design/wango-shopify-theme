@@ -85,29 +85,58 @@
     function esc(t) { var d = document.createElement("div"); d.textContent = t == null ? "" : String(t); return d.innerHTML; }
     function sized(url, w) { if (!url) return ""; return url + (url.indexOf("?") > -1 ? "&" : "?") + "width=" + w; }
 
+    var totalEl = root.querySelector("[data-drawer-total]");
+    var shipEl = root.querySelector("[data-drawer-ship]");
+    var shownTotal = null, tweenId = 0, enterNext = false;
+    var trash = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4.8h6V7m-8 0 .8 12.2a1.8 1.8 0 0 0 1.8 1.8h4.8a1.8 1.8 0 0 0 1.8-1.8L17 7"/></svg>';
+
+    /* dispatch date: two working days from today, weekends skipped */
+    (function () {
+      if (!shipEl) return;
+      var d = new Date(), left = 2;
+      while (left > 0) { d.setDate(d.getDate() + 1); var w = d.getDay(); if (w !== 0 && w !== 6) left--; }
+      shipEl.textContent = "en geç " + d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" }) + " kargoda";
+    })();
+
+    /* subtotal and button total count to the new value instead of jumping */
+    function showTotal(cents) {
+      var from = shownTotal == null ? cents : shownTotal, id = ++tweenId, t0 = performance.now();
+      shownTotal = cents;
+      if (from === cents || (W.reduced && W.reduced())) { subEl.textContent = totalEl.textContent = money(cents); return; }
+      (function step(t) {
+        if (id !== tweenId) return;
+        var k = Math.min(1, (t - t0) / 450), e = 1 - Math.pow(1 - k, 3);
+        var v = Math.round(from + (cents - from) * e);
+        subEl.textContent = totalEl.textContent = money(v);
+        if (k < 1) requestAnimationFrame(step);
+      })(t0);
+    }
+
     function render(cart) {
       if (!cart) return;
       var items = cart.items || [];
-      countEl.textContent = cart.item_count ? "(" + cart.item_count + ")" : "";
+      countEl.textContent = cart.item_count || "";
+      countEl.hidden = !cart.item_count;
       emptyEl.hidden = items.length > 0;
       footEl.hidden = items.length === 0;
       linesEl.innerHTML = items.map(function (it, i) {
         var opts = it.product_has_only_default_variant ? "" : '<span class="w-drawer__opt">' + esc(it.variant_title) + "</span>";
-        return '<li class="w-drawer__line">' +
-          '<a class="w-drawer__img" href="' + esc(it.url) + '">' + (it.image ? '<img src="' + esc(sized(it.image, 160)) + '" alt="" width="72" height="72" loading="lazy">' : "") + "</a>" +
+        return '<li class="w-drawer__line' + (enterNext ? " is-enter" : "") + '" style="--i:' + i + '">' +
+          '<a class="w-drawer__img" href="' + esc(it.url) + '">' + (it.image ? '<img src="' + esc(sized(it.image, 240)) + '" alt="" width="84" height="84" loading="lazy">' : "") + "</a>" +
           '<div class="w-drawer__info">' +
             '<a class="w-drawer__title" href="' + esc(it.url) + '">' + esc(it.product_title) + "</a>" + opts +
+            '<b class="w-drawer__price">' + money(it.final_line_price) + "</b>" +
             '<div class="w-drawer__ctl">' +
               '<div class="w-qty w-qty--sm"><button type="button" data-line-step="-1" data-line="' + (i + 1) + '" aria-label="Azalt">&minus;</button>' +
               '<span aria-live="polite">' + it.quantity + "</span>" +
               '<button type="button" data-line-step="1" data-line="' + (i + 1) + '" aria-label="Artır">+</button></div>' +
-              '<button type="button" class="w-drawer__rm" data-line-remove="' + (i + 1) + '">Kaldır</button>' +
+              '<button type="button" class="w-drawer__rm" data-line-remove="' + (i + 1) + '" aria-label="' + esc(it.product_title) + ' ürününü kaldır">' + trash + "</button>" +
             "</div>" +
           "</div>" +
-          '<b class="w-drawer__price">' + money(it.final_line_price) + "</b>" +
         "</li>";
       }).join("");
-      subEl.textContent = money(cart.total_price);
+      enterNext = false;
+      showTotal(cart.total_price);
 
       /* other colour: the first listed product not in the cart yet */
       var inCart = {};
@@ -116,10 +145,14 @@
       for (var k = 0; k < products.length; k++) { if (!inCart[products[k].product_id] && products[k].available) { extra = products[k]; break; } }
       if (extra && items.length) {
         upsellEl.hidden = false;
-        upsellEl.innerHTML = '<b class="w-drawer__up-head">Diğer rengi de ekle</b>' +
-          '<div class="w-drawer__up">' + (extra.image ? '<img src="' + esc(extra.image) + '" alt="" width="56" height="56" loading="lazy">' : "") +
-          '<span><b>' + esc(extra.title) + "</b><em>" + money(extra.price) + "</em></span>" +
-          '<button type="button" class="w-btn w-btn--ghost" data-drawer-add="' + extra.variant_id + '">Ekle</button></div>';
+        upsellEl.innerHTML =
+          '<div class="w-drawer__upcard">' +
+            '<div class="w-drawer__uppic">' + (extra.image ? '<img src="' + esc(extra.image) + '" alt="" width="96" height="96" loading="lazy">' : "") + "</div>" +
+            '<div class="w-drawer__upcopy"><span class="w-drawer__up-head">Diğer rengi de ekle</span>' +
+              "<b>" + esc(extra.title) + "</b><em>Biri senin, biri yanındakinin · " + money(extra.price) + "</em>" +
+              '<button type="button" class="w-btn w-btn--solid" data-drawer-add="' + extra.variant_id + '">Sepete ekle</button>' +
+            "</div>" +
+          "</div>";
       } else { upsellEl.hidden = true; upsellEl.innerHTML = ""; }
     }
 
@@ -130,6 +163,10 @@
     function open(flash) {
       if (!isOpen) {
         isOpen = true; lastFocus = document.activeElement;
+        /* the page behind sinks back a little around what the visitor was looking at */
+        var main = document.getElementById("MainContent");
+        if (main) main.style.transformOrigin = "50% " + Math.round(window.scrollY + window.innerHeight / 2) + "px";
+        linesEl.querySelectorAll(".w-drawer__line").forEach(function (li) { li.classList.remove("is-enter"); void li.offsetWidth; li.classList.add("is-enter"); });
         root.setAttribute("aria-hidden", "false");
         root.classList.add("is-open");
         document.documentElement.classList.add("has-drawer");
@@ -151,6 +188,7 @@
     }
 
     document.addEventListener("wango:added", function (e) {
+      enterNext = !isOpen;
       if (e.detail && e.detail.cart) render(e.detail.cart); else load();
       open(true);
     });

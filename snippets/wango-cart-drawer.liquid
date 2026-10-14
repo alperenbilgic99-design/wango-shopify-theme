@@ -14,8 +14,9 @@
   <div class="w-drawer" data-cart-drawer aria-hidden="true">
     <div class="w-drawer__scrim" data-drawer-close></div>
     <aside class="w-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="wango-drawer-title" tabindex="-1">
+      <div class="w-drawer__glow" aria-hidden="true"></div>
       <header class="w-drawer__head">
-        <h2 id="wango-drawer-title">{{ 'sections.cart.title' | t }} <span data-drawer-count></span></h2>
+        <h2 id="wango-drawer-title">{{ 'sections.cart.title' | t }} <span class="w-drawer__count" data-drawer-count hidden></span></h2>
         <button type="button" class="w-drawer__x" data-drawer-close aria-label="{{ 'accessibility.close' | t }}">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
@@ -25,6 +26,12 @@
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
         {{ 'products.product.added' | t }}
       </p>
+
+      {%- comment -%} dispatch date: today + 2 working days (weekends skipped), filled in by the script {%- endcomment -%}
+      <div class="w-drawer__ship">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>
+        <span><b>Ücretsiz kargo</b> · <span data-drawer-ship>2 iş günü içinde kargoda</span></span>
+      </div>
 
       <div class="w-drawer__body" data-lenis-prevent>
         <ul class="w-drawer__lines" data-drawer-lines></ul>
@@ -38,9 +45,16 @@
       <footer class="w-drawer__foot" data-drawer-foot>
         <div class="w-drawer__row"><span>{{ 'sections.cart.subtotal' | t }}</span><b data-drawer-subtotal></b></div>
         <div class="w-drawer__row"><span>{{ 'sections.cart.shipping' | t }}</span><span class="w-drawer__free">Ücretsiz</span></div>
-        <a class="w-btn w-btn--solid w-btn--block" href="/checkout">{{ 'sections.cart.checkout' | t }}</a>
-        <a class="w-drawer__view" href="{{ routes.cart_url }}">Sepeti görüntüle</a>
-        <p class="w-drawer__trust">2 iş günü içinde kargoda · Ödeme Shopify'ın güvenli ödeme sayfasında</p>
+        <a class="w-btn w-btn--solid w-btn--block w-drawer__go" href="/checkout">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
+          {{ 'sections.cart.checkout' | t }} <span class="w-drawer__go-sep" aria-hidden="true">·</span> <span data-drawer-total></span>
+        </a>
+        {%- if shop.enabled_payment_types.size > 0 -%}
+          <ul class="w-drawer__pay" aria-label="Ödeme yöntemleri">
+            {%- for type in shop.enabled_payment_types limit: 6 -%}<li>{{ type | payment_type_svg_tag }}</li>{%- endfor -%}
+          </ul>
+        {%- endif -%}
+        <p class="w-drawer__trust">Ödeme Shopify'ın güvenli ödeme sayfasında · <a class="w-drawer__view" href="{{ routes.cart_url }}">Sepeti görüntüle</a></p>
       </footer>
     </aside>
   </div>
