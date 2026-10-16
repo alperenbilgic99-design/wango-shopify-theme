@@ -23,8 +23,8 @@
             "kicker": "kapak",
             "title": "hoş geldin.",
             "body": "kapağın içinde seni kısa bir mektup karşılar. QR kod seni kullanım rehberine götürür.",
-            "start": 26,
-            "end": 52
+            "start": 23,
+            "end": 55
           }
         },
         "b2": {
@@ -33,8 +33,8 @@
             "kicker": "içinde",
             "title": "Origin ve dört boy uç.",
             "body": "M uç takılı gelir; S, L ve double yedekte bekler. hangisi kulağına oturuyorsa o.",
-            "start": 56,
-            "end": 80
+            "start": 53,
+            "end": 83
           }
         },
         "b3": {
@@ -43,8 +43,8 @@
             "kicker": "Origin",
             "title": "avucuna sığan bir sessizlik.",
             "body": "kutusunu çantana ya da karabinana tak, hep yanında olsun.",
-            "start": 84,
-            "end": 101
+            "start": 81,
+            "end": 100
           }
         }
       },

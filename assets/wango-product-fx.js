@@ -767,7 +767,7 @@
       beats.forEach(function (el, i) {
         var a = parseFloat(el.dataset.in), b = parseFloat(el.dataset.out), f = 0.05;
         var vin = i === 0 ? 1 : clamp(0, 1, (p - a) / f);
-        var vout = clamp(0, 1, (b - p) / f);
+        var vout = b >= 1 ? 1 : clamp(0, 1, (b - p) / f);
         var v = Math.min(vin, vout);
         el.style.opacity = v;
         el.style.transform = "translateY(" + ((1 - v) * (p < a + f ? 14 : -14)).toFixed(1) + "px)";
