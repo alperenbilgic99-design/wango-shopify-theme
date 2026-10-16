@@ -1,70 +1,81 @@
 {%- comment -%}
-  Open-box scroll — the container-scroll idea (container-scroll-animation.tsx:
-  a screen that starts tilted back and levels out as you scroll), except the
-  "screen" is the product box itself. There is no tablet bezel: the box's own
-  silhouette is the frame.
-
-  Scroll story:
-    entry   while the section scrolls into view, the box glides in along a curve
-            and levels out: rotateX 20 -> 0, rotateY 10 -> 0, a sideways arc,
-            scale 1.05 -> 1. It ends up facing the viewer, lid open as in the
-            render.
-    pinned  the stage is sticky for `scroll_length` vh of scrolling while the box
-            pushes in on its middle (the case and the ear tips), so the centre
-            of the box fills the screen. Then the pin releases and the section
-            ends.
-
-  The render has a white ground, so the card is blended with `multiply` and the
-  ground melts into the page; only the box and its own soft shadow remain.
+  Box reveal: a Cycles render of the real die-cut (every face printed from the
+  print file) scrubbed by scroll. The open is staged like the physical box:
+  outer lid (the "hoş geldin" letter inside), inner flap with its window, then
+  the insert, and the case lifts out. Each stage has one line of copy that
+  arrives with it.
 {%- endcomment -%}
-
 {%- liquid
-  if section.settings.image != blank
-    assign src = section.settings.image | image_url: width: 2400
+  if section.settings.video_url != blank
+    assign video_src = section.settings.video_url
   else
-    assign src = section.settings.image_asset | asset_url
+    assign video_src = section.settings.video_asset | asset_url
   endif
+  assign video_mobile = section.settings.video_asset_mobile | asset_url
+  assign poster = section.settings.poster_asset | asset_url
+  assign poster_end = section.settings.poster_end_asset | asset_url
 -%}
-
 <section class="w-bscroll w-paper" id="kesfet" data-bscroll
-         data-zoom="{{ section.settings.zoom }}" data-tilt="{{ section.settings.tilt }}"
-         style="--bs-fx: {{ section.settings.focus_x }}%; --bs-fy: {{ section.settings.focus_y }}%; --bs-scroll: {{ section.settings.scroll_length }}vh">
+         data-video="{{ video_src }}" data-video-mobile="{{ video_mobile }}" data-poster-end="{{ poster_end }}"
+         style="--bs-scroll: {{ section.settings.scroll_length }}vh">
   <div class="w-bscroll__stage" data-bscroll-stage>
-    <div class="w-bscroll__persp">
-      <div class="w-bscroll__head" data-bscroll-head>
-        {%- if section.settings.eyebrow != blank -%}<span class="w-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
-        <h2>
-          {%- if section.settings.lead != blank -%}<span class="w-bscroll__lead">{{ section.settings.lead }}</span>{%- endif -%}
-          <span class="w-bscroll__big">{{ section.settings.heading }}</span>
-        </h2>
-      </div>
-
-      <div class="w-bscroll__box">
-        <div class="w-bscroll__obj" data-bscroll-box>
-          <img src="{{ src }}" alt="{{ section.settings.alt | escape }}" width="2000" height="1124" draggable="false">
+    <div class="w-bscroll__grid">
+      <div class="w-bscroll__copy">
+        <div class="w-bscroll__beat is-head" data-bscroll-beat data-in="0" data-out="0.22">
+          {%- if section.settings.eyebrow != blank -%}<span class="w-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+          <h2>
+            {%- if section.settings.lead != blank -%}<span class="w-bscroll__lead">{{ section.settings.lead }}</span>{%- endif -%}
+            <span class="w-bscroll__big">{{ section.settings.heading }}</span>
+          </h2>
         </div>
+        {%- for block in section.blocks -%}
+          <div class="w-bscroll__beat" data-bscroll-beat data-in="{{ block.settings.start | divided_by: 100.0 }}" data-out="{{ block.settings.end | divided_by: 100.0 }}" {{ block.shopify_attributes }}>
+            <span class="w-eyebrow">{{ block.settings.kicker }}</span>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.body }}</p>
+          </div>
+        {%- endfor -%}
+      </div>
+      <div class="w-bscroll__media">
+        <video class="w-bscroll__video" data-bscroll-video muted playsinline preload="auto" disablepictureinpicture tabindex="-1"
+               poster="{{ poster }}" aria-label="{{ section.settings.alt | escape }}"></video>
       </div>
     </div>
+    <div class="w-bscroll__progress" aria-hidden="true"><i data-bscroll-bar></i></div>
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "Ürün · açık kutu",
+  "name": "Ürün · kutu açılışı",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Kutu görseli", "info": "Beyaz zeminli, kapağı açık kutu render'ı." },
-    { "type": "text", "id": "image_asset", "default": "ws-box-open-hero.webp", "label": "Tema görseli (görsel seçilmediyse)" },
-    { "type": "text", "id": "alt", "default": "Kapağı açık wango Origin kutusu: kutu ve kulak uçları", "label": "Alternatif metin" },
-    { "type": "text", "id": "eyebrow", "default": "Kutu", "label": "Üst etiket" },
-    { "type": "text", "id": "lead", "default": "Kutuyu açtığın an", "label": "Küçük başlık" },
+    { "type": "url", "id": "video_url", "label": "Video URL'si (isteğe bağlı)", "info": "Boşsa temadaki render kullanılır." },
+    { "type": "text", "id": "video_asset", "default": "ws-box-reveal.mp4", "label": "Tema videosu" },
+    { "type": "text", "id": "video_asset_mobile", "default": "ws-box-reveal-m.mp4", "label": "Tema videosu · telefon" },
+    { "type": "text", "id": "poster_asset", "default": "ws-box-reveal-poster.jpg", "label": "Poster (ilk kare)" },
+    { "type": "text", "id": "poster_end_asset", "default": "ws-box-reveal-end.jpg", "label": "Son kare (hareket azaltıldığında)" },
+    { "type": "text", "id": "alt", "default": "wango Origin kutusu açılıyor: kapak, iç kapak, insert ve kutu", "label": "Alternatif metin" },
+    { "type": "text", "id": "eyebrow", "default": "kutu", "label": "Üst etiket" },
+    { "type": "text", "id": "lead", "default": "kutuyu açtığın an", "label": "Küçük başlık" },
     { "type": "text", "id": "heading", "default": "sessizlik başlar.", "label": "Büyük başlık" },
-    { "type": "header", "content": "Hareket" },
-    { "type": "range", "id": "tilt", "min": 0, "max": 30, "step": 1, "default": 20, "unit": "°", "label": "Başlangıç eğimi" },
-    { "type": "range", "id": "scroll_length", "min": 60, "max": 300, "step": 10, "default": 170, "unit": "vh", "label": "Sabit kalma uzunluğu (yaklaşma süresi)" },
-    { "type": "range", "id": "zoom", "min": 1, "max": 3.5, "step": 0.1, "default": 2.3, "label": "Ortaya yaklaşma oranı" },
-    { "type": "range", "id": "focus_x", "min": 0, "max": 100, "step": 1, "default": 50, "unit": "%", "label": "Yaklaşılacak nokta · yatay" },
-    { "type": "range", "id": "focus_y", "min": 0, "max": 100, "step": 1, "default": 54, "unit": "%", "label": "Yaklaşılacak nokta · dikey" }
+    { "type": "range", "id": "scroll_length", "min": 120, "max": 400, "step": 10, "default": 280, "unit": "vh", "label": "Kaydırma uzunluğu" }
   ],
-  "presets": [{ "name": "Ürün · açık kutu" }]
+  "blocks": [
+    { "type": "beat", "name": "Adım", "settings": [
+      { "type": "text", "id": "kicker", "label": "Üst etiket" },
+      { "type": "text", "id": "title", "label": "Başlık" },
+      { "type": "textarea", "id": "body", "label": "Metin" },
+      { "type": "range", "id": "start", "min": 0, "max": 100, "step": 1, "default": 30, "unit": "%", "label": "Başlangıç" },
+      { "type": "range", "id": "end", "min": 0, "max": 100, "step": 1, "default": 55, "unit": "%", "label": "Bitiş" }
+    ]}
+  ],
+  "presets": [{
+    "name": "Ürün · kutu açılışı",
+    "blocks": [
+      { "type": "beat", "settings": { "kicker": "kapak", "title": "hoş geldin.", "body": "kapağın içinde seni kısa bir mektup karşılar. QR kod seni kullanım rehberine götürür.", "start": 26, "end": 52 } },
+      { "type": "beat", "settings": { "kicker": "içinde", "title": "Origin ve dört boy uç.", "body": "M uç takılı gelir; S, L ve double yedekte bekler. hangisi kulağına oturuyorsa o.", "start": 56, "end": 80 } },
+      { "type": "beat", "settings": { "kicker": "Origin", "title": "avucuna sığan bir sessizlik.", "body": "kutusunu çantana ya da karabinana tak, hep yanında olsun.", "start": 84, "end": 101 } }
+    ]
+  }]
 }
 {% endschema %}

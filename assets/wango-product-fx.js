@@ -724,48 +724,61 @@
     });
   }
 
-  /* ── open box: the product box is the tilting "screen" ────────────────────
-     Two phases off two triggers. ENTRY (section top: viewport bottom -> top):
-     the box glides in on a curve and levels out (rotateX, rotateY, a sideways
-     arc, scale 1.05 -> 1). PINNED (the sticky stage holds still): it pushes in
-     on the middle of the box, the heading drifts up 100px and fades. When the
-     pin releases the section is over. */
+  /* ── box reveal: a rendered open of the real box, scrubbed by scroll ──────
+     The sticky stage holds while the section scrolls; progress drives the
+     clip's currentTime (one seek in flight, from the ticker) and fades each
+     copy beat in and out over its own [in, out] window. */
   function initBoxScroll(root) {
-    var stage = root.querySelector("[data-bscroll-stage]");
-    var head = root.querySelector("[data-bscroll-head]");
-    var box = root.querySelector("[data-bscroll-box]");
-    if (!stage || !box) return;
-    if (reduced || !window.ScrollTrigger) return;          // static, level, full size
+    var video = root.querySelector("[data-bscroll-video]");
+    var beats = Array.prototype.slice.call(root.querySelectorAll("[data-bscroll-beat]"));
+    var bar = root.querySelector("[data-bscroll-bar]");
+    if (!video) return;
+    var small = window.matchMedia("(max-width: 899px)").matches;
+    var src = (small && root.dataset.videoMobile) || root.dataset.video;
+
+    if (reduced || !window.ScrollTrigger) {
+      if (root.dataset.posterEnd) video.poster = root.dataset.posterEnd;
+      beats.forEach(function (el) { el.style.opacity = 1; el.style.transform = "none"; });
+      return;
+    }
+
+    video.muted = true;
+    video.preload = "auto";
+    var ready = false, target = 0;
+    (W.blobUrl ? W.blobUrl(src) : Promise.resolve(src)).then(function (u) { video.src = u; video.load(); });
+    function onMeta() {
+      ready = true;
+      /* a detached muted video only decodes frames once it has played */
+      var pr = video.play();
+      if (pr && pr.then) pr.then(function () { video.pause(); }).catch(function () {});
+      else video.pause();
+    }
+    video.addEventListener("loadedmetadata", onMeta, { once: true });
+
+    gsap.ticker.add(function () {
+      if (!ready || !video.duration || video.seeking) return;
+      if (Math.abs(video.currentTime - target) > 0.012) video.currentTime = target;
+    });
 
     var clamp = gsap.utils.clamp;
-    var tilt = parseFloat(root.dataset.tilt) || 20;
-    var zoom = parseFloat(root.dataset.zoom) || 2.3;
-    var mobile = window.innerWidth <= 768;
-    window.addEventListener("resize", function () { mobile = window.innerWidth <= 768; });
-    var smooth = function (t) { return t * t * (3 - 2 * t); };
-    var entry = 0, hold = 0;
-
-    function paint() {
-      var u = 1 - smooth(entry);                             // 1 -> 0 while the box levels out
-      var push = smooth(clamp(0, 1, hold / 0.88));           // 0 -> 1 while it pushes in
-      gsap.set(box, {
-        rotationX: tilt * u,
-        rotationY: (mobile ? 5 : 10) * u,
-        x: mobile ? 0 : window.innerWidth * 0.09 * u * u,    // the arc
-        scale: (1.05 - 0.05 * (1 - u)) * (1 + (zoom - 1) * push)
+    function paint(p) {
+      if (ready && video.duration) target = clamp(0, 1, p) * (video.duration - 0.04);
+      if (bar) bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
+      beats.forEach(function (el, i) {
+        var a = parseFloat(el.dataset.in), b = parseFloat(el.dataset.out), f = 0.05;
+        var vin = i === 0 ? 1 : clamp(0, 1, (p - a) / f);
+        var vout = clamp(0, 1, (b - p) / f);
+        var v = Math.min(vin, vout);
+        el.style.opacity = v;
+        el.style.transform = "translateY(" + ((1 - v) * (p < a + f ? 14 : -14)).toFixed(1) + "px)";
+        el.style.pointerEvents = v > 0.5 ? "auto" : "none";
       });
-      if (head) gsap.set(head, { y: -100 * (entry * 0.5 + hold * 0.5), opacity: 1 - clamp(0, 1, hold / 0.25) });
     }
-    paint();
-    ScrollTrigger.create({
-      trigger: root, start: "top bottom", end: "top top", scrub: true,
-      onUpdate: function (self) { entry = self.progress; paint(); },
-      onRefresh: function (self) { entry = self.progress; paint(); }
-    });
+    paint(0);
     ScrollTrigger.create({
       trigger: root, start: "top top", end: "bottom bottom", scrub: true,
-      onUpdate: function (self) { hold = self.progress; paint(); },
-      onRefresh: function (self) { hold = self.progress; paint(); }
+      onUpdate: function (self) { paint(self.progress); },
+      onRefresh: function (self) { paint(self.progress); }
     });
   }
 

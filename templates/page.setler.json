@@ -15,7 +15,44 @@
     },
     "boxscroll": {
       "type": "wango-box-scroll",
-      "settings": {}
+      "settings": {},
+      "blocks": {
+        "b1": {
+          "type": "beat",
+          "settings": {
+            "kicker": "kapak",
+            "title": "hoş geldin.",
+            "body": "kapağın içinde seni kısa bir mektup karşılar. QR kod seni kullanım rehberine götürür.",
+            "start": 26,
+            "end": 52
+          }
+        },
+        "b2": {
+          "type": "beat",
+          "settings": {
+            "kicker": "içinde",
+            "title": "Origin ve dört boy uç.",
+            "body": "M uç takılı gelir; S, L ve double yedekte bekler. hangisi kulağına oturuyorsa o.",
+            "start": 56,
+            "end": 80
+          }
+        },
+        "b3": {
+          "type": "beat",
+          "settings": {
+            "kicker": "Origin",
+            "title": "avucuna sığan bir sessizlik.",
+            "body": "kutusunu çantana ya da karabinana tak, hep yanında olsun.",
+            "start": 84,
+            "end": 101
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3"
+      ]
     },
     "explode": {
       "type": "wango-explode-view",
