@@ -8,11 +8,19 @@
   is genuine, and the consent checkbox is what makes it lawful to send to.
 {%- endcomment -%}
 
-<section class="w-news" data-newsletter>
+{%- liquid
+  assign news_h = 'h1'
+  assign news_cls = ''
+  if template.name == 'index'
+    assign news_h = 'h2'
+    assign news_cls = ' w-news--inline'
+  endif
+-%}
+<section class="w-news{{ news_cls }}" data-newsletter>
   <div class="w-news__grid">
     <div>
       <span class="w-eyebrow">{{ section.settings.eyebrow }}</span>
-      <h1>{{ section.settings.heading }} <em>{{ section.settings.heading_accent }}</em></h1>
+      <{{ news_h }} class="w-news__title">{{ section.settings.heading }} <em>{{ section.settings.heading_accent }}</em></{{ news_h }}>
       <p class="w-news__lede">{{ section.settings.body }}</p>
 
       <dl class="w-news__perks">

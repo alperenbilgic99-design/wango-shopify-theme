@@ -1,12 +1,48 @@
 {
   "sections": {
-    "news": { "type": "wango-newsletter",
+    "news": {
+      "type": "wango-newsletter",
       "blocks": {
-        "p1": { "type": "perk", "settings": { "title": "Yeni renkler önce sana", "body": "Sınırlı üretim tonları, herkese açılmadan bir gün önce." } },
-        "p2": { "type": "perk", "settings": { "title": "Sessizlik üzerine", "body": "Ayda bir kısa mektup — ürün değil, üzerine düşündüğümüz şeyler." } },
-        "p3": { "type": "perk", "settings": { "title": "Sadece gerektiğinde", "body": "Ayda birden fazla yazmıyoruz. Tek tıkla çıkarsın." } }
+        "p1": {
+          "type": "perk",
+          "settings": {
+            "title": "gürültüyle yaşama notları",
+            "body": "kalabalıkta, yolda, masanda: gürültüyü azaltmanın küçük taktikleri."
+          }
+        },
+        "p2": {
+          "type": "perk",
+          "settings": {
+            "title": "festival rehberleri",
+            "body": "konser ve festival sezonu için pratik notlar."
+          }
+        },
+        "p3": {
+          "type": "perk",
+          "settings": {
+            "title": "spam yok",
+            "body": "iki haftada bir yazıyoruz. istediğin an tek tıkla çıkarsın."
+          }
+        }
       },
-      "block_order": ["p1","p2","p3"] }
+      "block_order": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "settings": {
+        "eyebrow": "bülten",
+        "heading": "iki haftada bir,",
+        "heading_accent": "kulağına gelsin.",
+        "body": "hikâyenin devamı gelen kutunda: gürültüyle yaşama notları, festival rehberleri ve yeni renkler. spam yok, sadece işine yarayan.",
+        "form_heading": "e-posta adresin",
+        "submit": "bültene katıl",
+        "success_heading": "kaydın alındı.",
+        "success_body": "ilk mektup iki hafta içinde gelen kutunda. istediğin an tek tıkla çıkabilirsin."
+      }
+    }
   },
-  "order": ["news"]
+  "order": [
+    "news"
+  ]
 }
