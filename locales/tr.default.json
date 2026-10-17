@@ -1,6 +1,9 @@
 {
   "general": {
-    "meta": { "tags": "{{ tags }} etiketli", "page": "Sayfa {{ page }}" },
+    "meta": {
+      "tags": "{{ tags }} etiketli",
+      "page": "Sayfa {{ page }}"
+    },
     "pagination": "Sayfalama",
     "404": {
       "title": "Sayfa bulunamadı",
@@ -12,8 +15,14 @@
       "placeholder": "Ne arıyorsun?",
       "results": "{{ count }} sonuç"
     },
-    "collections": { "title": "Koleksiyonlar" },
-    "password_page": { "title": "Yakında", "password": "Şifre", "enter": "Gir" }
+    "collections": {
+      "title": "Koleksiyonlar"
+    },
+    "password_page": {
+      "title": "Yakında",
+      "password": "Şifre",
+      "enter": "Gir"
+    }
   },
   "accessibility": {
     "skip_to_text": "İçeriğe geç",
@@ -35,8 +44,12 @@
       "shipping": "Kargo",
       "tax_note": "Kesin tutar ödeme adımında gösterilir."
     },
-    "collection": { "empty": "Burada henüz ürün yok." },
-    "sound": { "mute": "Sesi aç / kapat" }
+    "collection": {
+      "empty": "Burada henüz ürün yok."
+    },
+    "sound": {
+      "mute": "Sesi aç / kapat"
+    }
   },
   "products": {
     "product": {
@@ -53,15 +66,94 @@
       "see_set": "setine bak"
     }
   },
-  "newsletter": { "email": "E-posta" },
-  "gift_cards": { "issued": { "title": "Hediye kartın", "shop_link": "Alışverişe başla" } },
+  "newsletter": {
+    "email": "E-posta"
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Hediye kartın",
+      "shop_link": "Alışverişe başla"
+    }
+  },
   "customer": {
-    "login": { "title": "Giriş yap", "email": "E-posta", "password": "Şifre", "submit": "Giriş yap" },
-    "register": { "title": "Hesap oluştur", "first_name": "Ad", "last_name": "Soyad", "submit": "Hesap oluştur" },
-    "account": { "title": "Hesabım", "logout": "Çıkış yap" },
-    "orders": { "none": "Henüz siparişin yok." },
-    "addresses": { "title": "Adresler", "none": "Kayıtlı adresin yok." },
-    "reset_password": { "title": "Şifreyi sıfırla", "confirm": "Şifreyi tekrar gir", "submit": "Şifreyi kaydet" },
-    "activate_account": { "title": "Hesabı etkinleştir", "submit": "Etkinleştir", "decline": "Reddet" }
+    "login": {
+      "title": "Giriş yap",
+      "email": "E-posta",
+      "password": "Şifre",
+      "submit": "Giriş yap"
+    },
+    "register": {
+      "title": "Hesap oluştur",
+      "first_name": "Ad",
+      "last_name": "Soyad",
+      "submit": "Hesap oluştur"
+    },
+    "account": {
+      "title": "Hesabım",
+      "logout": "Çıkış yap"
+    },
+    "orders": {
+      "none": "Henüz siparişin yok."
+    },
+    "addresses": {
+      "title": "Adresler",
+      "none": "Kayıtlı adresin yok."
+    },
+    "reset_password": {
+      "title": "Şifreyi sıfırla",
+      "confirm": "Şifreyi tekrar gir",
+      "submit": "Şifreyi kaydet"
+    },
+    "activate_account": {
+      "title": "Hesabı etkinleştir",
+      "submit": "Etkinleştir",
+      "decline": "Reddet"
+    }
+  },
+  "merhaba": {
+    "eyebrow": "merhaba",
+    "quickstart_eyebrow": "3 adımda başla",
+    "step_1_title": "boyunu seç",
+    "step_1_text": "kutuda S, M, L ve Double uç var. kulağına en rahat oturanı dene.",
+    "step_2_title": "tak",
+    "step_2_text": "hafifçe yerleştir, kulağında yokmuş gibi hissetmesi lazım.",
+    "step_3_title": "keyfini çıkar",
+    "step_3_text": "gürültü susmadı, sadece yumuşadı. geri kalanı sana kalsın.",
+    "guide_link": "detaylı kullanım rehberi",
+    "cta_story": "hikayemizi oku",
+    "cta_meet": "wango'yu tanı"
+  },
+  "tanisalim": {
+    "eyebrow": "tanışalım",
+    "usage_eyebrow": "nasıl kullanılır",
+    "usage_1_title": "doğru takılış",
+    "usage_1_text": "kulak kepçeni hafifçe yukarı-geri çek, ucu yavaşça yerleştir. zorlama, batmaması gerekiyor.",
+    "usage_2_title": "eartip değişimi",
+    "usage_2_text": "kutuda S, M, L ve Double uç var. birini tak, başını hafifçe salla; kaymıyorsa doğru boy budur.",
+    "usage_3_title": "bakımı",
+    "usage_3_text": "ılık su ve sabunla yıkayabilirsin. hipoalerjenik silikon, tekrar tekrar kullanılır.",
+    "scenarios_eyebrow": "ne zaman takarsın",
+    "scenario_1": "odaklanman gereken anlarda arka plan gürültüsünü at.",
+    "scenario_2": "yüksek sesli ortamlarda kulağını yormadan kal.",
+    "scenario_3": "kalabalıktan kısa bir mola, dünyadan kopmadan.",
+    "scenario_4": "günün sonunda, sesi biraz yumuşat.",
+    "cta_story": "hikayeyi oku",
+    "cta_shop": "Origin'e göz at"
+  },
+  "ozellikler": {
+    "eyebrow": "spesifikasyonlar",
+    "spec_1_title": "akustik filtre",
+    "spec_1_text": "sesi kapatmaz, yumuşatır. rahatsız eden tepe noktalarını törpüler, geri kalanı olduğu gibi bırakır.",
+    "spec_2_title": "4 boy seçeneği",
+    "spec_2_text": "S, M, L ve Double uç, kutunun içinde. kulağına en uygun olanı seç.",
+    "spec_3_title": "hipoalerjenik silikon",
+    "spec_3_text": "cilt dostu, uzun süre takılı kalsa da rahatsız etmez.",
+    "spec_4_title": "yıkanabilir",
+    "spec_4_text": "ılık su ve sabunla temizle, tekrar tekrar kullan.",
+    "spec_5_title": "elektronik yok",
+    "spec_5_text": "şarj derdi yok, elektronik atık yok.",
+    "spec_6_title": "taşınabilir kutu",
+    "spec_6_text": "karabinana tak ya da çantanda taşı, her zaman yanında.",
+    "cta": "Origin'e göz at"
   }
 }
