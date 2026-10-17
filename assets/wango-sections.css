@@ -890,26 +890,6 @@ a.ptg-card__img { display: block; }
 .w-origin.is-scrub { min-height: 0; height: 260svh; overflow: visible; }
 .w-origin__pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 
-/* Story hero: same idea, the reveal clip is scrubbed through the wrapper. The
-   ground is flat here: a gradient on a 3-screen wrapper would drift behind the
-   pinned clip and show its edges. */
-.w-boxhero.is-scrub { display: block; min-height: 0; height: 300svh; padding: 0; overflow: visible; background: #F6FAFB; }
-.w-boxhero__pin {
-  position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 5.5rem 1.5rem 1.5rem;
-}
-.w-boxhero.is-scrub .w-boxhero__wrap { gap: 1.5rem; }
-.w-boxhero.is-scrub .w-boxhero__lines { margin-top: 1rem; }
-.w-boxhero.is-scrub .w-boxhero__sub { margin-top: 1rem; }
-/* never taller than a third of the screen, so the copy above it always fits */
-.w-boxhero.is-scrub .w-boxhero__media > div { max-width: min(640px, calc(34svh * 16 / 9)); }
-/* short phones: drop the small print so the buttons stay on the pinned screen */
-@media (max-height: 700px) {
-  .w-boxhero.is-scrub .w-boxhero__sub { display: none; }
-  .w-boxhero.is-scrub .w-boxhero__wrap { gap: 1.1rem; }
-}
-
 /* Moment cards: the deck sticks while its wrapper scrolls by. */
 .w-stack.is-scrub { position: sticky; top: 15vh; top: 15svh; cursor: default; }
 .w-stack.is-scrub .w-stack__hint { display: none; }

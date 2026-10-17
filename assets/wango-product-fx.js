@@ -28,38 +28,6 @@
      layout, so there is nothing to animate. */
   function centreOf(r) { return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width }; }
 
-  /* Phones: the reveal clip does not play on its own. The hero is a tall
-     wrapper with the stack pinned inside it, and the clip's currentTime is the
-     scroll progress through that wrapper (served from memory, one seek in
-     flight at a time, exactly like the exploded view below). */
-  function scrubBoxHero(section, wrap) {
-    var video = wrap.querySelector("video");
-    if (!video || !window.ScrollTrigger) { introDone(); return; }
-    var pin = document.createElement("div");
-    pin.className = "w-boxhero__pin";
-    section.insertBefore(pin, wrap);
-    pin.appendChild(wrap);
-    section.classList.add("is-scrub");
-
-    video.removeAttribute("autoplay"); video.removeAttribute("loop");
-    video.autoplay = false; video.loop = false; video.pause();
-    var ready = video.readyState >= 1, target = 0;
-    video.addEventListener("loadedmetadata", function () { ready = true; });
-    video.addEventListener("play", function () { video.pause(); });   /* a late autoplay must not take over the scrub */
-    if (W.videoFromBlob) W.videoFromBlob(video);
-    gsap.ticker.add(function () {
-      if (!ready || !video.duration || video.seeking) return;
-      if (Math.abs(video.currentTime - target) > 0.01) video.currentTime = target;
-    });
-    ScrollTrigger.create({
-      trigger: section, start: "top top", end: "bottom bottom", scrub: true,
-      onUpdate: function (self) {
-        if (ready && video.duration) target = gsap.utils.clamp(0, 1, self.progress / 0.94) * (video.duration - 0.05);
-        if (self.progress >= 0.94) introDone();
-      }
-    });
-  }
-
   /* In-page buttons glide through Lenis instead of jumping. */
   function initBoxHeroLinks(section) {
     section.querySelectorAll("[data-boxhero-go]").forEach(function (a) {
@@ -78,7 +46,6 @@
     initBoxHeroLinks(section);
     var wrap = section.querySelector("[data-boxhero-wrap]");
     if (!wrap || reduced || !window.gsap) { introDone(); return; }
-    if (mobile) { scrubBoxHero(section, wrap); return; }
     /* The opening here is the reveal clip itself: it has finished once the clip
        has played through for the first time (with a ceiling, in case it never
        loads). */
