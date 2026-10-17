@@ -692,44 +692,89 @@
   }
 
   /* ── box reveal: a rendered open of the real box, scrubbed by scroll ──────
-     The sticky stage holds while the section scrolls; progress drives the
-     clip's currentTime (one seek in flight, from the ticker) and fades each
-     copy beat in and out over its own [in, out] window. */
+     The sticky stage holds while the section scrolls; progress drives every
+     loaded clip's currentTime (one seek in flight per clip, from the ticker)
+     and fades each copy beat over its own [in, out] window. Two renders, one
+     per box colour: only the chosen one is fetched, and a newly chosen clip
+     fades in once it has landed on the current frame. */
+  var BOX_KEY = "wango-box-colour";
   function initBoxScroll(root) {
-    var video = root.querySelector("[data-bscroll-video]");
+    var vids = Array.prototype.slice.call(root.querySelectorAll("[data-bscroll-video]"));
+    var swatches = Array.prototype.slice.call(root.querySelectorAll("[data-bscroll-swatch]"));
     var beats = Array.prototype.slice.call(root.querySelectorAll("[data-bscroll-beat]"));
     var bar = root.querySelector("[data-bscroll-bar]");
-    if (!video) return;
+    if (!vids.length) return;
     var small = window.matchMedia("(max-width: 899px)").matches;
-    var src = (small && root.dataset.videoMobile) || root.dataset.video;
+    var clamp = gsap.utils.clamp;
+    var target = 0, current = vids[0].dataset.variant;
+    var players = {};
+    vids.forEach(function (v) { players[v.dataset.variant] = { video: v, loaded: false, ready: false }; });
+
+    function show(variant) {
+      vids.forEach(function (v) { v.classList.toggle("is-on", v.dataset.variant === variant); });
+    }
+    function mark(variant) {
+      swatches.forEach(function (b) { b.setAttribute("aria-checked", b.dataset.bscrollSwatch === variant ? "true" : "false"); });
+    }
+    function load(variant) {
+      var pl = players[variant];
+      if (!pl || pl.loaded) return;
+      pl.loaded = true;
+      var v = pl.video;
+      v.muted = true; v.preload = "auto";
+      var src = (small && v.dataset.srcMobile) || v.dataset.src;
+      v.addEventListener("loadedmetadata", function () {
+        pl.ready = true;
+        /* a detached muted video only decodes frames once it has played */
+        var pr = v.play();
+        if (pr && pr.then) pr.then(function () { v.pause(); }).catch(function () {});
+        else v.pause();
+      }, { once: true });
+      (W.blobUrl ? W.blobUrl(src) : Promise.resolve(src)).then(function (u) { v.src = u; v.load(); });
+    }
+    function choose(variant, remember) {
+      if (!players[variant]) return;
+      current = variant;
+      mark(variant);
+      if (remember) { try { localStorage.setItem(BOX_KEY, variant); } catch (e) { /* private mode */ } }
+      if (reduced || !window.ScrollTrigger) { show(variant); return; }
+      load(variant);
+      var pl = players[variant];
+      /* keep the old colour on screen until the new clip sits on the same frame */
+      (function wait() {
+        if (current !== variant) return;
+        var v = pl.video;
+        if (pl.ready && v.readyState >= 2 && !v.seeking && Math.abs(v.currentTime - target) < 0.05) show(variant);
+        else requestAnimationFrame(wait);
+      })();
+    }
+    swatches.forEach(function (b) {
+      b.addEventListener("click", function () { choose(b.dataset.bscrollSwatch, true); });
+    });
+
+    var saved = null;
+    try { saved = localStorage.getItem(BOX_KEY); } catch (e) { /* private mode */ }
+    if (saved && players[saved]) current = saved;
 
     if (reduced || !window.ScrollTrigger) {
-      if (root.dataset.posterEnd) video.poster = root.dataset.posterEnd;
+      vids.forEach(function (v) { if (v.dataset.posterEnd) v.poster = v.dataset.posterEnd; });
       beats.forEach(function (el) { el.style.opacity = 1; el.style.transform = "none"; });
+      mark(current); show(current);
       return;
     }
 
-    video.muted = true;
-    video.preload = "auto";
-    var ready = false, target = 0;
-    (W.blobUrl ? W.blobUrl(src) : Promise.resolve(src)).then(function (u) { video.src = u; video.load(); });
-    function onMeta() {
-      ready = true;
-      /* a detached muted video only decodes frames once it has played */
-      var pr = video.play();
-      if (pr && pr.then) pr.then(function () { video.pause(); }).catch(function () {});
-      else video.pause();
-    }
-    video.addEventListener("loadedmetadata", onMeta, { once: true });
-
     gsap.ticker.add(function () {
-      if (!ready || !video.duration || video.seeking) return;
-      if (Math.abs(video.currentTime - target) > 0.012) video.currentTime = target;
+      vids.forEach(function (v) {
+        var pl = players[v.dataset.variant];
+        if (!pl.ready || !v.duration || v.seeking) return;
+        var t = Math.min(target, v.duration - 0.04);
+        if (Math.abs(v.currentTime - t) > 0.012) v.currentTime = t;
+      });
     });
 
-    var clamp = gsap.utils.clamp;
     function paint(p) {
-      if (ready && video.duration) target = clamp(0, 1, p) * (video.duration - 0.04);
+      target = clamp(0, 1, p) * 5;   /* seconds; each clip clamps to its own length */
+      vids.forEach(function (v) { if (v.duration) target = Math.min(target, clamp(0, 1, p) * (v.duration - 0.04)); });
       if (bar) bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
       beats.forEach(function (el, i) {
         var a = parseFloat(el.dataset.in), b = parseFloat(el.dataset.out), f = 0.05;
@@ -741,6 +786,7 @@
         el.style.pointerEvents = v > 0.5 ? "auto" : "none";
       });
     }
+    mark(current); show(current); load(current);
     paint(0);
     ScrollTrigger.create({
       trigger: root, start: "top top", end: "bottom bottom", scrub: true,

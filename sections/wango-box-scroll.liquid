@@ -3,7 +3,8 @@
   print file) scrubbed by scroll. The open is staged like the physical box:
   outer lid (the "hoş geldin" letter inside), inner flap with its window, then
   the insert, and the case lifts out. Each stage has one line of copy that
-  arrives with it.
+  arrives with it. Two renders (Tropical Indigo / Obsidian Black) share one
+  scroll position; the swatches crossfade between them.
 {%- endcomment -%}
 {%- liquid
   if section.settings.video_url != blank
@@ -14,9 +15,12 @@
   assign video_mobile = section.settings.video_asset_mobile | asset_url
   assign poster = section.settings.poster_asset | asset_url
   assign poster_end = section.settings.poster_end_asset | asset_url
+  assign video_black = section.settings.video_asset_black | asset_url
+  assign video_black_mobile = section.settings.video_asset_black_mobile | asset_url
+  assign poster_black = section.settings.poster_asset_black | asset_url
+  assign poster_end_black = section.settings.poster_end_asset_black | asset_url
 -%}
 <section class="w-bscroll w-paper" id="kesfet" data-bscroll
-         data-video="{{ video_src }}" data-video-mobile="{{ video_mobile }}" data-poster-end="{{ poster_end }}"
          style="--bs-scroll: {{ section.settings.scroll_length }}vh">
   <div class="w-bscroll__stage" data-bscroll-stage>
     <div class="w-bscroll__grid">
@@ -37,8 +41,24 @@
         {%- endfor -%}
       </div>
       <div class="w-bscroll__media">
-        <video class="w-bscroll__video" data-bscroll-video muted playsinline preload="auto" disablepictureinpicture tabindex="-1"
-               poster="{{ poster }}" aria-label="{{ section.settings.alt | escape }}"></video>
+        <div class="w-bscroll__frame">
+          <video class="w-bscroll__video is-on" data-bscroll-video data-variant="indigo"
+                 data-src="{{ video_src }}" data-src-mobile="{{ video_mobile }}" data-poster-end="{{ poster_end }}"
+                 muted playsinline preload="none" disablepictureinpicture tabindex="-1"
+                 poster="{{ poster }}" aria-label="{{ section.settings.alt | escape }} (Tropical Indigo)"></video>
+          <video class="w-bscroll__video" data-bscroll-video data-variant="black"
+                 data-src="{{ video_black }}" data-src-mobile="{{ video_black_mobile }}" data-poster-end="{{ poster_end_black }}"
+                 muted playsinline preload="none" disablepictureinpicture tabindex="-1"
+                 poster="{{ poster_black }}" aria-label="{{ section.settings.alt | escape }} (Obsidian Black)"></video>
+        </div>
+        <div class="w-bscroll__swatches" role="radiogroup" aria-label="{{ section.settings.swatch_label | escape }}">
+          <button type="button" role="radio" aria-checked="true" data-bscroll-swatch="indigo">
+            <i style="--sw: #7E76BC"></i>Tropical Indigo
+          </button>
+          <button type="button" role="radio" aria-checked="false" data-bscroll-swatch="black">
+            <i style="--sw: #1B1B1D"></i>Obsidian Black
+          </button>
+        </div>
       </div>
     </div>
     <div class="w-bscroll__progress" aria-hidden="true"><i data-bscroll-bar></i></div>
@@ -54,6 +74,11 @@
     { "type": "text", "id": "video_asset_mobile", "default": "ws-box-reveal-m.mp4", "label": "Tema videosu · telefon" },
     { "type": "text", "id": "poster_asset", "default": "ws-box-reveal-poster.jpg", "label": "Poster (ilk kare)" },
     { "type": "text", "id": "poster_end_asset", "default": "ws-box-reveal-end.jpg", "label": "Son kare (hareket azaltıldığında)" },
+    { "type": "text", "id": "video_asset_black", "default": "ws-box-reveal-black.mp4", "label": "Obsidian Black videosu" },
+    { "type": "text", "id": "video_asset_black_mobile", "default": "ws-box-reveal-black-m.mp4", "label": "Obsidian Black videosu · telefon" },
+    { "type": "text", "id": "poster_asset_black", "default": "ws-box-reveal-black-poster.jpg", "label": "Obsidian Black poster" },
+    { "type": "text", "id": "poster_end_asset_black", "default": "ws-box-reveal-black-end.jpg", "label": "Obsidian Black son kare" },
+    { "type": "text", "id": "swatch_label", "default": "kutu rengi", "label": "Renk düğmeleri etiketi" },
     { "type": "text", "id": "alt", "default": "wango Origin kutusu açılıyor: kapak, iç kapak, insert ve kutu", "label": "Alternatif metin" },
     { "type": "text", "id": "eyebrow", "default": "kutu", "label": "Üst etiket" },
     { "type": "text", "id": "lead", "default": "kutuyu açtığın an", "label": "Küçük başlık" },
