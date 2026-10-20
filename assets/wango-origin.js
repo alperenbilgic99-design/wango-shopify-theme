@@ -409,7 +409,9 @@
         applyZoom(st ? st.progress : 0);
       }, { once: true });
       /* Scrubbed hard, so it is served from memory (see Wango.blobUrl). */
-      W.blobUrl(mobileClip ? videoMobile : videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
+      (W.whenNear || function (e, f) { f(); })(outer, function () {
+        W.blobUrl(mobileClip ? videoMobile : videoSrc).then(function (u) { videoEl.src = u; videoEl.load(); });
+      }, "100%");
     }
 
     function applyZoom(p) {

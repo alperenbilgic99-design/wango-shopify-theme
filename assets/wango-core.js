@@ -77,6 +77,15 @@
     }
     return blobCache[url];
   };
+  /** Runs cb once, when el comes within `margin` of the viewport (default 1.5
+      screens ahead), so below-the-fold clips stop competing with the first paint. */
+  W.whenNear = function (el, cb, margin) {
+    if (!el || !window.IntersectionObserver) { cb(); return; }
+    var io = new IntersectionObserver(function (es) {
+      if (es.some(function (e) { return e.isIntersecting; })) { io.disconnect(); cb(); }
+    }, { rootMargin: (margin || "150%") + " 0px" });
+    io.observe(el);
+  };
   /** Points a <video> at the first playable <source>, but from memory. */
   W.videoFromBlob = function (video) {
     var srcs = [].slice.call(video.querySelectorAll("source"));

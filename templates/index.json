@@ -1,30 +1,42 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "origin_hero": {
       "type": "wango-origin-hero",
       "settings": {
+        "art_eyebrow": "wango origin",
+        "art_caption": "modern çağın analog filtresi ile gürültünün kontrolü sende.",
+        "heading": "yeni Origin",
+        "body": "akustik filtreli kulak tıkacı, \nyalnızca seçici kulaklar için.",
+        "cta1_label": "Origin'i keşfet",
         "cta1_url": "shopify://collections/all",
-        "cta2_url": "/#hikaye",
-        "art_caption": "yüzyıllar önce uzanan bir el. şimdi kulağında bir sessizlik.",
-        "body": "gürültünün kontrolü sende. Origin, gürültüyü susturmadan kontrolü sana veren akustik filtreli bir kulak tıkacı.",
-        "cta1_label": "Origin'ini seç",
-        "cta2_label": "hikâyeyi oku"
+        "cta2_label": "hikâyeyi oku",
+        "cta2_url": "/#hikaye"
       }
     },
     "wordmark": {
       "type": "wango-wordmark-reveal",
       "settings": {
-        "cta_url": "shopify://collections/all",
-        "video_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/hero-scrub.mp4?v=1789826650",
+        "video_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/hero-scrub-v2.mp4?v=1792499207",
         "video_url_mobile": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/hero-scrub-mobile.mp4?v=1790602153",
+        "touch_hint": "Kafayı çevirmek için sağa sola kaydır",
         "eyebrow": "01 · sorunun kökeni",
-        "heading": "dış ses arttığında zihin daralır.",
+        "heading": "gürültü çoğaldığında zihin daralır.",
         "body": "en sevdiğin anlar çoğu zaman en gürültülü olanlar. konserde en sevdiğin şarkı çalarken ya dışarı çıkıyorsun ya da katlanıyorsun.",
+        "cta_label": "Origin'i seç",
+        "cta_url": "shopify://collections/all",
         "read_label": "devamını oku",
         "story_eyebrow": "01 · sorunun kökeni",
         "story_heading": "kaçmak da katlanmak da eksik bir cevaptı.",
-        "story_body": "odaklanmak için taktığın kulaklık ise seni bir şey dinlemeye, oradan da telefona çekiyor. gürültüyü bastırmak ya da üstüne daha yüksek sesle müzik açmak: zihnini dinlendirmen gereken anda ikisi de seni daha çok yoruyor.",
-        "cta_label": "Origin'ini seç"
+        "story_body": "odaklanmak için taktığın kulaklık ise seni bir şey dinlemeye, oradan da telefona çekiyor. gürültüyü bastırmak ya da üstüne daha yüksek sesle müzik açmak: zihnini dinlendirmen gereken anda ikisi de seni daha çok yoruyor."
       }
     },
     "marquee": {
@@ -80,7 +92,8 @@
         "s4",
         "s5",
         "s6"
-      ]
+      ],
+      "settings": {}
     },
     "transition": {
       "type": "wango-transition-story",
@@ -91,12 +104,12 @@
             "image_asset": "wp-real-lilac-banner.jpg",
             "focus_x": 72,
             "focus_y": 58,
+            "card_pos": "top",
             "step": "önce küçük bir kutu",
             "kicker": "kapalıyken",
             "title": "avucuna sığan bir sessizlik.",
             "body": "kapalıyken küçük, pürüzsüz bir taş gibi. deri kayışıyla bileğine ya da çantana takılır, hep elinin altında kalır.",
-            "chips": "Taşıma kutusu, Deri kayış",
-            "card_pos": "top"
+            "chips": "Taşıma kutusu, Deri kayış"
           }
         },
         "f2": {
@@ -105,12 +118,12 @@
             "image_asset": "wp-real-three-on-mint.jpg",
             "focus_x": 50,
             "focus_y": 100,
+            "card_pos": "top",
             "step": "iki renk",
             "kicker": "yan yana",
             "title": "iki renk, aynı sade form.",
             "body": "Obsidian Black gece kadar koyu; Tropical Indigo ışığa göre açılıp koyulaşan bir mor. hangisini seçersen seç, içi aynı.",
-            "chips": "Obsidian Black, Tropical Indigo",
-            "card_pos": "top"
+            "chips": "Obsidian Black, Tropical Indigo"
           }
         },
         "f3": {
@@ -119,6 +132,7 @@
             "image_asset": "wp-real-claw-machine.jpg",
             "focus_x": 52,
             "focus_y": 30,
+            "card_pos": "bottom",
             "step": "ve senin olur",
             "kicker": "seçildiğinde",
             "title": "ve biri senin olur.",
@@ -133,33 +147,93 @@
         "f3"
       ],
       "settings": {
-        "body": "aradığımız şey ne tam sessizlikti ne de daha yüksek bir ses; gürültünün sert ucunu törpüleyen, gerisini sana bırakan bir filtreydi. Origin böyle doğdu.",
         "eyebrow": "02 · fikrin kökeni",
-        "heading": "gürültü engellenemez, ama kontrol edilebilir olmalı."
+        "heading": "gürültü engellenemez, ama kontrol edilebilir olmalı.",
+        "body": "aradığımız şey ne tam sessizlikti ne de daha yüksek bir ses; gürültünün sert ucunu törpüleyen, gerisini sana bırakan bir filtreydi. Origin böyle doğdu."
+      }
+    },
+    "rail": {
+      "type": "wango-card-rail",
+      "blocks": {
+        "c1": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-disc-macro.jpg",
+            "tag": "filtre",
+            "title": "gürültüyü inceltir",
+            "body": "akustik filtre uğultunun sert ucunu törpüler. kalabalık, yerini daha sakin bir sese bırakır."
+          }
+        },
+        "c2": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-real-sofa-laugh.jpg",
+            "tag": "duymaya devam",
+            "title": "sesi tamamen kesmez",
+            "body": "konuşmayı, anonsu, müziği duymaya devam edersin. yalnızca fazlası gider."
+          }
+        },
+        "c3": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-worn-1.jpg",
+            "tag": "konfor",
+            "title": "hafif, rahat",
+            "body": "yumuşak silikon uçlarıyla kulağına nazikçe oturur. zorlamadan, batmadan."
+          }
+        },
+        "c4": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-real-three-on-mint.jpg",
+            "tag": "odak",
+            "title": "kopmadan odaklan",
+            "body": "kafede, açık ofiste, kütüphanede. bulunduğun ortamdan izole olmadan işine dönersin."
+          }
+        },
+        "c5": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-real-portrait-yellow.jpg",
+            "tag": "aksesuar",
+            "title": "kombinin parçası",
+            "body": "Obsidian Black ve Tropical Indigo. karabinana tak ya da çantanda taşı, her gün yanında olsun."
+          }
+        },
+        "c6": {
+          "type": "card",
+          "settings": {
+            "image_asset": "wp-case-open-seated.jpg",
+            "tag": "analog",
+            "title": "şarj yok, ekran yok",
+            "body": "içinde elektronik yok. kutusundan çıkar, tak, hazırsın."
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6"
+      ],
+      "settings": {
+        "ground": "w-black",
+        "eyebrow": "02 · fikrin kökeni",
+        "heading": "Origin, altı cümlede.",
+        "body": "",
+        "hint": "sağa kaydır",
+        "cta_heading": "seninki hangi renk?",
+        "cta_label": "Origin'ini seç",
+        "cta_url": "shopify://collections/all",
+        "prev_label": "Önceki kart",
+        "next_label": "Sonraki kart"
       }
     },
     "moments": {
       "type": "wango-moment-cards",
       "blocks": {
-        "m1": {
-          "type": "moment",
-          "settings": {
-            "image_asset": "wp-real-canvas-gymbag.jpg",
-            "title": "SABAH",
-            "meta": "kahve, sessizlik, ilk sayfa",
-            "body": "ev uyanmadan önceki yarım saat. sokaktan gelen uğultu geri çekilir; kahvenin sesi ve sayfanın hışırtısı kalır. günün ilk odağı senin."
-          },
-          "disabled": true
-        },
-        "m2": {
-          "type": "moment",
-          "settings": {
-            "image_asset": "wp-real-tray-flatlay.jpg",
-            "title": "ZONE OUT",
-            "meta": "şehir kısılır, sen kalırsın",
-            "body": "metro, otobüs, kalabalık bir cadde. uğultu geri çekilir; anonsu da yanındakini de duymaya devam edersin."
-          }
-        },
         "m3": {
           "type": "moment",
           "settings": {
@@ -178,6 +252,15 @@
             "body": "konser, bar, kalabalık bir masa. müzik yerinde kalır, yalnızca sertliği azalır."
           }
         },
+        "m2": {
+          "type": "moment",
+          "settings": {
+            "image_asset": "wp-real-tray-flatlay.jpg",
+            "title": "ZONE OUT",
+            "meta": "şehir kısılır, sen kalırsın",
+            "body": "metro, otobüs, kalabalık bir cadde. uğultu geri çekilir; anonsu da yanındakini de duymaya devam edersin."
+          }
+        },
         "m5": {
           "type": "moment",
           "settings": {
@@ -185,6 +268,16 @@
             "title": "EASE UP",
             "meta": "fazlası törpülenir",
             "body": "uzun bir günün sonunda kalabalık bir ortam. fazlası törpülenir, gerisi sende kalır."
+          }
+        },
+        "m1": {
+          "type": "moment",
+          "disabled": true,
+          "settings": {
+            "image_asset": "wp-real-canvas-gymbag.jpg",
+            "title": "SABAH",
+            "meta": "kahve, sessizlik, ilk sayfa",
+            "body": "ev uyanmadan önceki yarım saat. sokaktan gelen uğultu geri çekilir; kahvenin sesi ve sayfanın hışırtısı kalır. günün ilk odağı senin."
           }
         }
       },
@@ -296,16 +389,12 @@
         "heading": "her detayda wango'nun izi."
       }
     },
-    "wallpaper": {
-      "type": "wango-word-wallpaper",
-      "settings": {
-        "word": "wango",
-        "rows": 4
-      }
-    },
     "split": {
       "type": "wango-split-reveal",
+      "disabled": true,
       "settings": {
+        "image_asset": "wb-brief-14.jpg",
+        "image_secondary_asset": "wb-brief-18.jpg",
         "left_heading": "hareket",
         "left_body": "günün akışına eşlik eden, fark edilmeyen bir sessizlik.",
         "right_heading": "sükûnet",
@@ -477,107 +566,26 @@
         "t8",
         "t9"
       ],
-      "settings": {},
-      "disabled": true
+      "disabled": true,
+      "settings": {
+        "ground": "w-black",
+        "eyebrow": "Yorumlar",
+        "heading": "Kullananlar ne diyor?",
+        "subheading": "wango taşıyanların kendi cümleleri."
+      }
     },
     "cta": {
       "type": "wango-cta",
       "settings": {
         "ground": "w-black",
-        "cta_url": "shopify://collections/all",
         "heading": "gürültünün kontrolünü ele geçirdiğin an, gerçek frekansı hissedersin.",
         "body": "ve bu anında yanında olacağım için minnettarım. — wango",
-        "cta_label": "Origin'ini seç"
-      }
-    },
-    "rail": {
-      "type": "wango-card-rail",
-      "blocks": {
-        "c1": {
-          "type": "card",
-          "settings": {
-            "image_asset": "wp-disc-macro.jpg",
-            "tag": "filtre",
-            "title": "gürültüyü inceltir",
-            "body": "akustik filtre uğultunun sert ucunu törpüler. kalabalık, yerini daha sakin bir sese bırakır."
-          }
-        },
-        "c2": {
-          "type": "card",
-          "settings": {
-            "image_asset": "wp-real-sofa-laugh.jpg",
-            "tag": "duymaya devam",
-            "title": "sesi tamamen kesmez",
-            "body": "konuşmayı, anonsu, müziği duymaya devam edersin. yalnızca fazlası gider."
-          }
-        },
-        "c3": {
-          "type": "card",
-          "settings": {
-            "image_asset": "wp-worn-1.jpg",
-            "tag": "konfor",
-            "title": "hafif, rahat",
-            "body": "yumuşak silikon uçlarıyla kulağına nazikçe oturur. zorlamadan, batmadan."
-          }
-        },
-        "c4": {
-          "type": "card",
-          "settings": {
-            "image_asset": "wp-real-three-on-mint.jpg",
-            "tag": "odak",
-            "title": "kopmadan odaklan",
-            "body": "kafede, açık ofiste, kütüphanede. bulunduğun ortamdan izole olmadan işine dönersin."
-          }
-        },
-        "c5": {
-          "type": "card",
-          "settings": {
-            "image_asset": "wp-real-portrait-yellow.jpg",
-            "tag": "aksesuar",
-            "title": "kombinin parçası",
-            "body": "Obsidian Black ve Tropical Indigo. karabinana tak ya da çantanda taşı, her gün yanında olsun."
-          }
-        },
-        "c6": {
-          "type": "card",
-          "settings": {
-            "image_asset": "wp-case-open-seated.jpg",
-            "tag": "analog",
-            "title": "şarj yok, ekran yok",
-            "body": "içinde elektronik yok. kutusundan çıkar, tak, hazırsın."
-          }
-        }
-      },
-      "block_order": [
-        "c1",
-        "c2",
-        "c3",
-        "c4",
-        "c5",
-        "c6"
-      ],
-      "settings": {
-        "ground": "w-black",
-        "eyebrow": "02 · fikrin kökeni",
-        "heading": "Origin, altı cümlede.",
-        "cta_url": "shopify://collections/all",
-        "hint": "sağa kaydır",
-        "cta_heading": "seninki hangi renk?",
-        "cta_label": "Origin'ini seç"
+        "cta_label": "Origin'ini seç",
+        "cta_url": "shopify://collections/all"
       }
     },
     "news": {
       "type": "wango-newsletter",
-      "settings": {
-        "eyebrow": "bülten",
-        "heading": "iki haftada bir,",
-        "heading_accent": "kulağına gelsin.",
-        "body": "hikâyenin devamı gelen kutunda: gürültüyle yaşama notları, festival rehberleri ve yeni renkler. spam yok, sadece işine yarayan.",
-        "form_heading": "e-posta adresin",
-        "submit": "bültene katıl",
-        "success_heading": "kaydın alındı.",
-        "success_body": "ilk mektup iki hafta içinde gelen kutunda. istediğin an tek tıkla çıkabilirsin."
-      },
       "blocks": {
         "p1": {
           "type": "perk",
@@ -605,7 +613,22 @@
         "p1",
         "p2",
         "p3"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "bülten",
+        "heading": "iki haftada bir,",
+        "heading_accent": "kulağına gelsin.",
+        "body": "hikâyenin devamı gelen kutunda: gürültüyle yaşama notları, festival rehberleri ve yeni renkler. spam yok, sadece işine yarayan.",
+        "form_heading": "e-posta adresin",
+        "placeholder": "ad@ornek.com",
+        "consent": "wango'dan e-posta almayı ve adresimin bu amaçla işlenmesini kabul ediyorum. Dilediğim zaman çıkabilirim.",
+        "submit": "bültene katıl",
+        "err_email": "Geçerli bir e-posta adresi gir.",
+        "err_consent": "Devam etmek için onay kutusunu işaretle.",
+        "success_heading": "kaydın alındı.",
+        "success_body": "ilk mektup iki hafta içinde gelen kutunda. istediğin an tek tıkla çıkabilirsin.",
+        "success_cta": "Ana sayfaya dön"
+      }
     }
   },
   "order": [
@@ -614,7 +637,6 @@
     "marquee",
     "transition",
     "rail",
-    "wallpaper",
     "moments",
     "gallery",
     "split",

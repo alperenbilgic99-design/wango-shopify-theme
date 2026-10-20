@@ -136,7 +136,7 @@
        scroll". */
     var ready = video.readyState >= 1, target = 0;
     video.addEventListener("loadedmetadata", function () { ready = true; });
-    if (window.Wango && Wango.videoFromBlob) Wango.videoFromBlob(video);
+    if (window.Wango && Wango.videoFromBlob) (W.whenNear || function (e, f) { f(); })(outer, function () { Wango.videoFromBlob(video); });
     /* Dimmed, not hidden: the text column keeps its full height from the first
        frame, so it stays balanced against the card instead of the heading
        floating alone at the top. */
@@ -468,9 +468,11 @@
          currentTime write snaps back to 0. A blob URL is always seekable. */
       var vsrc = vid.getAttribute("data-src");
       if (vsrc) {
-        fetch(vsrc).then(function (r) { return r.blob(); })
-          .then(function (b) { vid.src = URL.createObjectURL(b); vid.load(); })
-          .catch(function () { vid.src = vsrc; });
+        (W.whenNear || function (e, f) { f(); })(root, function () {
+          fetch(vsrc).then(function (r) { return r.blob(); })
+            .then(function (b) { vid.src = URL.createObjectURL(b); vid.load(); })
+            .catch(function () { vid.src = vsrc; });
+        });
       }
       var lastT = -1;
       view = {
@@ -825,7 +827,8 @@
         el.style.pointerEvents = v > 0.5 ? "auto" : "none";
       });
     }
-    mark(current); show(current); load(current);
+    mark(current); show(current);
+    (W.whenNear || function (e, f) { f(); })(root, function () { load(current); });
     paint(0);
     ScrollTrigger.create({
       trigger: root, start: "top top", end: "bottom bottom", scrub: true,

@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "boxhero": {
@@ -15,7 +24,6 @@
     },
     "boxscroll": {
       "type": "wango-box-scroll",
-      "settings": {},
       "blocks": {
         "b1": {
           "type": "beat",
@@ -52,13 +60,11 @@
         "b1",
         "b2",
         "b3"
-      ]
+      ],
+      "settings": {}
     },
     "explode": {
       "type": "wango-explode-view",
-      "settings": {
-        "video_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/wango-explode-white.mp4?v=1789996889"
-      },
       "blocks": {
         "e1": {
           "type": "callout",
@@ -78,13 +84,13 @@
       "block_order": [
         "e1",
         "e2"
-      ]
+      ],
+      "settings": {
+        "video_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/wango-explode-white-v2.mp4?v=1792499213"
+      }
     },
     "sound": {
       "type": "wango-sound-filter",
-      "settings": {
-        "audio_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/pub-ambience.mp3?v=1789826652"
-      },
       "blocks": {
         "n1": {
           "type": "note",
@@ -112,7 +118,10 @@
         "n1",
         "n2",
         "n3"
-      ]
+      ],
+      "settings": {
+        "audio_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/pub-ambience.mp3?v=1789826652"
+      }
     },
     "story": {
       "type": "wango-short-story",
@@ -131,10 +140,10 @@
           "type": "row",
           "settings": {
             "image_asset": "wp-worn-1.jpg",
+            "image_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/katman.png",
             "eyebrow": "Nasıl durur",
             "title": "Konkaya oturur, kanala yerleşir, orada kalır.",
             "body": "Gövde kulağın kendi çukuruna oturur, uç kanala yerleşir. Kutudaki 4 boy uçtan (S, M, L, Double) kulağına uyanı seçtiğinde yerinde kalır ve uzun süre rahatsız etmez.",
-            "image_url": "https://cdn.shopify.com/s/files/1/0852/0240/3571/files/katman.png",
             "chips": "4 boy uç, S · M · L · Double"
           }
         },
@@ -153,7 +162,8 @@
         "b1",
         "b2",
         "b3"
-      ]
+      ],
+      "settings": {}
     },
     "reveal": {
       "type": "wango-scroll-reveal",
@@ -183,7 +193,6 @@
     },
     "orbit": {
       "type": "wango-orbit-gallery",
-      "settings": {},
       "blocks": {
         "o0": {
           "type": "frame",
@@ -243,7 +252,8 @@
         "o5",
         "o6",
         "o7"
-      ]
+      ],
+      "settings": {}
     },
     "cta": {
       "type": "wango-cta",
@@ -361,8 +371,8 @@
       ],
       "settings": {
         "tone": "purple",
-        "speed": 40,
-        "ground": "paper"
+        "ground": "paper",
+        "speed": 40
       }
     }
   },
