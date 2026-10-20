@@ -151,13 +151,17 @@
          the screen: a pure function of where the card is, so it holds still
          the moment the track does */
       if (!reduced) {
-        var vr = viewport.getBoundingClientRect(), mid = vr.left + vr.width / 2;
-        for (var k = 0; k < cards.length; k++) {
+        /* every card is read before any picture is moved: a read after a write
+           re-ran layout once per card */
+        var vr = viewport.getBoundingClientRect(), mid = vr.left + vr.width / 2, k, moves = [];
+        for (k = 0; k < cards.length; k++) {
           if (!imgs[k]) continue;
           var r = cards[k].getBoundingClientRect();
           if (r.right < vr.left - 80 || r.left > vr.right + 80) continue;
-          var t = ((r.left + r.width / 2) - mid) / vr.width;       /* -0.5 … 0.5 across the viewport */
-          imgs[k].style.transform = "translate3d(" + (t * -9).toFixed(2) + "%,0,0) scale(1.2)";
+          moves.push(k, ((r.left + r.width / 2) - mid) / vr.width);   /* -0.5 … 0.5 across the viewport */
+        }
+        for (k = 0; k < moves.length; k += 2) {
+          imgs[moves[k]].style.transform = "translate3d(" + (moves[k + 1] * -9).toFixed(2) + "%,0,0) scale(1.2)";
         }
       }
     }

@@ -100,10 +100,14 @@
      refreshing on every callback would itself make the scroll jitter. */
   if (window.ScrollTrigger) {
     ScrollTrigger.config({ ignoreMobileResize: true });
-    var lastH = document.documentElement.scrollHeight, calTimer = 0;
+    /* A refresh re-measures every trigger and costs a long frame, so it never
+       runs while the page is moving: it waits for the scroll to rest. */
+    var lastH = document.documentElement.scrollHeight, calTimer = 0, lastScroll = 0;
+    window.addEventListener("scroll", function () { lastScroll = performance.now(); }, { passive: true });
     var recalibrate = function () {
       clearTimeout(calTimer);
-      calTimer = setTimeout(function () {
+      calTimer = setTimeout(function settle() {
+        if (performance.now() - lastScroll < 250) { calTimer = setTimeout(settle, 250); return; }
         var h = document.documentElement.scrollHeight;
         if (Math.abs(h - lastH) > 1) { lastH = h; ScrollTrigger.refresh(); }
       }, 120);
@@ -129,19 +133,26 @@
      untransformed top is used (its current offset is subtracted), otherwise
      the rise would feed back into its own progress. */
   var scrubbed = [], scrubQueued = false;
+  /* All positions are read first, then all styles written: a read after a
+     write forces the browser to lay the page out again, once per element. */
+  var scrubP = [];
   function paintScrubbed() {
     scrubQueued = false;
-    var vh = window.innerHeight, start = vh * 0.96, span = vh * 0.22;
-    for (var i = 0; i < scrubbed.length; i++) {
-      var el = scrubbed[i];
+    var vh = window.innerHeight, start = vh * 0.96, span = vh * 0.22, i, el;
+    for (i = 0; i < scrubbed.length; i++) {
+      el = scrubbed[i];
       var top = el.getBoundingClientRect().top - (el._wy || 0);
       var p = (start - top) / span - (el._wd || 0);
-      p = p < 0 ? 0 : p > 1 ? 1 : p;
-      if (p === el._wp) continue;
-      el._wp = p;
-      el._wy = 28 * (1 - p);
-      el.style.opacity = p;
-      el.style.transform = p === 1 ? "none" : "translateY(" + el._wy.toFixed(1) + "px)";
+      scrubP[i] = p < 0 ? 0 : p > 1 ? 1 : p;
+    }
+    for (i = 0; i < scrubbed.length; i++) {
+      el = scrubbed[i];
+      var q = scrubP[i];
+      if (q === el._wp) continue;
+      el._wp = q;
+      el._wy = 28 * (1 - q);
+      el.style.opacity = q;
+      el.style.transform = q === 1 ? "none" : "translateY(" + el._wy.toFixed(1) + "px)";
     }
   }
   function queueScrubbed() {
@@ -262,19 +273,31 @@
     /* Sections marked data-header-tone="light" flip the bar to dark type while
        they sit under it (probe a point just inside the bar's vertical middle),
        otherwise it is white-on-white. */
+    /* Once per frame at most, every read before any write, and the class only
+       touched when it actually changes (each toggle restyled the header). */
+    var lights = [].slice.call(document.querySelectorAll('[data-header-tone="light"]'));
+    var wasScrolled = null, wasLight = null, headQueued = false;
     var onScroll = function () {
-      header.classList.toggle("is-scrolled", window.scrollY > 40);
-      /* the bar's own middle: it moves down when the announcement bar sits above it */
-      var hb = header.getBoundingClientRect();
-      var under = false, y = hb.top + hb.height / 2;
-      document.querySelectorAll('[data-header-tone="light"]').forEach(function (el) {
-        var r = el.getBoundingClientRect();
-        if (r.top <= y && r.bottom >= y) under = true;
-      });
-      header.classList.toggle("is-light", under);
+      headQueued = false;
+      var scrolled = window.scrollY > 40;
+      var under = false;
+      if (lights.length) {
+        /* the bar's own middle: it moves down when the announcement bar sits above it */
+        var hb = header.getBoundingClientRect(), y = hb.top + hb.height / 2;
+        for (var i = 0; i < lights.length && !under; i++) {
+          var r = lights[i].getBoundingClientRect();
+          if (r.top <= y && r.bottom >= y) under = true;
+        }
+      }
+      if (scrolled !== wasScrolled) { wasScrolled = scrolled; header.classList.toggle("is-scrolled", scrolled); }
+      if (under !== wasLight) { wasLight = under; header.classList.toggle("is-light", under); }
     };
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", function () {
+      if (!headQueued) { headQueued = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    /* a frame queued in a background tab may never run: don't let it latch */
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) onScroll(); });
 
     var nav = document.querySelector("[data-nav-overlay]");
     var burger = header.querySelector("[data-burger]");

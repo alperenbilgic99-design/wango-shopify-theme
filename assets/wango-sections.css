@@ -38,7 +38,7 @@
 .w-header__glass {
   position: absolute; inset: 0 0.5rem; border-radius: 0.75rem;
   border: 1px solid transparent; background: transparent; opacity: 0;
-  transition: all .5s; pointer-events: none;
+  transition: opacity .5s, border-color .5s, background-color .5s; pointer-events: none;
 }
 @media (min-width: 768px) { .w-header__glass { inset: 0 1rem; } }
 .w-header.is-scrolled .w-header__glass {
@@ -346,8 +346,11 @@
 /* ── product tilt grid ──────────────────────────────────────────────────── */
 .ptg { display: grid; gap: 2rem; margin-top: 3rem; }
 @media (min-width: 768px) { .ptg { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
-.ptg-card { position: relative; display: block; overflow: hidden; border-radius: 1.75rem; border: 4px solid var(--w-black); background: var(--w-black); box-shadow: 0 30px 70px rgba(11,11,13,.25); transform-origin: bottom; transition: transform .5s; }
-.ptg-card:hover { transform: translateY(-6px); }
+.ptg-card { position: relative; display: block; overflow: hidden; border-radius: 1.75rem; border: 4px solid var(--w-black); background: var(--w-black); box-shadow: 0 30px 70px rgba(11,11,13,.25); transform-origin: bottom; transition: translate .5s var(--w-ease); }
+/* the lift uses `translate`, not `transform`: GSAP writes transform on every
+   frame of the fan-in, and a CSS transition on the same property restarted on
+   each write, so the cards trailed the scroll by half a second */
+.ptg-card:hover { translate: 0 -6px; }
 .ptg-card__img { position: relative; aspect-ratio: 16 / 11; overflow: hidden; }
 .ptg-card__img img { height: 100%; width: 100%; object-fit: cover; transition: transform .9s var(--w-ease); }
 .ptg-card:hover .ptg-card__img img { transform: scale(1.06); }
@@ -372,6 +375,20 @@ a.ptg-card__img { display: block; }
 .ptg-card__img--duo img { min-width: 0; }
 .ptg-card__plus { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 2.6rem; height: 2.6rem; display: grid; place-items: center; border-radius: 50%; background: var(--w-white); color: var(--w-black); font: 700 1.5rem/1 var(--font-brand); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
 .ptg-card__tag { display: inline-block; margin-bottom: .6rem; padding: .3rem .65rem; border-radius: 999px; background: var(--w-purple); color: var(--w-white); font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+
+/* on the paper ground the cards are paper too: a warm white sheet with the
+   black product photo inset as a framed print, so no black slab breaks the page */
+.ptg .ptg-card { border: 1px solid var(--w-paper-line); background: #FDFCFA; box-shadow: 0 1px 2px rgba(20,18,26,.04), 0 24px 56px -18px rgba(20,18,26,.16); }
+.ptg .ptg-card__img { margin: .5rem .5rem 0; border-radius: 1.3rem; background: var(--w-black); }
+.ptg .ptg-card__row h3, .ptg .ptg-card__row span { color: var(--w-ink); }
+.ptg .ptg-card__sub { color: var(--w-ink-soft); }
+.ptg .ptg-card__more { color: var(--w-purple); }
+.ptg .ptg-card__go { color: var(--w-ink); }
+.ptg .w-btn--solid { background: var(--w-ink); color: var(--w-white); }
+.ptg .w-btn--solid:hover:not([disabled]) { background: var(--w-purple); }
+.ptg .ptg-card__actions .w-btn.is-added { background: var(--w-purple); color: var(--w-white); }
+.ptg .ptg-card--set { border: 2px solid var(--w-purple-lift); box-shadow: 0 1px 2px rgba(20,18,26,.04), 0 24px 56px -18px rgba(75,42,126,.30); }
+.ptg .ptg-card__plus { background: #FDFCFA; color: var(--w-ink); }
 
 /* ── promise ticker ─────────────────────────────────────────────────────── */
 .w-ticker { position: relative; z-index: 2; overflow: hidden; padding-block: 1.6rem; margin-block: -1.6rem; pointer-events: none; }
@@ -1358,8 +1375,11 @@ html.has-drawer body { overflow: hidden; }
 .w-drawer__pay svg { display: block; width: 38px; height: 24px; }
 .w-drawer__trust .w-drawer__view { font-size: inherit; color: var(--w-white); }
 /* the page behind sinks back while the drawer is open */
-#MainContent { transition: transform .55s cubic-bezier(.32, .72, 0, 1), border-radius .55s, filter .55s; }
-html.has-drawer #MainContent { transform: scale(.965); border-radius: 22px; overflow: clip; filter: brightness(.82); }
+/* transform only: animating filter and border-radius on the whole page
+   repainted every pixel of it on each frame of the drawer opening; the
+   drawer's own scrim already darkens it */
+#MainContent { transition: transform .55s cubic-bezier(.32, .72, 0, 1); }
+html.has-drawer #MainContent { transform: scale(.965); border-radius: 22px; overflow: clip; will-change: transform; }
 @media (prefers-reduced-motion: reduce) { #MainContent, html.has-drawer #MainContent { transition: none; transform: none; } .w-drawer__line.is-enter { animation: none; } }
 
 /* ── transition story, upgraded: edge-to-edge picture, one caption card,

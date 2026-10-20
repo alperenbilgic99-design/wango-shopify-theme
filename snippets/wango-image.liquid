@@ -3,8 +3,11 @@
   image object (`image:`), so a merchant can replace any packaged photo from
   the theme editor without the section markup changing.
 
-  A Shopify image gets a real srcset and the CDN's own resizing; a packaged
-  asset is served as-is (asset_url takes no width).
+  Both get a srcset, so a phone downloads and decodes a picture its own size
+  instead of a 2400px original: a Shopify image through image_url, a packaged
+  asset through asset_img_url (the CDN resizes theme assets too). Images
+  decode off the main thread (decoding="async") so a big one entering the
+  screen does not stall a scroll frame.
 
   Params: asset, image, alt, class, sizes, loading
 {%- endcomment -%}
@@ -26,13 +29,18 @@
     width="{{ image.width }}" height="{{ image.height }}"
     alt="{{ img_alt | escape }}"
     class="{{ img_class }}"
-    loading="{{ img_loading }}">
+    loading="{{ img_loading }}" decoding="async">
 {%- elsif asset != blank -%}
   {%- capture pos %}{% render 'focal', src: asset %}{% endcapture -%}
   <img
-    src="{{ asset | asset_url }}"
+    src="{{ asset | asset_img_url: '1600x' }}"
+    srcset="{{ asset | asset_img_url: '640x' }} 640w,
+            {{ asset | asset_img_url: '1000x' }} 1000w,
+            {{ asset | asset_img_url: '1600x' }} 1600w,
+            {{ asset | asset_img_url: '2400x' }} 2400w"
+    sizes="{{ img_sizes }}"
     alt="{{ img_alt | escape }}"
     class="{{ img_class }}"
-    loading="{{ img_loading }}"
+    loading="{{ img_loading }}" decoding="async"
     style="object-position: {{ pos | strip }};">
 {%- endif -%}

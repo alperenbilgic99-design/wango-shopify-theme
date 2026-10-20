@@ -40,25 +40,51 @@
       track.style.transform = "translateX(" + s.currentX + "px)";
     }
 
-    var items = track.querySelectorAll(".w-marquee__item");
+    /* Each slide's place is measured once (and on resize) and then derived
+       from currentX. Reading getBoundingClientRect for every slide right after
+       writing the track's transform forced a full layout on every frame. */
+    var slides = [].map.call(track.querySelectorAll(".w-marquee__item"), function (item) {
+      return { item: item, img: item.querySelector("img"), x: 0, w: 0, shift: null };
+    }).filter(function (sl) { return sl.img; });
+    var originX = 0;
+    function measure() {
+      var prev = track.style.transform;
+      track.style.transform = "none";
+      originX = track.getBoundingClientRect().left;
+      track.style.transform = prev;
+      slides.forEach(function (sl) { sl.x = sl.item.offsetLeft; sl.w = sl.item.offsetWidth; });
+      painted = null;
+    }
     function parallax() {
       var vw = window.innerWidth / 2;
-      items.forEach(function (item) {
-        var img = item.querySelector("img");
-        if (!img) return;
-        var r = item.getBoundingClientRect();
-        var dist = (r.left + r.width / 2) - vw;
-        var cap = SHIFT_RATIO * r.width;
-        var shift = Math.max(-cap, Math.min(cap, dist * -0.25));
-        img.style.transform = "translateX(" + shift + "px) scale(" + PARALLAX_SCALE + ")";
-      });
+      for (var i = 0; i < slides.length; i++) {
+        var sl = slides[i], left = originX + s.currentX + sl.x;
+        if (left > vw * 2 + 40 || left + sl.w < -40) continue;     /* off screen */
+        var cap = SHIFT_RATIO * sl.w;
+        var shift = Math.max(-cap, Math.min(cap, ((left + sl.w / 2) - vw) * -0.25));
+        shift = Math.round(shift * 10) / 10;
+        if (shift === sl.shift) continue;
+        sl.shift = shift;
+        sl.img.style.transform = "translate3d(" + shift + "px,0,0) scale(" + PARALLAX_SCALE + ")";
+      }
     }
 
-    (function tick() {
+    /* Runs only while the strip is on screen, and writes nothing once it has
+       come to rest. */
+    var onScreen = false, running = false, painted = null;
+    function tick() {
+      if (!onScreen) { running = false; return; }
       s.currentX += (s.targetX - s.currentX) * 0.05;
-      wrap(); parallax();
+      if (Math.abs(s.targetX - s.currentX) < 0.05) s.currentX = s.targetX;
+      if (s.currentX !== painted) { wrap(); parallax(); painted = s.currentX; }
       requestAnimationFrame(tick);
-    })();
+    }
+    function wake() { if (onScreen && !running) { running = true; requestAnimationFrame(tick); } }
+    measure();
+    if (window.ResizeObserver) new ResizeObserver(measure).observe(track);
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (es) { onScreen = es[es.length - 1].isIntersecting; wake(); }, { rootMargin: "100px" }).observe(root);
+    } else { onScreen = true; wake(); }
 
     /* The wheel NUDGES the strip but never swallows the event: a preventDefault
        here made the whole 60vh band a scroll trap — with the pointer over it
@@ -89,7 +115,7 @@
     root.addEventListener("touchstart", function (e) { down(e.touches[0].clientX); }, { passive: true });
     window.addEventListener("touchmove", function (e) { move(e.touches[0].clientX); }, { passive: true });
     window.addEventListener("touchend", up);
-    window.addEventListener("resize", function () { slideWidth = isMobile() ? 215 : 390; });
+    window.addEventListener("resize", function () { slideWidth = isMobile() ? 215 : 390; measure(); });
   }
 
   /* ── displacement crossfade ───────────────────────────────────────────── */
@@ -237,7 +263,12 @@
       dirty = 6;
     }
     srcs.forEach(function (src, k) {
-      WangoGL.loadImage(src).then(function (img) { images[k] = img; loaded++; apply(); }).catch(function () {});
+      WangoGL.loadImage(src).then(function (img) {
+        images[k] = img; loaded++; apply();
+        /* upload it now, while nothing is moving, not mid-scroll */
+        var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 200 + k * 120); };
+        idle(function () { gl.warm(img); }, { timeout: 2000 });
+      }).catch(function () {});
     });
 
     ScrollTrigger.create({
@@ -424,14 +455,17 @@
     srcs.forEach(function (src, i) {
       var img = new Image();
       img.crossOrigin = "anonymous";
-      img.onload = function () { imgs[i] = img; loaded++; };
+      img.onload = function () { imgs[i] = img; loaded++; render(); };
       img.src = src;
     });
 
-    var progress = 1, target = 1, startVal = 1, startTs = null, animId = null;
+    var progress = 1, target = 1, startVal = 1, startTs = null, animId = null, drawn = null;
 
-    (function render() {
-      if (loaded === n) {
+    /* Drawn only when the blend actually changes (or the last image lands),
+       not 60 times a second for a picture that is standing still. */
+    function render() {
+      if (loaded === n && progress !== drawn) {
+        drawn = progress;
         var p = progress;
         var base = Math.floor(p - 1) % n;
         var from = ((base % n) + n) % n;
@@ -443,8 +477,7 @@
         if (t > 0.001) { ctx.globalAlpha = t; ctx.drawImage(imgs[to], 0, 0, canvas.width, canvas.height); }
         ctx.globalAlpha = 1;
       }
-      requestAnimationFrame(render);
-    })();
+    }
 
     function shortestPath(start, end, len) {
       var diffs = [end - start, end + len - start, end - (start + len)];
@@ -459,9 +492,11 @@
         if (val > n) val -= n;
         if (val < 1) val += n;
         progress = val;
+        render();
         animId = requestAnimationFrame(animate);
       } else {
         progress = target; animId = null; startTs = null;
+        render();
       }
       if (readout) readout.textContent = progress.toFixed(2);
     }

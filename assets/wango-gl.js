@@ -44,7 +44,9 @@
    * @returns {?Object} null when WebGL is unavailable — callers must fall back.
    */
   function quad(canvas, opts) {
-    var gl = canvas.getContext("webgl", { alpha: true, antialias: true, premultipliedAlpha: false });
+    /* no MSAA: a single full-screen triangle has no edges to smooth, and the
+       multisampled buffer cost a resolve pass on every frame */
+    var gl = canvas.getContext("webgl", { alpha: true, antialias: false, premultipliedAlpha: false });
     if (!gl) return null;
 
     var vs = compile(gl, gl.VERTEX_SHADER, VERT);
@@ -88,12 +90,36 @@
       new IntersectionObserver(function (es) {
         visible = es[es.length - 1].isIntersecting;
         lastT = 0;                       /* a gap while hidden is not a slow frame */
+        if (visible) changed = true;
       }, { rootMargin: "120px" }).observe(canvas);
     }
 
     var textures = {};   // name -> {tex, unit, source, dynamic}
     var nextUnit = 0;
     var values = {};
+    /* Draw only when something on screen would differ: a uniform that really
+       changed, a texture, a resize, a new video frame. Callers run a rAF loop
+       and call render() every frame; an idle effect now costs nothing instead
+       of a full-screen shader pass 60 times a second. */
+    var changed = true;
+    /* Still images keep their GL texture, keyed by the source element, so a
+       picture shown again (the crossfade's pairs) is re-bound, not re-uploaded:
+       a texImage2D of a 2400px photo stalled the frame it happened on. */
+    var stills = [];   // [{source, tex}]
+    function stillTexture(source) {
+      for (var i = 0; i < stills.length; i++) if (stills[i].source === source) return stills[i].tex;
+      var tex = makeTexture(source);
+      stills.push({ source: source, tex: tex });
+      return tex;
+    }
+    function same(a, b) {
+      if (Array.isArray(a) && Array.isArray(b)) {
+        if (a.length !== b.length) return false;
+        for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+        return true;
+      }
+      return a === b;
+    }
 
     function makeTexture(source) {
       var tex = gl.createTexture();
@@ -119,15 +145,18 @@
     }
 
     function set(name, value) {
-      values[name] = value;
       if (value && value.texture) {
-        var t = textures[name];
+        values[name] = value;
+        changed = true;
+        var dyn = !!value.dynamic, t = textures[name];
         if (!t) {
-          t = textures[name] = { tex: makeTexture(value.texture), unit: nextUnit++, source: value.texture, dynamic: !!value.dynamic };
-        } else {
-          t.source = value.texture;
-          t.dynamic = !!value.dynamic;
-          upload(t.tex, value.texture);
+          t = textures[name] = { tex: dyn ? makeTexture(value.texture) : stillTexture(value.texture), unit: nextUnit++, source: value.texture, dynamic: dyn };
+        } else if (dyn) {
+          if (!t.dynamic || t.source !== value.texture) t.tex = makeTexture(value.texture);
+          t.source = value.texture; t.dynamic = true;
+        } else if (t.source !== value.texture || t.dynamic) {
+          t.tex = stillTexture(value.texture);
+          t.source = value.texture; t.dynamic = false;
         }
         /* requestVideoFrameCallback fires once per frame the video actually
            presents (including after a seek), so the texture is re-uploaded
@@ -140,6 +169,9 @@
         }
         return;
       }
+      if (same(values[name], value)) return;
+      values[name] = Array.isArray(value) ? value.slice() : value;
+      changed = true;
       gl.useProgram(prog);
       var l = uloc(name);
       if (l === null) return;
@@ -158,10 +190,18 @@
       canvas.width = Math.max(1, Math.round(w * d));
       canvas.height = Math.max(1, Math.round(h * d));
       gl.viewport(0, 0, canvas.width, canvas.height);
+      changed = true;
     }
 
     function render() {
       if (!visible) return;              /* nothing to see: skip the draw */
+      var fresh = false;
+      for (var n in textures) {
+        var tx = textures[n];
+        if (tx.dynamic && tx.source && tx.source.readyState >= 2 && (!tx.rvfc || tx.dirty)) { fresh = true; break; }
+      }
+      if (!changed && !fresh) { lastT = 0; return; }   /* same picture as last frame */
+      changed = false;
       var now = performance.now();
       if (lastT) {
         ema += (Math.min(now - lastT, 100) - ema) * 0.08;
@@ -198,7 +238,11 @@
 
     if (opts.uniforms) for (var k in opts.uniforms) set(k, opts.uniforms[k]);
 
-    return { gl: gl, set: set, resize: resize, render: render, dispose: dispose, values: values };
+    /** Uploads a still ahead of time (call it when the page is idle), so the
+        frame that first shows it does not pay for the upload. */
+    function warm(source) { stillTexture(source); }
+
+    return { gl: gl, set: set, resize: resize, render: render, dispose: dispose, values: values, warm: warm };
   }
 
   /** Loads an image and resolves with it, or rejects — never hangs. */
@@ -206,7 +250,12 @@
     return new Promise(function (resolve, reject) {
       var img = new Image();
       img.crossOrigin = "anonymous";
-      img.onload = function () { resolve(img); };
+      /* decode off the main thread before anyone uploads it; otherwise the
+         decode happens inside texImage2D, on the frame that first draws it */
+      img.onload = function () {
+        if (img.decode) img.decode().then(function () { resolve(img); }, function () { resolve(img); });
+        else resolve(img);
+      };
       img.onerror = reject;
       img.src = src;
     });

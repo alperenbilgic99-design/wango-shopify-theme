@@ -18,7 +18,7 @@
     if block.settings.image != blank
       assign one = block.settings.image | image_url: width: 2400
     else
-      assign one = block.settings.image_asset | asset_url
+      assign one = block.settings.image_asset | asset_img_url: '2400x'
     endif
     assign fx = block.settings.focus_x | divided_by: 100.0
     assign fy = block.settings.focus_y | divided_by: 100.0

@@ -422,15 +422,18 @@
       var w = host.clientWidth, h = host.clientHeight;
       gl.resize(w, h);
       gl.set("uResolution", [w, h]);
+      rect = null;
     }
     resize();
     new ResizeObserver(resize).observe(host);
 
     var t0 = performance.now(), mouseStrength = 0;
     (function tick() {
-      mouseStrength *= 0.94;
+      /* the ripple is the only thing that moves on its own; once it has died
+         out the clock stops too, so a still frame is not redrawn every tick */
+      mouseStrength = mouseStrength > 0.002 ? mouseStrength * 0.94 : 0;
       gl.set("uMouseStrength", mouseStrength);
-      gl.set("uTime", (performance.now() - t0) / 1000);
+      if (mouseStrength) gl.set("uTime", (performance.now() - t0) / 1000);
       /* Scrub is eased inside the rAF loop rather than applied straight off
          mousemove: a big pointer jump then plays out as a continuous glide
          instead of one hard seek that paints a frame and stalls. */
@@ -450,8 +453,11 @@
        touch-action: pan-y keeps vertical scrolling native while horizontal
        movement still arrives here instead of being swallowed by the browser. */
     sticky.style.touchAction = "pan-y";
+    var rect = null;   /* read once per gesture, not on every pointer event */
+    sticky.addEventListener("pointerenter", function () { rect = null; });
+    window.addEventListener("scroll", function () { rect = null; }, { passive: true });
     sticky.addEventListener("pointermove", function (e) {
-      var rect = sticky.getBoundingClientRect();
+      if (!rect) rect = sticky.getBoundingClientRect();
       gl.set("uMouse", [(e.clientX - rect.left) / rect.width, 1 - (e.clientY - rect.top) / rect.height]);
       mouseStrength = 1;
       if (prevX === null) { prevX = e.clientX; return; }

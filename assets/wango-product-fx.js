@@ -234,12 +234,18 @@
         filterNode.type = "lowpass"; filterNode.frequency.value = RAW_FREQ;
         gainNode = audioCtx.createGain(); gainNode.gain.value = RAW_GAIN;
         src.connect(filterNode).connect(gainNode).connect(audioCtx.destination);
+        audioEl.volume = 1;              /* the gain node sets the level from here on */
       } catch (e) { /* no Web Audio — the plain <audio> still plays, unfiltered */ }
     }
-    function startAudio() {
+    /* Creating the AudioContext costs a ~220 ms freeze, so scrolling in never
+       builds it: the plain element plays at the raw level, and the graph is
+       made only on the tap that needs the filter. (Scrolling in can only play
+       sound once the page has had a tap at all; browsers block it before.) */
+    function startAudio(fromGesture) {
       if (muted || !audioEl || !audioEl.getAttribute("src")) return;
-      ensureGraph();
+      if (fromGesture) ensureGraph();
       if (audioCtx) audioCtx.resume().catch(function () {});
+      else audioEl.volume = RAW_GAIN;
       audioEl.play().catch(function () {});
     }
     function stopAudio() { if (audioEl) audioEl.pause(); }
@@ -260,7 +266,7 @@
        a tap, a scroll is not a gesture a browser accepts for it). */
     var scrubSound = mobile && !!window.ScrollTrigger;
     if (button) button.addEventListener("click", function () {
-      startAudio(); rampFilter(true);
+      startAudio(true); rampFilter(true);
       if (scrubSound) { finishFilter(); return; }
       if (window.gsap) {
         gsap.to(reach, { v: 1, duration: 1.8, ease: "power2.out" });
@@ -333,10 +339,13 @@
       ctx.globalAlpha = 1;
     }
 
+    var soundOn = false, soundLoop = false;
     function tick(tMs) {
-      if (!reduced) requestAnimationFrame(tick);
+      if (!reduced) {
+        if (!soundOn) { soundLoop = false; return; }
+        requestAnimationFrame(tick);
+      }
       var t = tMs / 1000;
-      ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h);
       var cx = w * EARBUD_X_PCT, cy = h * EARBUD_Y_PCT;
 
@@ -348,26 +357,35 @@
       ctx.fillStyle = glow;
       ctx.fillRect(cx - EARBUD_W * 1.6, cy - EARBUD_W * 1.6, EARBUD_W * 3.2, EARBUD_W * 3.2);
 
+      /* The glow is a wide faint stroke under the thin one. Canvas shadowBlur
+         blurred the whole strand bundle on every frame and kept the GPU busy
+         enough to drop frames across the section. */
       ctx.save();
-      ctx.strokeStyle = "rgba(165,175,225,0.6)"; ctx.lineWidth = 1.1;
-      ctx.shadowColor = "rgba(165,175,225,0.4)"; ctx.shadowBlur = 4;
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = "rgba(165,175,225,0.10)"; ctx.lineWidth = 5;
       drawBundle(0, cx - EARBUD_W * 0.5, cy, t, STRANDS, 52, true, 1);
-      ctx.restore();
+      ctx.strokeStyle = "rgba(165,175,225,0.6)"; ctx.lineWidth = 1.1;
+      drawBundle(0, cx - EARBUD_W * 0.5, cy, t, STRANDS, 52, true, 1);
 
       if (reach.v > 0.001) {
-        ctx.save();
-        ctx.strokeStyle = "rgba(215,212,248,0.85)"; ctx.lineWidth = 1.5;
-        ctx.shadowColor = "rgba(205,198,255,0.55)"; ctx.shadowBlur = 7;
+        ctx.strokeStyle = "rgba(205,198,255,0.16)"; ctx.lineWidth = 8;
         drawBundle(cx + EARBUD_W * 0.5, w, cy, t, 1, 0, false, reach.v);
-        ctx.restore();
+        ctx.strokeStyle = "rgba(215,212,248,0.85)"; ctx.lineWidth = 1.5;
+        drawBundle(cx + EARBUD_W * 0.5, w, cy, t, 1, 0, false, reach.v);
       }
+      ctx.restore();
 
       if (earbudCanvas) {
         var iw = EARBUD_W, ih = iw * (earbudCanvas.height / earbudCanvas.width || 1.5);
         ctx.drawImage(earbudCanvas, cx - iw / 2, cy - ih / 2, iw, ih);
       }
     }
-    if (reduced) { setTimeout(function () { tick(0); }, 300); } else { requestAnimationFrame(tick); }
+    if (reduced) { setTimeout(function () { tick(0); }, 300); }
+    /* the strands animate only while the section is on screen */
+    new IntersectionObserver(function (es) {
+      soundOn = es[es.length - 1].isIntersecting;
+      if (soundOn && !soundLoop && !reduced) { soundLoop = true; requestAnimationFrame(tick); }
+    }, { rootMargin: "100px" }).observe(root);
 
     /* Hysteresis so a section sitting on the boundary can't stutter the track
        on and off: START at ≥50% visible, STOP only once fully gone. */
@@ -457,7 +475,10 @@
       var lastT = -1;
       view = {
         setSpin: function (rad) {
-          if (!vid.duration || vid.readyState < 2) return;
+          /* one seek in flight: a new currentTime every frame cancelled the
+             previous seek before its frame landed, and the decoder queue
+             stalled the whole page for seconds on a fast scroll */
+          if (!vid.duration || vid.readyState < 2 || vid.seeking) return;
           var t = Math.min(rad / (SPINS * Math.PI * 2), 1) * (vid.duration - 0.04);
           if (Math.abs(t - lastT) < 1 / 120) return;
           lastT = t; vid.currentTime = t;
@@ -506,8 +527,10 @@
     var spinEnd = vid && !reduced ? 0.5 : 1;
     /* the wipe starts while the last part of the turn is still playing */
     var choreoStart = 0.34;
-    var SPINS = 4, scrollP = 0, curSpin = 0, last = performance.now();
-    (function loop() {
+    /* The glide loop runs only while the stage is on screen. */
+    var SPINS = 4, scrollP = 0, curSpin = 0, last = performance.now(), onStage = false, looping = false;
+    function loop() {
+      if (!onStage) { looping = false; return; }
       var now = performance.now();
       var dt = Math.min((now - last) / 1000, 0.05);
       last = now;
@@ -515,7 +538,13 @@
       view.setSpin(curSpin);
       view.render(dt);
       requestAnimationFrame(loop);
-    })();
+    }
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (es) {
+        onStage = es[es.length - 1].isIntersecting;
+        if (onStage && !looping) { looping = true; last = performance.now(); requestAnimationFrame(loop); }
+      }, { rootMargin: "200px" }).observe(outer);
+    } else { onStage = looping = true; requestAnimationFrame(loop); }
 
     function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
     function easeOut(v) { return 1 - Math.pow(1 - v, 3); }
@@ -533,7 +562,9 @@
     function choreo(raw) {
       var p = Math.min(raw / 0.97, 1);
       var e = easeOut(clamp01((p - 0.04) / 0.16));
-      if (header1) gsap.set(header1, { yPercent: -64 * e, autoAlpha: 1 - e, filter: "blur(" + (5 * e).toFixed(2) + "px)" });
+      /* lift and fade only: an animated blur filter re-rasterised the heading on
+         every scroll frame */
+      if (header1) gsap.set(header1, { yPercent: -64 * e, autoAlpha: 1 - e });
 
       var m = clamp01((p - 0.12) / 0.15);
       gsap.set(mask, { clipPath: "circle(" + (m * 122).toFixed(2) + "% at 50% 50%)" });
@@ -612,11 +643,15 @@
       direction = e.deltaY > 0 ? 1 : -1;
       speed = Math.min(speed + Math.abs(e.deltaY) * cfg.scrollAcceleration, cfg.maxRotationSpeed);
     }, { passive: true });
-    gallery.addEventListener("mousemove", function (e) {
-      var r = gallery.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top;
-    });
+    /* the pointer is kept in viewport coordinates: no layout read per event */
+    gallery.addEventListener("mousemove", function (e) { px = e.clientX; py = e.clientY; });
     gallery.addEventListener("mouseleave", function () { px = py = -1; });
     window.addEventListener("resize", measure);
+    var orbitOn = false, orbitLoop = false;
+    new IntersectionObserver(function (es) {
+      orbitOn = es[es.length - 1].isIntersecting;
+      if (orbitOn && !orbitLoop) { orbitLoop = true; requestAnimationFrame(tick); }
+    }, { rootMargin: "100px" }).observe(gallery);
 
     function applyHover(active) {
       items.forEach(function (item) {
@@ -628,21 +663,25 @@
       });
     }
 
-    (function tick() {
+    var hoverEvery = 0;
+    function tick() {
+      if (!orbitOn) { orbitLoop = false; return; }
       speed += (cfg.idleRotationSpeed - speed) * cfg.speedEasing;
       ringRotation += speed * direction;
       var rad = ringRotation * Math.PI / 180;
       var under = null;
-      if (px >= 0) {
-        var gb = gallery.getBoundingClientRect();
-        var el = document.elementFromPoint(px + gb.left, py + gb.top);
+      /* hit-test every third frame, before this frame's writes: a hit test
+         right after moving every frame forced a layout each time */
+      if (px < 0) { if (hovered) { applyHover(null); hovered = null; } }
+      else if (++hoverEvery % 3 === 0) {
+        var el = document.elementFromPoint(px, py);
         var wrap = el && el.closest && el.closest(".sl-orbit-item");
         under = items.filter(function (it) { return it.wrapper === wrap; })[0] || null;
+        if (under !== hovered) { applyHover(under); hovered = under; }
       }
-      if (under !== hovered) { applyHover(under); hovered = under; }
       items.forEach(function (it) { place(it, rad); });
       requestAnimationFrame(tick);
-    })();
+    }
   }
 
   /* ── container scroll: tilted screen that levels out, stages cross-fade ───
