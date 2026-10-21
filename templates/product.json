@@ -1,9 +1,30 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-product",
       "settings": {
-        "show_rating": false
+        "eyebrow": "Origin WOB",
+        "swatch_option": "Renk",
+        "includes": "1 adet wango case, 1 çift Origin kulak tıkacı, 4 beden eartip: S · M · L · double",
+        "promises": "aynı gün ücretsiz kargo, 100 gün iade, güvenli ödeme",
+        "show_rating": true,
+        "rating_value": "4,3",
+        "rating_count": "46",
+        "cross_sell": "",
+        "show_duo": true,
+        "duo_title": "biri sana, biri sevdiğine.",
+        "duo_button": "İkisini ekle",
+        "show_buybar": true,
+        "about_label": "Origin hakkında"
       }
     },
     "stats": {
@@ -12,29 +33,29 @@
         "a": {
           "type": "stat",
           "settings": {
-            "value": "0",
-            "label": "elektronik parça"
+            "value": "0 elektronik",
+            "label": "şarj, pil, atık yok"
           }
         },
         "b": {
           "type": "stat",
           "settings": {
-            "value": "4",
-            "label": "uç boyu · S, M, L, Double"
+            "value": "4 beden",
+            "label": "S, M, L, Double"
           }
         },
         "c": {
           "type": "stat",
           "settings": {
-            "value": "2",
-            "label": "renk"
+            "value": "2 renk",
+            "label": "siyah ve morun uyumu"
           }
         },
         "d": {
           "type": "stat",
           "settings": {
-            "value": "2 gün",
-            "label": "içinde kargoda"
+            "value": "1 gün",
+            "label": "hemen kargoda"
           }
         }
       },
@@ -43,7 +64,212 @@
         "b",
         "c",
         "d"
-      ]
+      ],
+      "settings": {}
+    },
+    "ticker": {
+      "type": "wango-ticker",
+      "blocks": {
+        "kargo": {
+          "type": "item",
+          "settings": {
+            "text": "ücretsiz kargo",
+            "icon": "truck",
+            "link": ""
+          }
+        },
+        "sure": {
+          "type": "item",
+          "settings": {
+            "text": "1 gün içinde kargoda",
+            "icon": "clock",
+            "link": ""
+          }
+        },
+        "bulten": {
+          "type": "item",
+          "settings": {
+            "text": "ilk siparişine %10 indirim",
+            "icon": "mail",
+            "link": "shopify://pages/wango-bulten"
+          }
+        }
+      },
+      "block_order": [
+        "kargo",
+        "sure",
+        "bulten"
+      ],
+      "settings": {
+        "tone": "ink",
+        "ground": "black",
+        "speed": 40
+      }
+    },
+    "wango_sound_filter_eg3Db8": {
+      "type": "wango-sound-filter",
+      "blocks": {
+        "note_PT8BCj": {
+          "type": "note",
+          "settings": {
+            "title": "Çok katmanlı uğultu",
+            "body": "Dışarıdaki ses tek bir şey değil — sürekli değişen onlarca kaynak."
+          }
+        },
+        "note_rpMUFD": {
+          "type": "note",
+          "settings": {
+            "title": "Anlık ayrışma",
+            "body": "Filtreden geçen karmaşa sakin bir çizgiye iner; konuşma ve müzik kalır."
+          }
+        },
+        "note_wtrbqz": {
+          "type": "note",
+          "settings": {
+            "title": "Müzik önde kalır",
+            "body": "Arka plan geri çekilirken dinlediğin şey netliğini korur."
+          }
+        }
+      },
+      "block_order": [
+        "note_PT8BCj",
+        "note_rpMUFD",
+        "note_wtrbqz"
+      ],
+      "name": "Ürün · gürültü filtresi",
+      "settings": {
+        "audio_url": "",
+        "eyebrow": "Akustik gürültü filtresi",
+        "heading": "kaos her yerde, kontrol sende.",
+        "body": "kalabalık, trafik, korna, dip ses. seni rahatsız eden hangisi?\n\nwango'nun etkisini \nşimdi keşfet.",
+        "button_off": "Gürültüyü filtrele",
+        "button_on": "Sessizlik",
+        "in_label": "Dış gürültü",
+        "in_sub": "kafe, metro, ofis",
+        "out_label": "Duyduğun",
+        "out_sub": "Henüz filtresiz",
+        "out_sub_on": "şiddeti azalır"
+      }
+    },
+    "17922546517ef472be": {
+      "type": "_blocks",
+      "settings": {}
+    },
+    "wango_drag_marquee_YinHKw": {
+      "type": "wango-drag-marquee",
+      "blocks": {
+        "slide_NnXr8C": {
+          "type": "slide",
+          "settings": {
+            "image_asset": "wp-real-sky-mirror.jpg",
+            "title": "SESSİZLİK"
+          }
+        },
+        "slide_yrtrGJ": {
+          "type": "slide",
+          "settings": {
+            "image_asset": "wp-real-sport-duffel.jpg",
+            "title": "HAREKET"
+          }
+        },
+        "slide_XjQ7qG": {
+          "type": "slide",
+          "settings": {
+            "image_asset": "wp-real-pocket-denim.jpg",
+            "title": "GÜNDELİK"
+          }
+        },
+        "slide_kprGMY": {
+          "type": "slide",
+          "settings": {
+            "image_asset": "wp-real-portrait-yellow.jpg",
+            "title": "DOKUNUŞ"
+          }
+        },
+        "slide_HyzTkB": {
+          "type": "slide",
+          "settings": {
+            "image_asset": "wp-real-three-hands.jpg",
+            "title": "RİTİM"
+          }
+        },
+        "slide_FPWtkX": {
+          "type": "slide",
+          "settings": {
+            "image_asset": "wp-real-leather-bag.jpg",
+            "title": "AN"
+          }
+        }
+      },
+      "block_order": [
+        "slide_NnXr8C",
+        "slide_yrtrGJ",
+        "slide_XjQ7qG",
+        "slide_kprGMY",
+        "slide_HyzTkB",
+        "slide_FPWtkX"
+      ],
+      "custom_css": [],
+      "name": "Origin · sürüklenen şerit",
+      "settings": {}
+    },
+    "wango_box_scroll_TGUe6y": {
+      "type": "wango-box-scroll",
+      "blocks": {
+        "beat_BrYabT": {
+          "type": "beat",
+          "settings": {
+            "kicker": "kapak",
+            "title": "hoş geldin.",
+            "body": "kapağın içinde seni kısa bir mektup karşılar. QR kod seni kullanım rehberine götürür.",
+            "start": 23,
+            "end": 55
+          }
+        },
+        "beat_iCn8cE": {
+          "type": "beat",
+          "settings": {
+            "kicker": "içinde",
+            "title": "Origin ve dört boy uç.",
+            "body": "M uç takılı gelir; S, L ve double yedekte bekler. hangisi kulağına oturuyorsa o.",
+            "start": 53,
+            "end": 83
+          }
+        },
+        "beat_RKtK4N": {
+          "type": "beat",
+          "settings": {
+            "kicker": "Origin",
+            "title": "avucuna sığan bir sessizlik.",
+            "body": "kutusunu çantana ya da karabinana tak, hep yanında olsun.",
+            "start": 81,
+            "end": 100
+          }
+        }
+      },
+      "block_order": [
+        "beat_BrYabT",
+        "beat_iCn8cE",
+        "beat_RKtK4N"
+      ],
+      "name": "Ürün · kutu açılışı",
+      "settings": {
+        "video_url": "",
+        "video_asset": "ws-box-reveal.mp4",
+        "video_asset_mobile": "ws-box-reveal-m.mp4",
+        "poster_asset": "ws-box-reveal-poster.jpg",
+        "poster_end_asset": "ws-box-reveal-end.jpg",
+        "video_asset_black": "ws-box-reveal-black.mp4",
+        "video_asset_black_mobile": "ws-box-reveal-black-m.mp4",
+        "poster_asset_black": "ws-box-reveal-black-poster.jpg",
+        "poster_end_asset_black": "ws-box-reveal-black-end.jpg",
+        "swatch_label": "kutu rengi",
+        "alt": "wango Origin kutusu açılıyor: kapak, iç kapak, insert ve kutu",
+        "eyebrow": "kutu",
+        "lead": "kutuyu açtığın an",
+        "heading": "sessizlik başlar.",
+        "scroll_length": 280
+      }
     },
     "specs": {
       "type": "wango-specs",
@@ -52,7 +278,7 @@
           "type": "spec",
           "settings": {
             "key": "Tür",
-            "value": "Akustik kanallı kulak tıkacı · analog"
+            "value": "Akustik kanallı kulak tıkacı"
           }
         },
         "s2": {
@@ -66,14 +292,14 @@
           "type": "spec",
           "settings": {
             "key": "Gövde",
-            "value": "Hipoalerjenik silikon, metal detay"
+            "value": "Hipoalerjenik silikon, metal charm"
           }
         },
         "s4": {
           "type": "spec",
           "settings": {
-            "key": "Uçlar",
-            "value": "4 boy silikon uç · S, M, L, Double"
+            "key": "BEDEN",
+            "value": "4 farklı eartip · S, M, L, Double"
           }
         },
         "s5": {
@@ -87,7 +313,7 @@
           "type": "spec",
           "settings": {
             "key": "Taşıma",
-            "value": "Kutu ve kutuya entegre deri kayış"
+            "value": "wango case · dilediğin yere tak"
           }
         },
         "s7": {
@@ -100,8 +326,8 @@
         "s8": {
           "type": "spec",
           "settings": {
-            "key": "Şarj",
-            "value": "Yok · elektronik parça yok"
+            "key": "şarj",
+            "value": "elektronik yok ·  pasif gürültü önleyici"
           }
         }
       },
@@ -114,7 +340,117 @@
         "s6",
         "s7",
         "s8"
-      ]
+      ],
+      "settings": {
+        "tag": "Teknik",
+        "heading": "için rahat etsin.",
+        "body": "çünkü içinde elektronik yok, şarj yok. \nmeraklısı için tüm teknik özellikler burada."
+      }
+    },
+    "wango_testimonials_columns_r4PffX": {
+      "type": "wango-testimonials-columns",
+      "blocks": {
+        "testimonial_zpem6r": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Sekiz saat taktım, hiç acıtmadı. Kutusu o kadar küçük ki anahtarlığımda taşıyorum.",
+            "name": "Deniz K.",
+            "role": "Origin Obsidian Black"
+          }
+        },
+        "testimonial_BwBT9g": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Açık ofiste klavye sesi ve konuşmalar kayboluyor, müzik dinlemiyorum bile. Sadece sessizlik.",
+            "name": "Elif A.",
+            "role": "Origin Tropical Indigo"
+          }
+        },
+        "testimonial_WQFpb3": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Uçakta motor uğultusunu aldı, anons duyulmaya devam etti. Tam istediğim denge.",
+            "name": "Mert Y.",
+            "role": "Origin Obsidian Black"
+          }
+        },
+        "testimonial_wWUaCY": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Küpelerimle uyumlu duruyor. Kulaklık aldığımı değil, bir parça aldığımı hissettim.",
+            "name": "Selin T.",
+            "role": "Origin Tropical Indigo"
+          }
+        },
+        "testimonial_McAcrY": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Konserden çınlamayla çıkmamak yıllar sonra ilk. Müziğin tadı da kaçmadı.",
+            "name": "Burak Ö.",
+            "role": "Origin Obsidian Black"
+          }
+        },
+        "testimonial_mH7TTr": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Yan odadaki televizyon sesi bitti, uykuya dalma süresi yarıya indi.",
+            "name": "Ayşe N.",
+            "role": "Origin Tropical Indigo"
+          }
+        },
+        "testimonial_9FCTpc": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Metroda tam kapatıyor, ofiste hafif açık bırakıyorum. Kademe farkı gerçekten hissediliyor.",
+            "name": "Can D.",
+            "role": "Origin Obsidian Black"
+          }
+        },
+        "testimonial_ykJq4h": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Üç farklı uç geliyor, ortancası kulağıma oturdu. Koşarken bile yerinden oynamıyor.",
+            "name": "Zeynep K.",
+            "role": "Origin Tropical Indigo"
+          }
+        },
+        "testimonial_GCedYw": {
+          "type": "testimonial",
+          "settings": {
+            "text": "Kütüphanede kullanıyorum. Taktığımı kimse fark etmiyor, ben de kimseyi duymuyorum.",
+            "name": "Emre S.",
+            "role": "Origin Obsidian Black"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_zpem6r",
+        "testimonial_BwBT9g",
+        "testimonial_WQFpb3",
+        "testimonial_wWUaCY",
+        "testimonial_McAcrY",
+        "testimonial_mH7TTr",
+        "testimonial_9FCTpc",
+        "testimonial_ykJq4h",
+        "testimonial_GCedYw"
+      ],
+      "name": "Yorumlar · sütunlar",
+      "settings": {
+        "ground": "w-black",
+        "eyebrow": "geri dönüşler",
+        "heading": "kullananlar ne diyor?",
+        "subheading": "wango ile gürültüyü kontrol eden +1000 kişi."
+      }
+    },
+    "product_compare_pWjc7J": {
+      "type": "product-compare",
+      "name": "wango: karşılaştırma",
+      "settings": {
+        "heading": "peki köpük tıkaçtan farkı ne",
+        "row_label": "",
+        "col_foam": "köpük tıkaç",
+        "col_headphones": "anc kulaklık"
+      }
     },
     "reviews": {
       "type": "wango-reviews",
@@ -152,51 +488,73 @@
         "r2",
         "r3"
       ],
-      "disabled": true
+      "disabled": true,
+      "settings": {
+        "eyebrow": "Değerlendirmeler",
+        "heading": "312 kişi taktı, anlattı.",
+        "average": "4.8 / 5 ortalama"
+      }
     },
-    "ticker": {
-      "type": "wango-ticker",
+    "wango_newsletter_AQcQcq": {
+      "type": "wango-newsletter",
       "blocks": {
-        "kargo": {
-          "type": "item",
+        "perk_FXfkBU": {
+          "type": "perk",
           "settings": {
-            "text": "Ücretsiz kargo",
-            "icon": "truck"
+            "title": "Yeni renkler önce sana",
+            "body": "Sınırlı üretim tonları, herkese açılmadan bir gün önce."
           }
         },
-        "sure": {
-          "type": "item",
+        "perk_Bb74pw": {
+          "type": "perk",
           "settings": {
-            "text": "2 iş günü içinde kargoda",
-            "icon": "clock"
+            "title": "Sessizlik üzerine",
+            "body": "Ayda bir kısa mektup — ürün değil, üzerine düşündüğümüz şeyler."
           }
         },
-        "bulten": {
-          "type": "item",
+        "perk_WYEKbm": {
+          "type": "perk",
           "settings": {
-            "text": "Bültene katıl, ilk siparişine %10 indirim",
-            "icon": "mail",
-            "link": "shopify://pages/wango-bulten"
+            "title": "Sadece gerektiğinde",
+            "body": "Ayda birden fazla yazmıyoruz. Tek tıkla çıkarsın."
           }
         }
       },
       "block_order": [
-        "kargo",
-        "sure",
-        "bulten"
+        "perk_FXfkBU",
+        "perk_Bb74pw",
+        "perk_WYEKbm"
       ],
+      "name": "Bülten",
       "settings": {
-        "tone": "purple",
-        "speed": 40,
-        "ground": "black"
+        "eyebrow": "Bülten",
+        "heading": "sessizliğe",
+        "heading_accent": "abone ol",
+        "body": "Ayda bir e-posta. Yeni renkler, sınırlı setler ve arada bir sessizlik üzerine kısa bir yazı. Başka hiçbir şey.",
+        "form_heading": "E-posta adresin",
+        "placeholder": "ad@ornek.com",
+        "consent": "wango'dan e-posta almayı ve adresimin bu amaçla işlenmesini kabul ediyorum. Dilediğim zaman çıkabilirim.",
+        "submit": "Bültene kaydol",
+        "err_email": "Geçerli bir e-posta adresi gir.",
+        "err_consent": "Devam etmek için onay kutusunu işaretle.",
+        "success_heading": "Kaydın alındı.",
+        "success_body": "Adresin listeye eklendi. İstediğin zaman tek tıkla çıkabilirsin.",
+        "success_cta": "Ana sayfaya dön"
       }
     }
   },
   "order": [
     "main",
-    "ticker",
     "stats",
+    "ticker",
+    "wango_sound_filter_eg3Db8",
+    "17922546517ef472be",
+    "wango_drag_marquee_YinHKw",
+    "wango_box_scroll_TGUe6y",
     "specs",
-    "reviews"
+    "wango_testimonials_columns_r4PffX",
+    "product_compare_pWjc7J",
+    "reviews",
+    "wango_newsletter_AQcQcq"
   ]
 }

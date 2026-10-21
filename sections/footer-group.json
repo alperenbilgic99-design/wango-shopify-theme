@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "footer",
   "name": "Alt bilgi",
@@ -5,18 +14,48 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "products_url": "shopify://pages/wango-setler",
-        "menu": "wango-origin-alt",
-        "newsletter_url": "shopify://pages/wango-bulten",
-        "credit": "",
-        "credit_code": "",
         "blurb": "gürültünün kontrolü sende. Türkiye'de sevgiyle tasarlandı. setler ve satın alma",
-        "products_label": "ürün sayfasında"
+        "products_label": "ürün sayfasında",
+        "products_url": "shopify://pages/wango-setler",
+        "newsletter_label": "Bültene kaydol",
+        "newsletter_url": "shopify://pages/wango-bulten",
+        "menu": "wango-origin-alt",
+        "credit": "",
+        "credit_code": ""
       }
     },
     "popup": {
       "type": "wango-popup",
-      "settings": {}
+      "settings": {
+        "enabled": true,
+        "on_home": true,
+        "on_story": true,
+        "on_product": true,
+        "product_scroll": true,
+        "delay": 2,
+        "days": 7,
+        "badge": "Bültene özel",
+        "big": "%10",
+        "big_sub": "ilk siparişine indirim",
+        "eyebrow": "wango bülteni",
+        "heading": "İlk siparişine",
+        "heading_accent": "%10 indirim.",
+        "body": "Bültene katıl, ilk siparişinde kullanacağın %10 indirim kodu e-postana gelsin. Yeni renkleri de ilk sen duy.",
+        "placeholder": "e-posta adresin",
+        "consent": "wango'dan kampanya ve yenilik e-postaları almayı kabul ediyorum. İstediğim zaman çıkabilirim.",
+        "submit": "Kodu al",
+        "later": "Şimdi değil",
+        "close_label": "Kapat",
+        "err_generic": "Kayıt tamamlanamadı. E-posta adresini kontrol edip tekrar dener misin?",
+        "code": "",
+        "success_eyebrow": "Aramıza hoş geldin",
+        "success_heading": "Kaydın alındı.",
+        "success_body": "İlk siparişinde ödeme adımında bu kodu gir:",
+        "success_body_nocode": "%10 indirim kodunu e-posta adresine göndereceğiz.",
+        "copy_label": "kopyala",
+        "copied_label": "kopyalandı",
+        "success_cta": "Alışverişe devam et"
+      }
     }
   },
   "order": [
